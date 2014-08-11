@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ParcheggiAusiliari</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_activity2">Activity2</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">closed</string>
+    <string name="title_activity_park_list_fragment">ParkListFragment</string>
+    <string name= "drawer_mappa">Mappa</string>
+    <string name= "drawer_storico">Storico</string>
+    <string name= "drawer_logout">Logout</string>
+    <string name= "storico_fragment">Storico</string>
+    <string name= "map_fragment">Mappa</string>
+    <string name= "parklist_fragment">Parkings</string>
+    <string name= "streetlist_fragment">Vie</string>
+    <string name= "login_fragment">Login</string>
+    <string name="btnParkings">Parcheggi</string>
+    <string name="btnStreets">Vie</string>
+
+</resources>

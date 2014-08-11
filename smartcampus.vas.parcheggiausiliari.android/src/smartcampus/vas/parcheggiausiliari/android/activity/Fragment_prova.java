@@ -60,7 +60,7 @@ public class Fragment_prova extends Fragment {
 		@Override
 		public Fragment getItem(int position) {
 			if (position == 0)
-				return new StoricoFragment();
+				return new StoricoAgenteFragment();
 			else
 				return new ParkListFragment();
 		}

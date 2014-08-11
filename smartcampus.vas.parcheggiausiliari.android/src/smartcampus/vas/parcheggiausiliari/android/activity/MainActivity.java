@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
-
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +32,7 @@ public class MainActivity extends ActionBarActivity {
 	private ActionBarDrawerToggle mDrawerToggle;
 	private CharSequence mTitle;
 	private int mCurrent = 0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,6 +40,7 @@ public class MainActivity extends ActionBarActivity {
 
 		if (savedInstanceState != null)
 			mCurrent = savedInstanceState.getInt("current");
+		
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		// to remove the application logo in the drawer Title
@@ -73,16 +76,6 @@ public class MainActivity extends ActionBarActivity {
 		/**															
         *
         */
-
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-		mDrawerList.setAdapter(new DrawerArrayAdapter(getApplicationContext(),
-				getResources().getStringArray(R.array.drawer_entries_strings)));
-
-		/**															
-        *
-        */
-
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		String[] strings = { "Mappa", "Storico", "Logout" };
 		mDrawerList.setAdapter(new DrawerArrayAdapter(getApplicationContext(),
@@ -110,17 +103,18 @@ public class MainActivity extends ActionBarActivity {
 						FragmentTransaction ft = getSupportFragmentManager()
 								.beginTransaction();
 						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-						ft.replace(R.id.container, new StoricoFragment(),
+						ft.replace(R.id.container, new StoricoAgenteFragment(),
 								getString(R.string.storico_fragment))
 								.addToBackStack(null).commit();
 					} else if (arg2 == 2) {
 						getSupportActionBar().setTitle("Login");
+						logout();
 						FragmentTransaction ft = getSupportFragmentManager()
 								.beginTransaction();
 						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-						ft.replace(R.id.container, new Fragment_prova(),
-								getString(R.string.login_fragment))
-								.addToBackStack(null).commit();
+						ft.replace(R.id.container, new LoginFragment(),
+								getString(R.string.logout_fragment))
+								.commit();
 					}
 
 				mDrawerLayout.closeDrawer(mDrawerList);
@@ -129,11 +123,27 @@ public class MainActivity extends ActionBarActivity {
 		});
 		mTitle = getTitle();
 
+		
 		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new MapFragment(), "Mappa")
-					.addToBackStack(null).commit();
+
+			SharedPreferences sp = getPreferences(MODE_PRIVATE);
+			Log.d("DEBUG",sp.getString("User", "nada"));
+			if (sp.getString("User", null) == null) {
+				getSupportFragmentManager().beginTransaction()
+						.add(R.id.container, new LoginFragment())
+						.commit();
+			} else {
+				getSupportFragmentManager().beginTransaction()
+						.add(R.id.container, new MapFragment(), "Mappa")
+						.commit();
+			}
 		}
+		
+	}
+
+	protected void logout() {
+		getPreferences(MODE_PRIVATE).edit().remove("User").apply();
+		getPreferences(MODE_PRIVATE).edit().remove("Pass").apply();
 	}
 
 	@Override
@@ -156,6 +166,10 @@ public class MainActivity extends ActionBarActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
+	public String getUsername(){
+		return getPreferences(MODE_PRIVATE).getString("User",null);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent e) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {

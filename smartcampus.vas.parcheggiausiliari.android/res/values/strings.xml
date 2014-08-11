@@ -21,7 +21,7 @@
     <string name= "map_fragment">Mappa</string>
     <string name= "parklist_fragment">Parkings</string>
     <string name= "streetlist_fragment">Vie</string>
-    <string name= "login_fragment">Login</string>
+    <string name= "logout_fragment">Logout</string>
     <string name="btnParkings">Parcheggi</string>
     <string name="btnStreets">Vie</string>
 

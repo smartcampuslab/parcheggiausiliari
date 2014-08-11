@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class StoricoFragment extends Fragment {
+public class StoricoAgenteFragment extends Fragment {
 	ListView lv;
 
 	@Override
@@ -34,7 +34,7 @@ public class StoricoFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onStart();
 		ArrayList<String> result = new ArrayList<String>();
-		for (ParkingLog lc : new AusiliariHelper(getActivity()).getStorico()) {
+		for (ParkingLog lc : new AusiliariHelper(getActivity()).getStoricoAgente()) {
 			result.add("da "+lc.getAuthor()+" il " +lc.getTime());
 		}
 		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), result);

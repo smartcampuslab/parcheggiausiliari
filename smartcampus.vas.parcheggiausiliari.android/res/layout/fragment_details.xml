@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <smartcampus.vas.parcheggiausiliari.android.views.PagerSlidingTabStrip
+    <eu.trentorise.smartcampus.parcheggiausiliari.views.PagerSlidingTabStrip
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="48dip" />

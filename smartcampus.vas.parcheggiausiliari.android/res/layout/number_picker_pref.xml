@@ -21,7 +21,7 @@
     android:orientation="vertical"
     android:padding="10dip" >
 
-    <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
+    <eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker
         android:id="@+id/pref_num_picker"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

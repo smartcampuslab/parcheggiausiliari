@@ -42,13 +42,13 @@
                 android:gravity="center_vertical"
                 android:src="@drawable/ic_parking" />
 
-            <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
+            <eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker
                 android:id="@+id/NumberPicker01"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="horizontal" >
-            </smartcampus.vas.parcheggiausiliari.android.views.NumberPicker>
+            </eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker>
 
             <TextView
                 android:id="@+id/txtMaxFree"
@@ -81,13 +81,13 @@
                     android:gravity="center_vertical"
                     android:src="@drawable/ic_parchimetro" />
 
-                <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
+                <eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker
                     android:id="@+id/NumberPicker02"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="horizontal" >
-                </smartcampus.vas.parcheggiausiliari.android.views.NumberPicker>
+                </eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker>
 
                 <TextView
                     android:id="@+id/txtMaxPayment"
@@ -113,13 +113,13 @@
                     android:gravity="center_vertical"
                     android:src="@drawable/ic_disco_orario" />
 
-                <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
+                <eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker
                     android:id="@+id/NumberPicker03"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="horizontal" >
-                </smartcampus.vas.parcheggiausiliari.android.views.NumberPicker>
+                </eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker>
 
                 <TextView
                     android:id="@+id/txtMaxTimed"
@@ -146,13 +146,13 @@
                 android:gravity="center_vertical"
                 android:src="@drawable/ic_lavori" />
 
-            <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
+            <eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker
                 android:id="@+id/NumberPicker04"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="horizontal" >
-            </smartcampus.vas.parcheggiausiliari.android.views.NumberPicker>
+            </eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker>
 
             <TextView
                 android:id="@+id/txtMaxWork"

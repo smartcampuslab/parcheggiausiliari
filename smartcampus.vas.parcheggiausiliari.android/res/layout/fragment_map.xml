@@ -1,5 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,30 +9,40 @@
     <org.osmdroid.views.MapView
         android:id="@+id/mapview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/LinearLayout1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"/>
 
     <LinearLayout
+        android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@android:color/transparent"
         android:orientation="horizontal" >
 
         <Button
             android:id="@+id/btnParking"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="3dp"
             android:layout_weight="1"
+            android:background="@drawable/buttons"
             android:text="@string/btnParkings"
-            style="?android:attr/borderlessButtonStyle" />
+            android:textColor="@android:color/primary_text_dark" />
 
         <Button
             android:id="@+id/btnVie"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_margin="3dp"
             android:layout_weight="1"
-            android:text="@string/btnStreets" 
-            style="?android:attr/borderlessButtonStyle"/>
+            android:background="@drawable/buttons"
+            android:text="@string/btnStreets"
+            android:textColor="@android:color/primary_text_dark" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

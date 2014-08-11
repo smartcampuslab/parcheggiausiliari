@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background_tab_pressed">#6633B5E5</color>
+    <color name="button_normal">#E15829</color>
+    <color name="button_pressed">#E84E26</color>
+    <color name="action_bar">#0C4F6C</color>
 </resources>

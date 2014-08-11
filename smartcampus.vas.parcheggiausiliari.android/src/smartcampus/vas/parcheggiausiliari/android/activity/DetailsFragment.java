@@ -25,6 +25,7 @@ public class DetailsFragment extends Fragment {
 				false);
 		ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
 		tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
+		tabs.setTextColor(getResources().getColorStateList(R.color.tab_titles_color));
 		pager.setAdapter(new MyPagerAdapter(getFragmentManager()));
 		// Bind the tabs to the ViewPager
 		tabs.setViewPager(pager);

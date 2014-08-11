@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:src="@drawable/ic_park" />
+                android:src="@drawable/ic_parking" />
 
             <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
                 android:id="@+id/NumberPicker01"
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:src="@drawable/ic_park_meter" />
+                    android:src="@drawable/ic_parchimetro" />
 
                 <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
                     android:id="@+id/NumberPicker02"
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:src="@drawable/ic_park_disk" />
+                    android:src="@drawable/ic_disco_orario" />
 
                 <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
                     android:id="@+id/NumberPicker03"
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:src="@drawable/ic_work_in_progress" />
+                android:src="@drawable/ic_lavori" />
 
             <smartcampus.vas.parcheggiausiliari.android.views.NumberPicker
                 android:id="@+id/NumberPicker04"
@@ -176,15 +176,22 @@
             android:id="@+id/btnReset"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_weight="1"
-            android:text="Reset" />
+            android:background="@drawable/buttons"
+            android:text="Reset"
+            android:textColor="@android:color/primary_text_dark" />
 
         <Button
             android:id="@+id/btnSend"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_weight="1"
-            android:text="Invia" />
+            android:background="@drawable/buttons"
+            android:text="Invia"
+            android:textColor="@android:color/primary_text_dark" />
+
     </LinearLayout>
 
 </LinearLayout>

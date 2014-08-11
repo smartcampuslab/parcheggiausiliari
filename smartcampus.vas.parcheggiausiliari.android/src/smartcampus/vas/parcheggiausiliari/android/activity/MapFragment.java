@@ -1,7 +1,6 @@
 package smartcampus.vas.parcheggiausiliari.android.activity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.osmdroid.bonuspack.overlays.FolderOverlay;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -45,6 +44,7 @@ public class MapFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_map, container,
 				false);
 		Button btnParkings = (Button) rootView.findViewById(R.id.btnParking);
+	//	btnParkings.setBackgroundColor(getResources().getColor(R.color.button_normal));
 		btnParkings.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -62,6 +62,7 @@ public class MapFragment extends Fragment {
 		});
 
 		Button btnStreets = (Button) rootView.findViewById(R.id.btnVie);
+	//	btnStreets.setBackgroundColor(getResources().getColor(R.color.button_normal));
 		btnStreets.setOnClickListener(new OnClickListener() {
 
 			@Override

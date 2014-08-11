@@ -29,17 +29,24 @@
 
         <Button
             android:id="@+id/btnStorico"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Segnala" />
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttons"
+            android:text="Segnala" 
+            android:textColor="@android:color/primary_text_dark"/>
 
         <Button
             android:id="@+id/btnDel"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Annulla"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttons"
+            android:text="Annulla" 
+            android:textColor="@android:color/primary_text_dark"/>
+
     </LinearLayout>
 
 </LinearLayout>

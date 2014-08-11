@@ -6,7 +6,6 @@ import java.util.Arrays;
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
@@ -22,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -40,12 +40,8 @@ public class MainActivity extends ActionBarActivity {
 
 		if (savedInstanceState != null)
 			mCurrent = savedInstanceState.getInt("current");
-		
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		// to remove the application logo in the drawer Title
-		getSupportActionBar().setIcon(
-				new ColorDrawable(android.R.color.transparent));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -70,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
 				supportInvalidateOptionsMenu();
 			}
 		};
-
+		// mDrawerLayout.setBackgroundColor(Color.parseColor("#E15829"));
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 		/**															
@@ -113,8 +109,7 @@ public class MainActivity extends ActionBarActivity {
 								.beginTransaction();
 						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
 						ft.replace(R.id.container, new LoginFragment(),
-								getString(R.string.logout_fragment))
-								.commit();
+								getString(R.string.logout_fragment)).commit();
 					}
 
 				mDrawerLayout.closeDrawer(mDrawerList);
@@ -123,22 +118,20 @@ public class MainActivity extends ActionBarActivity {
 		});
 		mTitle = getTitle();
 
-		
 		if (savedInstanceState == null) {
 
 			SharedPreferences sp = getPreferences(MODE_PRIVATE);
-			Log.d("DEBUG",sp.getString("User", "nada"));
+			Log.d("DEBUG", sp.getString("User", "nada"));
 			if (sp.getString("User", null) == null) {
 				getSupportFragmentManager().beginTransaction()
-						.add(R.id.container, new LoginFragment())
-						.commit();
+						.add(R.id.container, new LoginFragment()).commit();
 			} else {
 				getSupportFragmentManager().beginTransaction()
 						.add(R.id.container, new MapFragment(), "Mappa")
 						.commit();
 			}
 		}
-		
+
 	}
 
 	protected void logout() {
@@ -166,10 +159,10 @@ public class MainActivity extends ActionBarActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
-	public String getUsername(){
-		return getPreferences(MODE_PRIVATE).getString("User",null);
+	public String getUsername() {
+		return getPreferences(MODE_PRIVATE).getString("User", null);
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent e) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -224,9 +217,24 @@ public class MainActivity extends ActionBarActivity {
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View rowView = inflater.inflate(R.layout.drawerrow, parent, false);
-			TextView textView = (TextView) rowView.findViewById(R.id.txt1);
+			TextView textView = (TextView) rowView
+					.findViewById(R.id.textDrawer);
 			textView.setText(values.get(position));
-
+			ImageView img = (ImageView) rowView.findViewById(R.id.iconDrawer);
+			switch (position) {
+			case 0:
+				img.setImageDrawable(rowView.getResources().getDrawable(
+						R.drawable.ic_map));
+				break;
+			case 1:
+				img.setImageDrawable(rowView.getResources().getDrawable(
+						R.drawable.ic_storico));
+				break;
+			case 2:
+				img.setImageDrawable(rowView.getResources().getDrawable(
+						R.drawable.ic_logout));
+				break;
+			}
 			return rowView;
 		}
 	}

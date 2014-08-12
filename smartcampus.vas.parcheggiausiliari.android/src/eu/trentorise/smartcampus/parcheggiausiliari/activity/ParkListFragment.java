@@ -2,6 +2,7 @@ package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
 public class ParkListFragment extends Fragment {
@@ -62,20 +64,20 @@ public class ParkListFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
-	public static class MySimpleArrayAdapter extends ArrayAdapter<GeoObject> {
+	public static class MySimpleArrayAdapter extends ArrayAdapter<Parking> {
 		private final Context context;
-		private final ArrayList<GeoObject> values;
+		private final List<Parking> values;
 
-		public MySimpleArrayAdapter(Context context, ArrayList<GeoObject> values) {
+		public MySimpleArrayAdapter(Context context, List<Parking> values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
 			this.values = values;
 		}
 
-		public MySimpleArrayAdapter(Context context, GeoObject[] values) {
+		public MySimpleArrayAdapter(Context context, Parking[] values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
-			this.values = new ArrayList<GeoObject>(Arrays.asList(values));
+			this.values = new ArrayList<Parking>(Arrays.asList(values));
 		}
 
 		@Override

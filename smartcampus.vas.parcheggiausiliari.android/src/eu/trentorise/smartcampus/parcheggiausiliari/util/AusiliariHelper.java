@@ -1,29 +1,27 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.util;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Random;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import smartcampus.vas.parcheggiausiliari.android.R;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.res.Resources.NotFoundException;
+import android.os.AsyncTask;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.StreetLog;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.constants.Parcheggi_Services;
 
-public class AusiliariHelper {
+public class AusiliariHelper implements Parcheggi_Services {
 	private static Context mContext;
-	private static AusiliariHelper helper;
 
-	public AusiliariHelper(Context ctx) {
+	public AusiliariHelper(Context ctx ) {
 		this.mContext = ctx;
-	}
-
-	public static boolean isInstantiated() {
-		return (helper != null);
 	}
 
 	public void sendData(GeoObject obj) {
@@ -31,10 +29,42 @@ public class AusiliariHelper {
 		ast.execute(obj);
 	}
 
-	public static ArrayList<ParkingLog> getStorico() {
-		ArrayList<ParkingLog> toRtn = new ArrayList<ParkingLog>();
+	public static List<ParkingLog> getStoricoPark(Parking obj) {
+		List<ParkingLog> toRtn = new ArrayList<ParkingLog>();
 		try {
-			GetStoricoTask ast = new GetStoricoTask();
+			GetParkingStoricoTask ast = new GetParkingStoricoTask();
+			ast.execute(obj);
+			toRtn = ast.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toRtn;
+	}
+
+	public static List<StreetLog> getStoricoStreet(Street obj) {
+		List<StreetLog> toRtn = new ArrayList<StreetLog>();
+		try {
+			GetStreetStoricoTask ast = new GetStreetStoricoTask();
+			ast.execute(obj);
+			toRtn = ast.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toRtn;
+	}
+
+	public static List<ParkingLog> getStoricoAgente() {
+		List<ParkingLog> toRtn = new ArrayList<ParkingLog>();
+		try {
+			GetStoricoAgenteTask ast = new GetStoricoAgenteTask();
 			ast.execute();
 			toRtn = ast.get();
 		} catch (InterruptedException e) {
@@ -47,37 +77,33 @@ public class AusiliariHelper {
 		return toRtn;
 	}
 
-	public static ArrayList<ParkingLog> getStoricoAgente() {
-		ArrayList<ParkingLog> toRtn = new ArrayList<ParkingLog>();
-		try {
-			GetStoricoTask ast = new GetStoricoTask();
-			ast.execute();
-			toRtn = ast.get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return toRtn;
-	}
-	
-	private static class SetDataTask extends
-			AsyncTask<GeoObject, Void, Void> {
+	private static class SetDataTask extends AsyncTask<GeoObject, Void, Void> {
 		ProgressDialog pd;
 
 		@Override
 		protected Void doInBackground(GeoObject... params) {
-			if(Parking.class.isInstance(params[0]))
-			{
-				Parking temp = ((Parking)params[0]);
-				Log.d("DEBUG","Parcheggio");
-				Log.d("DEBUG", temp.getName()+ " " +temp.getSlotsOccupiedOnTotal()+" "+temp.getSlotsUnavailable());
-			} else {
-				Street temp = ((Street)params[0]);
-				Log.d("DEBUG","Via");
-				Log.d("DEBUG", temp.getName()+ " " +temp.getSlotsOccupiedOnFree()+" "+temp.getSlotsOccupiedOnPaying()+" "+temp.getSlotsOccupiedOnTimed()+" "+temp.getSlotsUnavailable());
+			try {
+				if (Parking.class.isInstance(params[0])) {
+
+					RemoteConnector.postJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+							UPDATEPARK + params[0].getId() + "/" + new AusiliariHelper(mContext).getUsername(),
+							JsonUtils.toJSON(params[0]), mContext
+									.getResources().getString(R.string.token));
+				} else {
+					RemoteConnector.postJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+							UPDATESTREET + params[0].getId() + "/" + new AusiliariHelper(mContext).getUsername(),
+							JsonUtils.toJSON(params[0]), mContext
+									.getResources().getString(R.string.token));
+				}
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			return null;
 		}
@@ -102,21 +128,29 @@ public class AusiliariHelper {
 		}
 	}
 
-	private static class GetStoricoTask extends
-			AsyncTask<Void, Void, ArrayList<ParkingLog>> {
+	private static class GetStreetStoricoTask extends
+			AsyncTask<GeoObject, Void, List<StreetLog>> {
 		ProgressDialog pd;
 
 		@Override
-		protected ArrayList<ParkingLog> doInBackground(Void... params) {
-			ArrayList<ParkingLog> array = new ArrayList<ParkingLog>();
-			int a = new Random().nextInt(90000000);
-			for (int i = 0; i < 10; i++) {
-				ParkingLog p = new ParkingLog();
-				p.setAuthor("Mario Rossi");
-				p.setTime(System.currentTimeMillis()+ (i*a));
-				array.add(p);
+		protected List<StreetLog> doInBackground(GeoObject... params) {
+			String request = null;
+			List<StreetLog> list = null;
+			try {
+				request = RemoteConnector.getJSON(HOST,
+						STREETLIST + params[0].getId(), mContext.getResources()
+								.getString(R.string.token));
+				list = JsonUtils.toObjectList(request, StreetLog.class);
+
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			return array;
+
+			return list;
 
 		}
 
@@ -130,7 +164,7 @@ public class AusiliariHelper {
 		}
 
 		@Override
-		protected void onPostExecute(ArrayList<ParkingLog> result) {
+		protected void onPostExecute(List<StreetLog> result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 
@@ -139,8 +173,93 @@ public class AusiliariHelper {
 		}
 	}
 
-	public static Parking[] getParklist() {
-		Parking[] array = null;
+	private static class GetParkingStoricoTask extends
+			AsyncTask<GeoObject, Void, List<ParkingLog>> {
+		ProgressDialog pd;
+
+		@Override
+		protected List<ParkingLog> doInBackground(GeoObject... params) {
+			String request = null;
+			List<ParkingLog> list = null;
+			try {
+				request = RemoteConnector.getJSON(HOST,
+						PARKLIST + params[0].getId(), mContext.getResources()
+								.getString(R.string.token));
+				list = JsonUtils.toObjectList(request, ParkingLog.class);
+
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return list;
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			pd = new ProgressDialog(mContext);
+			pd.setTitle("Downloading Data");
+			pd.show();
+		}
+
+		@Override
+		protected void onPostExecute(List<ParkingLog> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+
+			if (pd.isShowing())
+				pd.dismiss();
+		}
+	}
+
+	private static class GetStoricoAgenteTask extends
+			AsyncTask<Void, Void, List<ParkingLog>> {
+		ProgressDialog pd;
+
+		@Override
+		protected List<ParkingLog> doInBackground(Void... params) {
+			String request = null;
+			try {
+				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+ AUSLOGLIST + new AusiliariHelper(mContext).getUsername(),
+						mContext.getResources().getString(R.string.token));
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return JsonUtils.toObjectList(request, ParkingLog.class);
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			pd = new ProgressDialog(mContext);
+			pd.setTitle("Downloading Data");
+			pd.show();
+		}
+
+		@Override
+		protected void onPostExecute(List<ParkingLog> result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+
+			if (pd.isShowing())
+				pd.dismiss();
+		}
+	}
+
+	public static List<Parking> getParklist() {
+		List<Parking> array = null;
 		try {
 			GetParkingTask ast = new GetParkingTask();
 			ast.execute();
@@ -155,8 +274,8 @@ public class AusiliariHelper {
 		return array;
 	}
 
-	public static Street[] getStreetlist() {
-		Street[] array = null;
+	public static List<Street> getStreetlist() {
+		List<Street> array = null;
 		try {
 			GetStreetsTask ast = new GetStreetsTask();
 			ast.execute();
@@ -171,34 +290,24 @@ public class AusiliariHelper {
 		return array;
 	}
 
-	private static class GetStreetsTask extends AsyncTask<Void, Void, Street[]> {
+	private static class GetStreetsTask extends
+			AsyncTask<Void, Void, List<Street>> {
 		ProgressDialog pd;
 
 		@Override
-		protected Street[] doInBackground(Void... params) {
-			Street[] array = {
-					new Street(),
-					new Street(),
-					new Street() };
-			array[0].setName("Via alla Cascata");
-			array[0].setDescription("Via di prova");
-			array[0].setId("v001");
-			array[0].setSlotsFree(10);
-			array[0].setSlotsPaying(6);
-			array[0].setSlotsTimed(8);
-			array[1].setName("Via Sommarive");
-			array[1].setDescription("Via di prova");
-			array[1].setId("v002");
-			array[1].setSlotsFree(2);
-			array[1].setSlotsPaying(18);
-			array[1].setSlotsTimed(1);
-			array[2].setName("Via dei Valoni");
-			array[2].setDescription("Via di prova");
-			array[2].setId("v003");
-			array[2].setSlotsFree(0);
-			array[2].setSlotsPaying(0);
-			array[2].setSlotsTimed(16);
-			return array;
+		protected List<Street> doInBackground(Void... params) {
+			String request = null;
+			try {
+				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+ STREETLIST, mContext
+						.getResources().getString(R.string.token));
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return JsonUtils.toObjectList(request, Street.class);
 		}
 
 		@Override
@@ -211,7 +320,7 @@ public class AusiliariHelper {
 		}
 
 		@Override
-		protected void onPostExecute(Street[] result) {
+		protected void onPostExecute(List<Street> result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 
@@ -221,36 +330,23 @@ public class AusiliariHelper {
 	}
 
 	private static class GetParkingTask extends
-			AsyncTask<Void, Void, Parking[]> {
+			AsyncTask<Void, Void, List<Parking>> {
 		ProgressDialog pd;
 
 		@Override
-		protected Parking[] doInBackground(Void... params) {
-			double[] loc1 = { 46.068654, 11.150679 };
-			double[] loc2 = { 46.069386, 11.151389 };
-			double[] loc3 = { 46.068686, 11.151723 };
-			Parking[] array = {
-					new Parking(),
-					new Parking(),
-					new Parking() };
-			
-			array[0].setName("Parcheggio 1");
-			array[0].setDescription("Parcheggio di prova");
-			array[0].setId("p001");
-			array[0].setSlotsTotal(132);
-			array[0].setPosition(loc1);
-			array[1].setName("Parcheggio 2");
-			array[1].setDescription("Parcheggio di prova");
-			array[1].setId("p002");
-			array[1].setSlotsTotal(948);
-			array[1].setPosition(loc2);
-			array[2].setName("Parcheggio 3 ");
-			array[2].setDescription("Parcheggio di prova");
-			array[2].setId("p003");
-			array[2].setSlotsTotal(33);
-			array[2].setPosition(loc3);
-			return array;
-
+		protected List<Parking> doInBackground(Void... params) {
+			String request = null;
+			try {
+				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+ PARKLIST, mContext
+						.getResources().getString(R.string.token));
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return JsonUtils.toObjectList(request, Parking.class);
 		}
 
 		@Override
@@ -263,13 +359,18 @@ public class AusiliariHelper {
 		}
 
 		@Override
-		protected void onPostExecute(Parking[] result) {
+		protected void onPostExecute(List<Parking> result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 
 			if (pd.isShowing())
 				pd.dismiss();
 		}
+	}
+
+	public static String getUsername() {
+		return ((Activity) mContext).getPreferences(0).getString(
+				"User", null);
 	}
 
 }

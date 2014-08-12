@@ -24,5 +24,7 @@
     <string name= "logout_fragment">Logout</string>
     <string name="btnParkings">Parcheggi</string>
     <string name="btnStreets">Vie</string>
-
+	<string name="token">dXNlcjpwYXNzd29yZA==</string>
+	<string name="applocation">rovereto</string>
+	
 </resources>

@@ -180,7 +180,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttons"
             android:text="Reset"
-            android:textColor="@android:color/primary_text_dark" />
+            android:textColor="@color/text_button_color" />
 
         <Button
             android:id="@+id/btnSend"
@@ -190,7 +190,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttons"
             android:text="Invia"
-            android:textColor="@android:color/primary_text_dark" />
+            android:textColor="@color/text_button_color" />
 
     </LinearLayout>
 

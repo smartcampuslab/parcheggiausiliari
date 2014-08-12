@@ -1,6 +1,9 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
+import java.util.Date;
+
 import smartcampus.vas.parcheggiausiliari.android.R;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
@@ -12,10 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 
 public class PopupFragment extends DialogFragment {
 
-	private String message;
 	private GeoObject obj = null;
 
 	public PopupFragment(GeoObject obj) {
@@ -23,18 +27,9 @@ public class PopupFragment extends DialogFragment {
 		this.obj = obj;
 	}
 
-	static PopupFragment newInstance(GeoObject obj, String message) {
-		PopupFragment f = new PopupFragment(obj);
-		Bundle args = new Bundle();
-		args.putString("Message", message);
-		f.setArguments(args);
-		return f;
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		message = getArguments().getString("Message");
 	}
 
 	@Override
@@ -42,7 +37,11 @@ public class PopupFragment extends DialogFragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.popup_fragment, container, false);
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
-		tv.setText(message);
+		if(Parking.class.isInstance(obj)){
+				tv.setText(((Parking)obj).getLastChange() != null ? ((Parking)obj).getLastChange().getAuthor() + " " + new Date(((Parking)obj).getLastChange().getTime()) : "Not recently updated");
+		}else{
+			tv.setText(((Street)obj).getLastChange() != null ? ((Street)obj).getLastChange().getAuthor() + " " + new Date(((Street)obj).getLastChange().getTime()) : "Not recently updated");
+		}
 		Button btnStorico = (Button) v.findViewById(R.id.btnStorico);
 		btnStorico.setOnClickListener(new OnClickListener() {
 

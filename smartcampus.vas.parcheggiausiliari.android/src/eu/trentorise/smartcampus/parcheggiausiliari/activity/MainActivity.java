@@ -7,23 +7,27 @@ import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -73,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
         *
         */
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		String[] strings = { "Mappa", "Storico", "Logout" };
+		String[] strings = { "Mappa", "Le mie segnalazioni", "Logout" };
 		mDrawerList.setAdapter(new DrawerArrayAdapter(getApplicationContext(),
 				strings));
 
@@ -121,7 +125,6 @@ public class MainActivity extends ActionBarActivity {
 		if (savedInstanceState == null) {
 
 			SharedPreferences sp = getPreferences(MODE_PRIVATE);
-			Log.d("DEBUG", sp.getString("User", "nada"));
 			if (sp.getString("User", null) == null) {
 				getSupportFragmentManager().beginTransaction()
 						.add(R.id.container, new LoginFragment()).commit();
@@ -159,10 +162,6 @@ public class MainActivity extends ActionBarActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
-	public String getUsername() {
-		return getPreferences(MODE_PRIVATE).getString("User", null);
-	}
-
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent e) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -190,10 +189,50 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		    //Used to put dark icons on light action bar
 
-		// Inflate the menu; this adds items to the action bar if it is present.
-		menu.setGroupVisible(0, false);
-		return true;
+		    //Create the search view
+		    final SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
+		    searchView.setQueryHint("Search");
+
+
+		    menu.add(Menu.NONE,Menu.NONE,1,"Search")
+		        .setIcon(android.R.drawable.ic_search_category_default)
+		        .setActionView(searchView)
+		        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+
+		    searchView.setOnQueryTextListener(new OnQueryTextListener() {
+		        @Override
+		        public boolean onQueryTextChange(String newText) {
+		            if (newText.length() > 0) {
+		                // Search
+
+		            } else {
+		                // Do something when there's no input
+		            }
+		            return false;
+		        }
+		        @Override
+		        public boolean onQueryTextSubmit(String query) { 
+
+		            InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+		            imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+
+		            Toast.makeText(getBaseContext(), "dummy Search", Toast.LENGTH_SHORT).show();
+		            setSupportProgressBarIndeterminateVisibility(true);
+
+		            Handler handler = new Handler(); 
+		            handler.postDelayed(new Runnable() { 
+		                 public void run() { 
+		                     setSupportProgressBarIndeterminateVisibility(false);
+		                 } 
+		            }, 2000);
+
+		            return false; }
+		    });
+
+		    return true;
+		
 	}
 
 	public static class DrawerArrayAdapter extends ArrayAdapter<String> {

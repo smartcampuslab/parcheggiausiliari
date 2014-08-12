@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttons"
             android:text="@string/btnParkings"
-            android:textColor="@android:color/primary_text_dark" />
+            android:textColor="@color/text_button_color" />
 
         <Button
             android:id="@+id/btnVie"
@@ -42,7 +42,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttons"
             android:text="@string/btnStreets"
-            android:textColor="@android:color/primary_text_dark" />
+            android:textColor="@color/text_button_color" />
     </LinearLayout>
 
 </RelativeLayout>

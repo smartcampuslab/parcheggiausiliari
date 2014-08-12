@@ -68,9 +68,9 @@ public class DetailsFragment extends Fragment {
 		@Override
 		public Fragment getItem(int position) {
 			if (position == 0)
-				return SegnalaFragment.newInstance(obj, 66, 37, 55, 0);
+				return SegnalaFragment.newInstance(obj);
 			else
-				return new StoricoFragment();
+				return new StoricoFragment(obj);
 		}
 
 	}

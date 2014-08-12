@@ -2,9 +2,9 @@ package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
-import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
-import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,9 +15,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.StreetLog;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
 public class StoricoFragment extends Fragment {
 	ListView lv;
+	private GeoObject obj;
+
+	public StoricoFragment(GeoObject obj) {
+		this.obj = obj;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,10 +45,22 @@ public class StoricoFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onStart();
 		ArrayList<String> result = new ArrayList<String>();
-		for (ParkingLog lc : new AusiliariHelper(getActivity()).getStorico()) {
-			result.add("da "+lc.getAuthor()+" il " +lc.getTime());
+		if (Parking.class.isInstance(obj)) {
+			List<ParkingLog> list = new AusiliariHelper(getActivity()).getStoricoPark((Parking)obj);
+			if(list!= null)
+			for(ParkingLog p : list){
+				result.add(p.getAuthor() + " " + new Date(p.getTime()));
+			}
+		} else {
+			List<StreetLog> list =  new AusiliariHelper(getActivity()).getStoricoStreet((Street)obj);
+			if(list!= null)
+			for(StreetLog p : list){
+				result.add(p.getAuthor() + " " + new Date(p.getTime()));
+			}
 		}
-		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), result);
+
+		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(),
+				result);
 		lv.setAdapter(adapter);
 	}
 

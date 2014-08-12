@@ -10,20 +10,31 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import android.content.Context;
-import android.util.Log;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
-import android.widget.Toast;
+import eu.trentorise.smartcampus.parcheggiausiliari.activity.PopupFragment;
+import eu.trentorise.smartcampus.parcheggiausiliari.activity.SinglePopup;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 
 public class MyPolyline extends Polyline {
 
-	public MyPolyline(Context ctx) {
+	private ActionBarActivity activity;
+	private Street obj;
+	private SinglePopup iPopup;
+
+	public MyPolyline(Context ctx, Street obj, SinglePopup iPopup) {
 		super(ctx);
 		// TODO Auto-generated constructor stub
+		this.obj = obj;
+		this.iPopup = iPopup;
 	}
 
-	public MyPolyline(ResourceProxy resourceProxy) {
+	public MyPolyline(ResourceProxy resourceProxy, Street obj, SinglePopup iPopup) {
 		super(resourceProxy);
 		// TODO Auto-generated constructor stub
+		this.obj = obj;
+		this.iPopup = iPopup;
 	}
 
 	
@@ -31,11 +42,12 @@ public class MyPolyline extends Polyline {
 	@Override
 	public boolean onSingleTapUp(MotionEvent e, MapView mapView) {
 		// TODO Auto-generated method stub
+		
 		if (isOnLine(mapView.getProjection().fromPixels((int) e.getX(),
-				(int) e.getX())))
-			// Log.d("DEBUG", "Path Pressed");
-			Toast.makeText(mapView.getContext(), "PATH PRESSED",
-					Toast.LENGTH_SHORT).show();
+				(int) e.getY())))
+		{
+			iPopup.openPopup(obj);
+		}
 		return super.onLongPress(e, mapView);
 	}
 	
@@ -45,7 +57,7 @@ public class MyPolyline extends Polyline {
 		for (int i = 0; i < getNumberOfPoints() - 1; i++) {
 			GeoPoint a = mPoints.get(i);
 			GeoPoint b = mPoints.get(i + 1);
-			toRtn = toRtn || (linePointDist(a, b, point, true) <= 0.0005);
+			toRtn = toRtn || (linePointDist(a, b, point, true) <= 0.00035);
 		}
 		return toRtn;
 	}
@@ -125,22 +137,26 @@ public class MyPolyline extends Polyline {
 			} while (b >= 0x20);
 			int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
 			lng += dlng;
-
-			GeoPoint p = new GeoPoint((int) (((double) lat / 1E5) * 1E6),
-					(int) (((double) lng / 1E5) * 1E6));
+			
+			GeoPoint p = new GeoPoint(lat*10, lng*10);
 			poly.add(p);
 		}
 
 		return poly;
 	}
 	
-	public static MyPolyline decode(Context ctx, String encoded)
+	public static MyPolyline decode(Context ctx, String encoded, Street obj, SinglePopup iPopup)
 	{
-		MyPolyline toRtn = new MyPolyline(ctx);
+		MyPolyline toRtn = new MyPolyline(ctx, obj, iPopup);
+		toRtn.setActivity((ActionBarActivity) ctx);
 		toRtn.setPoints(decodePoly(encoded));
-		for(GeoPoint p : toRtn.getPoints())
-			Log.d("DECODED", ""+p.getLatitude()+"    "+p.getLongitude());
+		toRtn.setWidth(2.3f);
 		return toRtn;
+	}
+
+	private void setActivity(ActionBarActivity ctx) {
+		// TODO Auto-generated method stub
+		this.activity = ctx;
 	}
 	
 }

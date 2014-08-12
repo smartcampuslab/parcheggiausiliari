@@ -31,10 +31,6 @@ public class SegnalaFragment extends Fragment {
 	private NumberPicker mPickerPayment;
 	private NumberPicker mPickerTimed;
 
-	private int mValue1;
-	private int mValue2;
-	private int mValue3;
-	private int mValue4;
 	private Button btnAnnulla;
 	private GeoObject obj;
 	private TextView mTxt;
@@ -48,14 +44,9 @@ public class SegnalaFragment extends Fragment {
 		this.obj = obj;
 	}
 
-	static SegnalaFragment newInstance(GeoObject obj, int val1, int val2,
-			int val3, int val4) {
+	static SegnalaFragment newInstance(GeoObject obj) {
 		SegnalaFragment f = new SegnalaFragment(obj);
 		Bundle args = new Bundle();
-		args.putInt("val1", val1);
-		args.putInt("val2", val2);
-		args.putInt("val3", val3);
-		args.putInt("val4", val4);
 		f.setArguments(args);
 		return f;
 	}
@@ -134,6 +125,8 @@ public class SegnalaFragment extends Fragment {
 										Toast.makeText(getActivity(),
 												"Data Sent", Toast.LENGTH_LONG)
 												.show();
+										getActivity()
+												.getPreferences(Context.MODE_PRIVATE).edit().remove(obj.getId()).commit();
 									}
 								}).setNegativeButton("No", null).show();
 			}
@@ -250,14 +243,7 @@ public class SegnalaFragment extends Fragment {
 				mPickerPayment.setCurrent(Integer.parseInt(splitted[2]));
 				mPickerTimed.setCurrent(Integer.parseInt(splitted[3]));
 			}
-		} else {
-
-			mValue1 = getArguments().getInt("val1");
-			mValue2 = getArguments().getInt("val2");
-			mValue3 = getArguments().getInt("val3");
-			mValue4 = getArguments().getInt("val4");
 		}
-
 	}
 
 	private class MyOnChangeListener implements OnChangedListener {

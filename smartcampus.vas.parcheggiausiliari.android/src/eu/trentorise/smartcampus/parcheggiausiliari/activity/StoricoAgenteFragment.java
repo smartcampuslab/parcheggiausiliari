@@ -2,9 +2,8 @@ package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
-import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
 public class StoricoAgenteFragment extends Fragment {
 	ListView lv;
@@ -34,10 +35,14 @@ public class StoricoAgenteFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onStart();
 		ArrayList<String> result = new ArrayList<String>();
-		for (ParkingLog lc : new AusiliariHelper(getActivity()).getStoricoAgente()) {
-			result.add("da "+lc.getAuthor()+" il " +lc.getTime());
-		}
-		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), result);
+		List<ParkingLog> list = new AusiliariHelper(getActivity())
+				.getStoricoAgente();
+		if (list != null)
+			for (ParkingLog lc : list) {
+				result.add("da " + lc.getAuthor() + " il " + lc.getTime());
+			}
+		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(),
+				result);
 		lv.setAdapter(adapter);
 	}
 

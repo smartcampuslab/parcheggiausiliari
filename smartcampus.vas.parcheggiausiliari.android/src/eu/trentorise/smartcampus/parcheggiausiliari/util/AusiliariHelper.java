@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.os.AsyncTask;
+import android.util.Log;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
@@ -84,7 +85,6 @@ public class AusiliariHelper implements Parcheggi_Services {
 		protected Void doInBackground(GeoObject... params) {
 			try {
 				if (Parking.class.isInstance(params[0])) {
-
 					RemoteConnector.postJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
 							UPDATEPARK + params[0].getId() + "/" + new AusiliariHelper(mContext).getUsername(),
 							JsonUtils.toJSON(params[0]), mContext
@@ -137,8 +137,10 @@ public class AusiliariHelper implements Parcheggi_Services {
 			String request = null;
 			List<StreetLog> list = null;
 			try {
-				request = RemoteConnector.getJSON(HOST,
-						STREETLIST + params[0].getId(), mContext.getResources()
+				Log.d("DEBUG", HOST +"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+						STREETLOGLIST + params[0].getId());
+				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+						STREETLOGLIST + params[0].getId(), mContext.getResources()
 								.getString(R.string.token));
 				list = JsonUtils.toObjectList(request, StreetLog.class);
 
@@ -182,8 +184,10 @@ public class AusiliariHelper implements Parcheggi_Services {
 			String request = null;
 			List<ParkingLog> list = null;
 			try {
-				request = RemoteConnector.getJSON(HOST,
-						PARKLIST + params[0].getId(), mContext.getResources()
+				Log.d("DEBUG", HOST +"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+						PARKLOGLIST + params[0].getId());
+				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+						PARKLOGLIST + params[0].getId(), mContext.getResources()
 								.getString(R.string.token));
 				list = JsonUtils.toObjectList(request, ParkingLog.class);
 
@@ -226,6 +230,8 @@ public class AusiliariHelper implements Parcheggi_Services {
 		protected List<ParkingLog> doInBackground(Void... params) {
 			String request = null;
 			try {
+				Log.d("DEBUG", HOST +"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+						AUSLOGLIST + new AusiliariHelper(mContext).getUsername());
 				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+ AUSLOGLIST + new AusiliariHelper(mContext).getUsername(),
 						mContext.getResources().getString(R.string.token));
 			} catch (SecurityException e) {
@@ -298,6 +304,8 @@ public class AusiliariHelper implements Parcheggi_Services {
 		protected List<Street> doInBackground(Void... params) {
 			String request = null;
 			try {
+				Log.d("DEBUG", HOST +"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+						STREETLIST);
 				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+ STREETLIST, mContext
 						.getResources().getString(R.string.token));
 			} catch (SecurityException e) {
@@ -337,6 +345,8 @@ public class AusiliariHelper implements Parcheggi_Services {
 		protected List<Parking> doInBackground(Void... params) {
 			String request = null;
 			try {
+				Log.d("DEBUG", HOST +"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
+						PARKLIST);
 				request = RemoteConnector.getJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+ PARKLIST, mContext
 						.getResources().getString(R.string.token));
 			} catch (SecurityException e) {

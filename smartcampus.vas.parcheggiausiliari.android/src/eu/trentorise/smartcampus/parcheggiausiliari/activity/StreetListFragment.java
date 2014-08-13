@@ -8,21 +8,28 @@ import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
-public class StreetListFragment extends Fragment {
+public class StreetListFragment extends Fragment{
 
 	private ListView list;
+	private SearchView mSearchView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,8 +38,34 @@ public class StreetListFragment extends Fragment {
 	}
 
 	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+
+	    menu.clear();
+	    getActivity().getMenuInflater().inflate(R.menu.main, menu);
+
+		MenuItem searchItem = menu.findItem(R.id.action_search);
+		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+		mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
+			@Override
+			public boolean onQueryTextSubmit(String arg0) {
+					 Log.d("DEBUG","--->" + arg0);
+					 ((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(arg0);
+						return true;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String arg0) {
+					 Log.d("DEBUG","--->" + arg0);
+					 ((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(arg0);
+						return true;
+			}
+		});
+	}
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_streetlist,
 				container, false);
 		list = (ListView) rootView.findViewById(R.id.listStreets);

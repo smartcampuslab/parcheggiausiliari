@@ -3,7 +3,6 @@ package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 import java.util.Date;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;

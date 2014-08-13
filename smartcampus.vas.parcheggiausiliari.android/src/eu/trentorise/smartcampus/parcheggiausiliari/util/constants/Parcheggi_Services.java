@@ -5,11 +5,11 @@ public interface Parcheggi_Services {
 	 
 	public static final String HOST = "https://vas-dev.smartcampuslab.it/";
 	
-	public static final String PARKLIST = "/parkings";
+	public static final String PARKLIST = "/parkings/";
 	
 	public static final String PARKLISTINRADIUS = "/parkings?lat=45.888528&lon=11.036985&radius=0.013";
 	
-	public static final String STREETLIST = "/streets";
+	public static final String STREETLIST = "/streets/";
 
 	public static final String STREETLISTINRADIUS = "/streets?lat=45.888528&lon=11.036985&radius=0.001";
 

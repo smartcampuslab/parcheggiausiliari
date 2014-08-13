@@ -6,7 +6,6 @@ import java.util.List;
 import org.osmdroid.bonuspack.overlays.FolderOverlay;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay.OnItemGestureListener;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
@@ -17,16 +16,13 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -50,8 +46,15 @@ public class MapFragment extends Fragment implements SinglePopup {
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu,MenuInflater inflater) {
+		 	inflater.inflate(R.menu.main, menu);
+		 	super.onCreateOptionsMenu(menu, inflater);		
+	}
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_map, container,
 				false);
 		Button btnParkings = (Button) rootView.findViewById(R.id.btnParking);

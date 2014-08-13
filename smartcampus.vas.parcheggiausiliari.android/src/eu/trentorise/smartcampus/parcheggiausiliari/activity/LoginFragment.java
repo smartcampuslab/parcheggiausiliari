@@ -14,7 +14,7 @@ import android.widget.EditText;
 public class LoginFragment extends Fragment {
 	
 	EditText tvUser;
-	EditText tvPass;
+	//EditText tvPass;
 	
 	public LoginFragment() {
 		super();
@@ -25,7 +25,7 @@ public class LoginFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_login, container,
 				false);
 		tvUser = (EditText)rootView.findViewById(R.id.editText1);
-		tvPass = (EditText)rootView.findViewById(R.id.editText2);
+		//tvPass = (EditText)rootView.findViewById(R.id.editText2);
 		Button btnLogin = (Button)rootView.findViewById(R.id.button1);
 		btnLogin.setOnClickListener(new OnClickListener() {
 			@Override
@@ -41,7 +41,7 @@ public class LoginFragment extends Fragment {
 	private void saveData() {
 		SharedPreferences sp = getActivity().getPreferences( 0);
 		sp.edit().putString("User", tvUser.getText().toString()).apply();
-		sp.edit().putString("Pass", tvPass.getText().toString()).apply();
+		//sp.edit().putString("Pass", tvPass.getText().toString()).apply();
 	}
 	
 	

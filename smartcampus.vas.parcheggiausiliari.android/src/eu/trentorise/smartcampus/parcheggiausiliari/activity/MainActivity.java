@@ -187,54 +187,6 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		    //Used to put dark icons on light action bar
-
-		    //Create the search view
-		    final SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
-		    searchView.setQueryHint("Search");
-
-
-		    menu.add(Menu.NONE,Menu.NONE,1,"Search")
-		        .setIcon(android.R.drawable.ic_search_category_default)
-		        .setActionView(searchView)
-		        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-
-		    searchView.setOnQueryTextListener(new OnQueryTextListener() {
-		        @Override
-		        public boolean onQueryTextChange(String newText) {
-		            if (newText.length() > 0) {
-		                // Search
-
-		            } else {
-		                // Do something when there's no input
-		            }
-		            return false;
-		        }
-		        @Override
-		        public boolean onQueryTextSubmit(String query) { 
-
-		            InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
-		            imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-
-		            Toast.makeText(getBaseContext(), "dummy Search", Toast.LENGTH_SHORT).show();
-		            setSupportProgressBarIndeterminateVisibility(true);
-
-		            Handler handler = new Handler(); 
-		            handler.postDelayed(new Runnable() { 
-		                 public void run() { 
-		                     setSupportProgressBarIndeterminateVisibility(false);
-		                 } 
-		            }, 2000);
-
-		            return false; }
-		    });
-
-		    return true;
-		
-	}
-
 	public static class DrawerArrayAdapter extends ArrayAdapter<String> {
 		private final Context context;
 		private final ArrayList<String> values;

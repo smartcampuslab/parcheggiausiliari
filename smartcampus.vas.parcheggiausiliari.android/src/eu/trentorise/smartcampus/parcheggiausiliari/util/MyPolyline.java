@@ -10,16 +10,12 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import android.content.Context;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
-import eu.trentorise.smartcampus.parcheggiausiliari.activity.PopupFragment;
 import eu.trentorise.smartcampus.parcheggiausiliari.activity.SinglePopup;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 
 public class MyPolyline extends Polyline {
 
-	private ActionBarActivity activity;
 	private Street obj;
 	private SinglePopup iPopup;
 
@@ -148,15 +144,10 @@ public class MyPolyline extends Polyline {
 	public static MyPolyline decode(Context ctx, String encoded, Street obj, SinglePopup iPopup)
 	{
 		MyPolyline toRtn = new MyPolyline(ctx, obj, iPopup);
-		toRtn.setActivity((ActionBarActivity) ctx);
 		toRtn.setPoints(decodePoly(encoded));
 		toRtn.setWidth(2.3f);
 		return toRtn;
 	}
 
-	private void setActivity(ActionBarActivity ctx) {
-		// TODO Auto-generated method stub
-		this.activity = ctx;
-	}
 	
 }

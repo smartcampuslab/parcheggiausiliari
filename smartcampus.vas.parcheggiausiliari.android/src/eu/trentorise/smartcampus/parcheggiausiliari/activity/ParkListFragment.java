@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
@@ -39,34 +40,30 @@ public class ParkListFragment extends Fragment {
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 
-	    menu.clear();
-	    getActivity().getMenuInflater().inflate(R.menu.main, menu);
+		menu.clear();
+		getActivity().getMenuInflater().inflate(R.menu.main, menu);
 
 		MenuItem searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 		mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String arg0) {
-				if (arg0.length() != 0) {
-					 Log.d("DEBUG","--->" + arg0);
-					 ((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(arg0);
-						return true;
-			        }
-			        return false;
+				Log.d("DEBUG", "--->" + arg0);
+				((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(
+						arg0);
+				return true;
 			}
 
 			@Override
 			public boolean onQueryTextChange(String arg0) {
-				if (arg0.length() != 0) {
-					 Log.d("DEBUG","--->" + arg0);
-					 ((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(arg0);
-						return true;
-			        }
-			        return false;
+				Log.d("DEBUG", "--->" + arg0);
+				((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(
+						arg0);
+				return true;
 			}
 		});
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -102,19 +99,25 @@ public class ParkListFragment extends Fragment {
 	}
 
 	public static class MySimpleArrayAdapter extends ArrayAdapter<Parking> {
+		private Filter filter;
 		private final Context context;
-		private final List<Parking> values;
+		private List<Parking> items= new ArrayList<Parking>();
+		private List<Parking> filtered = new ArrayList<Parking>();
 
 		public MySimpleArrayAdapter(Context context, List<Parking> values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
-			this.values = values;
+			this.filtered.addAll(values);
+			this.items.addAll(values);
+			this.filter = new MyFilter();
 		}
 
 		public MySimpleArrayAdapter(Context context, Parking[] values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
-			this.values = new ArrayList<Parking>(Arrays.asList(values));
+			this.filtered = new ArrayList<Parking>(Arrays.asList(values));
+			this.items.addAll(this.filtered);
+			this.filter = new MyFilter();
 		}
 
 		@Override
@@ -123,10 +126,71 @@ public class ParkListFragment extends Fragment {
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View rowView = inflater.inflate(R.layout.rowlayout, parent, false);
 			TextView textView = (TextView) rowView.findViewById(R.id.txt1);
-			textView.setText(values.get(position).getName());
+			textView.setText(filtered.get(position).getName());
 
 			return rowView;
 		}
+
+		@Override
+		public Filter getFilter() {
+			if (filter == null)
+				filter = new MyFilter();
+			return filter;
+		}
+
+		private class MyFilter extends Filter {
+
+			@Override
+			protected FilterResults performFiltering(CharSequence constraint) {
+				// NOTE: this function is *always* called from a background
+				// thread, and
+				// not the UI thread.
+				filtered.clear();
+				filtered.addAll(items);
+				constraint = constraint.toString().toLowerCase();
+				FilterResults result = new FilterResults();
+				if (constraint != null && constraint.toString().length() > 0) {
+					ArrayList<Parking> filt = new ArrayList<Parking>();
+					ArrayList<Parking> lItems = new ArrayList<Parking>();
+					synchronized (this) {
+						lItems.addAll(filtered);
+					}
+					for (int i = 0, l = lItems.size(); i < l; i++) {
+						Parking m = lItems.get(i);
+						if (m.getName().toLowerCase().contains(constraint))
+							filt.add(m);
+					}
+					result.count = filt.size();
+					result.values = filt;
+				} else {
+
+					filtered.clear();
+					filtered.addAll(items);
+					result.count = filtered.size();
+					result.values = filtered;
+				}
+				return result;
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			protected void publishResults(CharSequence constraint,
+					FilterResults results) {
+				// NOTE: this function is *always* called from the UI thread.
+				filtered = (ArrayList<Parking>) results.values;
+				ArrayList<Parking> temp = new ArrayList<Parking>();
+				temp.addAll(filtered);
+				notifyDataSetChanged();
+				clear();
+				for (int i = 0, l = temp.size(); i < l; i++){
+					add(temp.get(i));
+				}
+				
+				notifyDataSetInvalidated();
+			}
+
+		}
+
 	}
 
 }

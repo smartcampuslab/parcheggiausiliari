@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
@@ -97,19 +98,25 @@ public class StreetListFragment extends Fragment{
 	}
 	
 	public static class MySimpleArrayAdapter extends ArrayAdapter<Street> {
+		private Filter filter;
 		private final Context context;
-		private final List<Street> values;
+		private List<Street> items= new ArrayList<Street>();
+		private List<Street> filtered = new ArrayList<Street>();
 
 		public MySimpleArrayAdapter(Context context, List<Street> values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
-			this.values = values;
+			this.filtered.addAll(values);
+			this.items.addAll(values);
+			this.filter = new MyFilter();
 		}
 
 		public MySimpleArrayAdapter(Context context, Street[] values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
-			this.values = new ArrayList<Street>(Arrays.asList(values));
+			this.filtered = new ArrayList<Street>(Arrays.asList(values));
+			this.items.addAll(this.filtered);
+			this.filter = new MyFilter();
 		}
 
 		@Override
@@ -118,9 +125,70 @@ public class StreetListFragment extends Fragment{
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View rowView = inflater.inflate(R.layout.rowlayout, parent, false);
 			TextView textView = (TextView) rowView.findViewById(R.id.txt1);
-			textView.setText(values.get(position).getName());
+			textView.setText(filtered.get(position).getName());
 
 			return rowView;
+		}
+		
+		
+		@Override
+		public Filter getFilter() {
+			if (filter == null)
+				filter = new MyFilter();
+			return filter;
+		}
+
+		private class MyFilter extends Filter {
+
+			@Override
+			protected FilterResults performFiltering(CharSequence constraint) {
+				// NOTE: this function is *always* called from a background
+				// thread, and
+				// not the UI thread.
+				filtered.clear();
+				filtered.addAll(items);
+				constraint = constraint.toString().toLowerCase();
+				FilterResults result = new FilterResults();
+				if (constraint != null && constraint.toString().length() > 0) {
+					ArrayList<Street> filt = new ArrayList<Street>();
+					ArrayList<Street> lItems = new ArrayList<Street>();
+					synchronized (this) {
+						lItems.addAll(filtered);
+					}
+					for (int i = 0, l = lItems.size(); i < l; i++) {
+						Street m = lItems.get(i);
+						if (m.getName().toLowerCase().contains(constraint))
+							filt.add(m);
+					}
+					result.count = filt.size();
+					result.values = filt;
+				} else {
+
+					filtered.clear();
+					filtered.addAll(items);
+					result.count = filtered.size();
+					result.values = filtered;
+				}
+				return result;
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			protected void publishResults(CharSequence constraint,
+					FilterResults results) {
+				// NOTE: this function is *always* called from the UI thread.
+				filtered = (ArrayList<Street>) results.values;
+				ArrayList<Street> temp = new ArrayList<Street>();
+				temp.addAll(filtered);
+				notifyDataSetChanged();
+				clear();
+				for (int i = 0, l = temp.size(); i < l; i++){
+					add(temp.get(i));
+				}
+				
+				notifyDataSetInvalidated();
+			}
+
 		}
 	}
 }

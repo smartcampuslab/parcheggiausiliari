@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.codehaus.jackson.format.InputAccessor;
+
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -48,15 +51,14 @@ public class ParkListFragment extends Fragment {
 		mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String arg0) {
-				Log.d("DEBUG", "--->" + arg0);
-				((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(
-						arg0);
-				return true;
+				InputMethodManager imm = (InputMethodManager) getActivity()
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(mSearchView.getWindowToken(), 0);
+				return false;
 			}
 
 			@Override
 			public boolean onQueryTextChange(String arg0) {
-				Log.d("DEBUG", "--->" + arg0);
 				((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(
 						arg0);
 				return true;
@@ -101,7 +103,7 @@ public class ParkListFragment extends Fragment {
 	public static class MySimpleArrayAdapter extends ArrayAdapter<Parking> {
 		private Filter filter;
 		private final Context context;
-		private List<Parking> items= new ArrayList<Parking>();
+		private List<Parking> items = new ArrayList<Parking>();
 		private List<Parking> filtered = new ArrayList<Parking>();
 
 		public MySimpleArrayAdapter(Context context, List<Parking> values) {
@@ -182,10 +184,10 @@ public class ParkListFragment extends Fragment {
 				temp.addAll(filtered);
 				notifyDataSetChanged();
 				clear();
-				for (int i = 0, l = temp.size(); i < l; i++){
+				for (int i = 0, l = temp.size(); i < l; i++) {
 					add(temp.get(i));
 				}
-				
+
 				notifyDataSetInvalidated();
 			}
 

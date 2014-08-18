@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -27,7 +28,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
-public class StreetListFragment extends Fragment{
+public class StreetListFragment extends Fragment {
 
 	private ListView list;
 	private SearchView mSearchView;
@@ -41,28 +42,29 @@ public class StreetListFragment extends Fragment{
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 
-	    menu.clear();
-	    getActivity().getMenuInflater().inflate(R.menu.main, menu);
+		menu.clear();
+		getActivity().getMenuInflater().inflate(R.menu.main, menu);
 
 		MenuItem searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 		mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String arg0) {
-					 Log.d("DEBUG","--->" + arg0);
-					 ((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(arg0);
-						return true;
+				InputMethodManager imm = (InputMethodManager) getActivity()
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(mSearchView.getWindowToken(), 0);
+				return false;
 			}
 
 			@Override
 			public boolean onQueryTextChange(String arg0) {
-					 Log.d("DEBUG","--->" + arg0);
-					 ((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(arg0);
-						return true;
+				((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(
+						arg0);
+				return true;
 			}
 		});
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -83,10 +85,10 @@ public class StreetListFragment extends Fragment{
 						.beginTransaction()
 						.replace(
 								R.id.container,
-								new DetailsFragment((GeoObject) list.getAdapter()
-										.getItem(arg2))).addToBackStack(null)
-						.commit();
-				//Log.d("DEBUG", "Passed");
+								new DetailsFragment((GeoObject) list
+										.getAdapter().getItem(arg2)))
+						.addToBackStack(null).commit();
+				// Log.d("DEBUG", "Passed");
 			}
 		});
 		return rootView;
@@ -96,11 +98,11 @@ public class StreetListFragment extends Fragment{
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 	}
-	
+
 	public static class MySimpleArrayAdapter extends ArrayAdapter<Street> {
 		private Filter filter;
 		private final Context context;
-		private List<Street> items= new ArrayList<Street>();
+		private List<Street> items = new ArrayList<Street>();
 		private List<Street> filtered = new ArrayList<Street>();
 
 		public MySimpleArrayAdapter(Context context, List<Street> values) {
@@ -129,8 +131,7 @@ public class StreetListFragment extends Fragment{
 
 			return rowView;
 		}
-		
-		
+
 		@Override
 		public Filter getFilter() {
 			if (filter == null)
@@ -182,10 +183,10 @@ public class StreetListFragment extends Fragment{
 				temp.addAll(filtered);
 				notifyDataSetChanged();
 				clear();
-				for (int i = 0, l = temp.size(); i < l; i++){
+				for (int i = 0, l = temp.size(); i < l; i++) {
 					add(temp.get(i));
 				}
-				
+
 				notifyDataSetInvalidated();
 			}
 

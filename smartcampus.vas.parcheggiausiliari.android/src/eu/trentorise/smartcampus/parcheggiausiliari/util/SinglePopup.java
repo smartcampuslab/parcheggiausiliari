@@ -1,4 +1,4 @@
-package eu.trentorise.smartcampus.parcheggiausiliari.activity;
+package eu.trentorise.smartcampus.parcheggiausiliari.util;
 
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 

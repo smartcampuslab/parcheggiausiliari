@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="eu.trentorise.smartcampus.parcheggiausiliari.activity.ParkListFragment" >
+    
     <ListView
         android:id="@+id/listStreets"
         android:layout_width="match_parent"

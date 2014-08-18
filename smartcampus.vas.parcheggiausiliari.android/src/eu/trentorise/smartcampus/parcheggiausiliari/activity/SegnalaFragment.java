@@ -107,28 +107,23 @@ public class SegnalaFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				new AlertDialog.Builder(getActivity())
-						.setIcon(android.R.drawable.ic_menu_upload)
-						.setTitle("Segnalazione")
-						.setMessage(
-								"Stai per fare una segnalazione. Continuare?")
-						.setPositiveButton("Si",
-								new DialogInterface.OnClickListener() {
+				new ConfirmPopup("Segnalazione",
+						"Stai per fare una segnalazione. Continuare?",
+						R.drawable.ic_invia) {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										clearFocus();
-										updateObject();
-										new AusiliariHelper(getActivity())
-												.sendData(obj);
-										Toast.makeText(getActivity(),
-												"Data Sent", Toast.LENGTH_LONG)
-												.show();
-										getActivity()
-												.getPreferences(Context.MODE_PRIVATE).edit().remove(obj.getId()).commit();
-									}
-								}).setNegativeButton("No", null).show();
+					@Override
+					public void confirm() {
+						clearFocus();
+						updateObject();
+						new AusiliariHelper(getActivity()).sendData(obj);
+						Toast.makeText(getActivity(), "Data Sent",
+								Toast.LENGTH_LONG).show();
+						getActivity().getSharedPreferences(MY_PREFERENCES,Context.MODE_PRIVATE)
+								.edit().remove(obj.getId()).commit();
+						resetPickers();
+						refresh();
+					}
+				}.show(getFragmentManager(), null);
 			}
 		});
 
@@ -141,6 +136,11 @@ public class SegnalaFragment extends Fragment {
 
 	}
 
+	public void refresh() {
+		getFragmentManager().beginTransaction()
+				.replace(R.id.container, new DetailsFragment(obj)).commit();
+	}
+
 	/**
 	 * method called to update value of the numberpickers if the text was
 	 * written with the keyboard
@@ -151,6 +151,20 @@ public class SegnalaFragment extends Fragment {
 		mPickerPayment.clearFocus();
 		mPickerTimed.clearFocus();
 		mPickerWork.clearFocus();
+	}
+
+	private void resetPickers() {
+		// TODO Auto-generated method stub
+
+		mPickerFree.setCurrent(0);
+		mPickerWork.setCurrent(0);
+		mPickerPayment.setCurrent(0);
+		mPickerTimed.setCurrent(0);
+		SharedPreferences prefs = getActivity()
+				.getSharedPreferences(MY_PREFERENCES,
+						Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(obj.getId()).commit();
 	}
 
 	private void updateObject() {
@@ -171,35 +185,23 @@ public class SegnalaFragment extends Fragment {
 
 		@Override
 		public void onClick(View v) {
-			new AlertDialog.Builder(getActivity())
-					.setIcon(android.R.drawable.ic_delete)
-					.setTitle("Reset")
-					.setMessage("Stai per cancellare i dati... Continuare?")
-					.setPositiveButton("Si",
-							new DialogInterface.OnClickListener() {
+			new ConfirmPopup("Reset",
+					"Stai per cancellare i dati... Continuare?",
+					R.drawable.ic_rimuovi) {
 
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-
-									mPickerFree.setCurrent(0);
-									mPickerWork.setCurrent(0);
-									mPickerPayment.setCurrent(0);
-									mPickerTimed.setCurrent(0);
-
-									SharedPreferences prefs = getActivity()
-											.getSharedPreferences(
-													MY_PREFERENCES,
-													Context.MODE_PRIVATE);
-									SharedPreferences.Editor editor = prefs
-											.edit();
-									editor.remove(obj.getId()).commit();
-									Toast.makeText(getActivity(),
-											"Dati cancellati",
-											Toast.LENGTH_LONG).show();
-								}
-
-							}).setNegativeButton("No", null).show();
+				@Override
+				public void confirm() {
+					// TODO Auto-generated method stub
+					resetPickers();
+					SharedPreferences prefs = getActivity()
+							.getSharedPreferences(MY_PREFERENCES,
+									Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.remove(obj.getId()).commit();
+					Toast.makeText(getActivity(), "Dati cancellati",
+							Toast.LENGTH_LONG).show();
+				}
+			}.show(getFragmentManager(), null);
 		}
 
 	}

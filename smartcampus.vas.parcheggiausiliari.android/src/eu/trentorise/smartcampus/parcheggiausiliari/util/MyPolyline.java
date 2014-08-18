@@ -9,9 +9,10 @@ import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.MotionEvent;
-import eu.trentorise.smartcampus.parcheggiausiliari.activity.SinglePopup;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 
 public class MyPolyline extends Polyline {
@@ -145,7 +146,9 @@ public class MyPolyline extends Polyline {
 	{
 		MyPolyline toRtn = new MyPolyline(ctx, obj, iPopup);
 		toRtn.setPoints(decodePoly(encoded));
-		toRtn.setWidth(2.3f);
+		toRtn.setWidth(5.5f);
+		int c = ctx.getResources().getColor(R.color.action_bar);
+		toRtn.setColor(Color.argb(100, Color.red(c), Color.green(c), Color.blue(c)));
 		return toRtn;
 	}
 

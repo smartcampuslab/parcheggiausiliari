@@ -33,6 +33,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.GPSTracker;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.MyPolyline;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.SinglePopup;
 
 public class MapFragment extends Fragment implements SinglePopup {
 
@@ -46,11 +47,11 @@ public class MapFragment extends Fragment implements SinglePopup {
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu,MenuInflater inflater) {
-		 	inflater.inflate(R.menu.main, menu);
-		 	super.onCreateOptionsMenu(menu, inflater);		
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -58,22 +59,6 @@ public class MapFragment extends Fragment implements SinglePopup {
 		View rootView = inflater.inflate(R.layout.fragment_map, container,
 				false);
 		Button btnParkings = (Button) rootView.findViewById(R.id.btnParking);
-		// btnParkings.setBackgroundColor(getResources().getColor(R.color.button_normal));
-		btnParkings.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				FragmentTransaction ft = getFragmentManager()
-						.beginTransaction();
-				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-				ft.replace(R.id.container, new ParkListFragment(),
-						getString(R.string.parklist_fragment))
-						.addToBackStack(null)
-						// Start the animated transition.
-						.commit();
-			}
-		});
 
 		Button btnStreets = (Button) rootView.findViewById(R.id.btnVie);
 		// btnStreets.setBackgroundColor(getResources().getColor(R.color.button_normal));
@@ -95,13 +80,11 @@ public class MapFragment extends Fragment implements SinglePopup {
 		map = (MapView) rootView.findViewById(R.id.mapview);
 		map.setTileSource(TileSourceFactory.MAPQUESTOSM);
 		map.setMultiTouchControls(true);
-		map.setMinZoomLevel(3);
+		map.setMinZoomLevel(10);
 		MyLocationNewOverlay myLoc = new MyLocationNewOverlay(getActivity(),
 				new CustomLocationProvider(getActivity()), map);
 		myLoc.enableMyLocation();
-		GPSTracker pos = new GPSTracker(getActivity());
 		map.getController().setZoom(18);
-		center(new GeoPoint(pos.getLatitude(), pos.getLongitude()));
 		ArrayList<ParkingMarker> items = new ArrayList<ParkingMarker>();
 		for (Parking mPark : new AusiliariHelper(getActivity()).getParklist()) {
 			ParkingMarker item = new ParkingMarker(mPark);
@@ -129,6 +112,39 @@ public class MapFragment extends Fragment implements SinglePopup {
 							}
 						}, map.getResourceProxy()));
 		map.getOverlays().add(myLoc);
+		Button myLocButton = (Button) rootView.findViewById(R.id.btMyLocation);
+		myLocButton.setBackgroundResource(R.drawable.ic_menu_mylocation);
+		myLocButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				GPSTracker pos = new GPSTracker(getActivity());
+				map.getController().animateTo(
+						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
+				map.getController().setZoom(18);
+				map.getController().animateTo(
+						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
+			}
+		});
+		GPSTracker pos = new GPSTracker(getActivity());
+		center(new GeoPoint(pos.getLatitude(), pos.getLongitude()));
+		center(new GeoPoint(pos.getLatitude(), pos.getLongitude()));
+		// btnParkings.setBackgroundColor(getResources().getColor(R.color.button_normal));
+		btnParkings.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				FragmentTransaction ft = getFragmentManager()
+						.beginTransaction();
+				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+				ft.replace(R.id.container, new ParkListFragment(),
+						getString(R.string.parklist_fragment))
+						.addToBackStack(null)
+						// Start the animated transition.
+						.commit();
+			}
+		});
+
 		addLinee(new AusiliariHelper(getActivity()).getStreetlist());
 		return rootView;
 	}
@@ -145,6 +161,7 @@ public class MapFragment extends Fragment implements SinglePopup {
 	}
 
 	public void center(GeoPoint geopoint) {
+		map.getController().animateTo(geopoint);
 		map.getController().animateTo(geopoint);
 	}
 

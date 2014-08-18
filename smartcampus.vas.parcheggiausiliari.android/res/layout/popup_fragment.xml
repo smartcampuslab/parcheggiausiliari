@@ -2,25 +2,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:layout_marginRight="8dp"
+    android:gravity="center_vertical"
     android:orientation="vertical" >
 
     <TextView
         android:id="@+id/txtLastDataHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="-12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="24dp"
         android:text="Ultima segnalazione:"
-        android:textSize="22sp" >
+        android:textSize="18sp" >
+
     </TextView>
 
     <TextView
         android:id="@+id/txtLastData"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="14 / 07 / 2014 alle 17.16 \n da Mario Rossi"
-        android:textAppearance="?android:attr/textAppearanceSmallPopupMenu" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="24dp"
+        android:text="14 / 07 / 2014 alle 17.16 da Mario Rossi"
+        android:textAppearance="?android:attr/textAppearanceSmallPopupMenu"
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,21 +41,23 @@
             android:id="@+id/btnStorico"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:background="@drawable/buttons"
-            android:text="Segnala" 
-            android:textColor="@android:color/primary_text_dark"/>
+            android:text="Segnala"
+            android:textColor="@android:color/primary_text_dark" />
 
         <Button
             android:id="@+id/btnDel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1"
             android:background="@drawable/buttons"
-            android:text="Annulla" 
-            android:textColor="@android:color/primary_text_dark"/>
+            android:text="Annulla"
+            android:textColor="@android:color/primary_text_dark" />
 
     </LinearLayout>
 

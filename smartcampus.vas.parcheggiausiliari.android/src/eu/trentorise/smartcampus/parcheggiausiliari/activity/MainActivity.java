@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,7 +43,10 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		if (savedInstanceState != null)
+		if (savedInstanceState == null)
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.container, new MapFragment(), "Mappa").commit();
+		else
 			mCurrent = savedInstanceState.getInt("current");
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -70,12 +74,8 @@ public class MainActivity extends ActionBarActivity {
 				supportInvalidateOptionsMenu();
 			}
 		};
-		// mDrawerLayout.setBackgroundColor(Color.parseColor("#E15829"));
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-		/**															
-        *
-        */
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		String[] strings = { "Mappa", "Le mie segnalazioni", "Logout" };
 		mDrawerList.setAdapter(new DrawerArrayAdapter(getApplicationContext(),
@@ -85,61 +85,50 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				// TODO Auto-generated method stub
-				if (arg2 != mCurrent)
-					if (arg2 == 0) {
-						// getSupportFragmentManager().beginTransaction().replace(R.id.container,
-						// new MapFragment(getApplicationContext())).commit();
-						// Animazione
-						getSupportActionBar().setTitle("Mappa");
-						FragmentTransaction ft = getSupportFragmentManager()
-								.beginTransaction();
-						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-						ft.replace(R.id.container, new MapFragment(),
-								getString(R.string.map_fragment))
-								.addToBackStack(null).commit();
-					} else if (arg2 == 1) {
-						getSupportActionBar().setTitle("Storico");
-						FragmentTransaction ft = getSupportFragmentManager()
-								.beginTransaction();
-						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-						ft.replace(R.id.container, new StoricoAgenteFragment(),
-								getString(R.string.storico_fragment))
-								.addToBackStack(null).commit();
-					} else if (arg2 == 2) {
-						getSupportActionBar().setTitle("Login");
-						logout();
-						FragmentTransaction ft = getSupportFragmentManager()
-								.beginTransaction();
-						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-						ft.replace(R.id.container, new LoginFragment(),
-								getString(R.string.logout_fragment)).commit();
-					}
+				if (arg2 == 0) {
+					getSupportActionBar().setTitle("Mappa");
+					FragmentTransaction ft = getSupportFragmentManager()
+							.beginTransaction();
+					ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+					ft.replace(R.id.container, new MapFragment(),
+							getString(R.string.map_fragment))
+							.addToBackStack(null).commit();
+				} else if (arg2 == 1) {
+					getSupportActionBar().setTitle("Storico");
+					FragmentTransaction ft = getSupportFragmentManager()
+							.beginTransaction();
+					ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+					ft.replace(R.id.container, new StoricoAgenteFragment(),
+							getString(R.string.storico_fragment))
+							.addToBackStack(null).commit();
+				} else if (arg2 == 2) {
+					logout();
+
+				}
 
 				mDrawerLayout.closeDrawer(mDrawerList);
-				mCurrent = arg2;
 			}
 		});
 		mTitle = getTitle();
-
-		if (savedInstanceState == null) {
-
-			SharedPreferences sp = getPreferences(MODE_PRIVATE);
-			if (sp.getString("User", null) == null) {
-				getSupportFragmentManager().beginTransaction()
-						.add(R.id.container, new LoginFragment()).commit();
-			} else {
-				getSupportFragmentManager().beginTransaction()
-						.add(R.id.container, new MapFragment(), "Mappa")
-						.commit();
-			}
-		}
-
 	}
 
-	protected void logout() {
-		getPreferences(MODE_PRIVATE).edit().remove("User").apply();
-		getPreferences(MODE_PRIVATE).edit().remove("Pass").apply();
+	private void logout() {
+		new ConfirmPopup("Logout",
+				"Stai per effettuare il logout. Continuare?",
+				R.drawable.ic_logout_confirm) {
+
+			@Override
+			public void confirm() {
+				// TODO Auto-generated method stub
+
+				getSupportActionBar().setTitle("Login");
+				getSharedPreferences("Login", MODE_PRIVATE).edit()
+						.remove("User").apply();
+				Intent i = new Intent(getActivity(), LoginActivity.class);
+				startActivity(i);
+				finish();
+			}
+		}.show(getSupportFragmentManager(), null);
 	}
 
 	@Override
@@ -151,22 +140,18 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		outState.putInt("current", mCurrent);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent e) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
-			// your action...
-
 			if (!mDrawerLayout.isDrawerOpen(mDrawerList)) {
 				mDrawerLayout.openDrawer(mDrawerList);
 			} else
@@ -178,9 +163,6 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}

@@ -379,7 +379,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 	}
 
 	public static String getUsername() {
-		return ((Activity) mContext).getPreferences(0).getString(
+		return ((Activity) mContext).getSharedPreferences("Login",0).getString(
 				"User", null);
 	}
 

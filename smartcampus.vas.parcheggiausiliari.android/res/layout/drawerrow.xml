@@ -21,7 +21,7 @@
             android:layout_height="36dp"
             android:text="TextView"
             android:textColor="#FFFFFF"
-            android:textSize="@dimen/asd" />
+            android:textSize="22sp" />
 
     </LinearLayout>
 

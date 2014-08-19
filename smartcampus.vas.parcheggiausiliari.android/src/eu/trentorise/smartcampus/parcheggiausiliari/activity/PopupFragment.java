@@ -48,6 +48,7 @@ public class PopupFragment extends DialogFragment {
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_LEFT_ICON);
 		View v = inflater.inflate(R.layout.popup_fragment, container, false);
+		//setRetainInstance(true);
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
 		if (Parking.class.isInstance(obj)) {
 			tv.setText(((Parking) obj).getLastChange() != null ? ((Parking) obj)

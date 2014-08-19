@@ -11,16 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/LinearLayout1"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
-
-    <Button
-        android:id="@+id/btMyLocation"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentLeft="true" />
 
     <LinearLayout
         android:id="@+id/LinearLayout1"
@@ -52,5 +43,13 @@
             android:text="@string/btnStreets"
             android:textColor="@color/text_button_color" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btMyLocation"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/mapview" />
 
 </RelativeLayout>

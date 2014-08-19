@@ -31,6 +31,7 @@ public class StoricoAgenteFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_storico, container,
 				false);
+		//setRetainInstance(true);
 		lv = (ListView) rootView.findViewById(R.id.listView1);
 		tv = (TextView) rootView.findViewById(R.id.txtNoData);
 		return rootView;
@@ -81,29 +82,33 @@ public class StoricoAgenteFragment extends Fragment {
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View rowView = inflater.inflate(R.layout.storicorow, parent, false);
-			TextView textView = (TextView) rowView.findViewById(R.id.storicotitle);
+			TextView textView = (TextView) rowView
+					.findViewById(R.id.storicotitle);
 			Date d = new Date(values.get(position).getTime());
-			textView.setText(values.get(position).getValue().getName()+" - ore "+String.format("%02d", d.getHours())+":"+String.format("%02d", d.getMinutes())+" - " +String.format("%02d", d.getDate())+"/"+String.format("%02d", (d.getMonth()+1))+"/"+(d.getYear()+1900));
+			textView.setText(values.get(position).getValue().getName()
+					+ " - ore " + String.format("%02d", d.getHours()) + ":"
+					+ String.format("%02d", d.getMinutes()) + " - "
+					+ String.format("%02d", d.getDate()) + "/"
+					+ String.format("%02d", (d.getMonth() + 1)) + "/"
+					+ (d.getYear() + 1900));
 			TextView valFree = (TextView) rowView.findViewById(R.id.valueFree);
 			TextView valWork = (TextView) rowView.findViewById(R.id.valueWork);
-			
+
 			TextView valPay;
 			TextView valTime;
-			if(values.get(position) instanceof ParkingLog)
-			{
+			if (values.get(position) instanceof ParkingLog) {
 				rowView.findViewById(R.id.txtStreet).setVisibility(View.GONE);
 				Parking p = (Parking) values.get(position).getValue();
-				valFree.setText(""+p.getSlotsOccupiedOnTotal());
-				valWork.setText(""+p.getSlotsUnavailable());
-			}
-			else{
-				valPay 	= (TextView) rowView.findViewById(R.id.valuePay);
+				valFree.setText("" + p.getSlotsOccupiedOnTotal());
+				valWork.setText("" + p.getSlotsUnavailable());
+			} else {
+				valPay = (TextView) rowView.findViewById(R.id.valuePay);
 				valTime = (TextView) rowView.findViewById(R.id.valueTime);
 				Street s = (Street) values.get(position).getValue();
-				valFree.setText(""+s.getSlotsOccupiedOnFree());
-				valWork.setText(""+s.getSlotsUnavailable());
-				valTime.setText(""+s.getSlotsOccupiedOnTimed());
-				valPay.setText(""+s.getSlotsOccupiedOnPaying());
+				valFree.setText("" + s.getSlotsOccupiedOnFree());
+				valWork.setText("" + s.getSlotsUnavailable());
+				valTime.setText("" + s.getSlotsOccupiedOnTimed());
+				valPay.setText("" + s.getSlotsOccupiedOnPaying());
 			}
 			return rowView;
 		}

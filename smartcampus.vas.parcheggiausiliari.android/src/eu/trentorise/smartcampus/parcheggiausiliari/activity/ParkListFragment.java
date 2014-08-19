@@ -72,6 +72,7 @@ public class ParkListFragment extends Fragment {
 		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_parklist, container,
 				false);
+		//setRetainInstance(true);
 		list = (ListView) rootView.findViewById(R.id.listParkings);
 		list.setAdapter(new MySimpleArrayAdapter(getActivity(),
 				new AusiliariHelper(getActivity()).getParklist()));

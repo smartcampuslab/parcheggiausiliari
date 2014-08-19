@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,6 +70,7 @@ public class StreetListFragment extends Fragment {
 		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_streetlist,
 				container, false);
+		// setRetainInstance(true);
 		list = (ListView) rootView.findViewById(R.id.listStreets);
 		list.setAdapter(new MySimpleArrayAdapter(getActivity(),
 				new AusiliariHelper(getActivity()).getStreetlist()));

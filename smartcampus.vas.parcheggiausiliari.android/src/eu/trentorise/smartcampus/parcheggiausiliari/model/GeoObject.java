@@ -49,4 +49,10 @@ public class GeoObject extends BasicObject {
 	public void setAgency(String agency) {
 		this.agency = agency;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return name;
+	}
 }

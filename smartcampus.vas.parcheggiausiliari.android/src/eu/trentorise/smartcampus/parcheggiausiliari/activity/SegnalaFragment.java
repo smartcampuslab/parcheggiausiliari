@@ -63,6 +63,7 @@ public class SegnalaFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_segnala, container,
 				false);
+		//setRetainInstance(true);
 		mTxt = (TextView) rootView.findViewById(R.id.txtTitle);
 		mTxt.setText(obj.getName());
 		mPickerFree = (NumberPicker) rootView.findViewById(R.id.NumberPicker01);
@@ -118,8 +119,10 @@ public class SegnalaFragment extends Fragment {
 						new AusiliariHelper(getActivity()).sendData(obj);
 						Toast.makeText(getActivity(), "Data Sent",
 								Toast.LENGTH_LONG).show();
-						getActivity().getSharedPreferences(MY_PREFERENCES,Context.MODE_PRIVATE)
-								.edit().remove(obj.getId()).commit();
+						getActivity()
+								.getSharedPreferences(MY_PREFERENCES,
+										Context.MODE_PRIVATE).edit()
+								.remove(obj.getId()).commit();
 						resetPickers();
 						refresh();
 					}
@@ -160,9 +163,8 @@ public class SegnalaFragment extends Fragment {
 		mPickerWork.setCurrent(0);
 		mPickerPayment.setCurrent(0);
 		mPickerTimed.setCurrent(0);
-		SharedPreferences prefs = getActivity()
-				.getSharedPreferences(MY_PREFERENCES,
-						Context.MODE_PRIVATE);
+		SharedPreferences prefs = getActivity().getSharedPreferences(
+				MY_PREFERENCES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(obj.getId()).commit();
 	}

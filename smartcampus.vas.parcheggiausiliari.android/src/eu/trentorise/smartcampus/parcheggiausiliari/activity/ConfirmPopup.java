@@ -33,7 +33,9 @@ public abstract class ConfirmPopup extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_LEFT_ICON);
+		
 		View v = inflater.inflate(R.layout.popup_fragment, container, false);
+		//setRetainInstance(true);
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
 		tv.setText(message);
 		v.findViewById(R.id.txtLastDataHeader).setVisibility(View.GONE);

@@ -1,10 +1,9 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -44,6 +43,113 @@ public class SegnalaFragment extends Fragment {
 		this.obj = obj;
 	}
 
+	private void saveValues() {
+		clearFocus();
+		SharedPreferences sp = getActivity().getPreferences(0);
+		sp.edit().putInt("FREE", mPickerFree.getCurrent()).apply();
+		;
+		sp.edit().putInt("PAY", mPickerPayment.getCurrent()).apply();
+		;
+		sp.edit().putInt("TIME", mPickerTimed.getCurrent()).apply();
+		;
+		sp.edit().putInt("WORK", mPickerWork.getCurrent()).apply();
+		;
+	}
+
+	private void restoreValues() {
+		SharedPreferences sp = getActivity().getPreferences(0);
+		mPickerFree.setCurrent(sp.getInt("FREE", 0));
+		mPickerPayment.setCurrent(sp.getInt("PAY", 0));
+		mPickerTimed.setCurrent(sp.getInt("TIME", 0));
+		mPickerWork.setCurrent(sp.getInt("WORK", 0));
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		saveValues();
+		LayoutInflater inflater = LayoutInflater.from(getActivity());
+		populateViewForOrientation(inflater, (ViewGroup) getView());
+	}
+
+	private void populateViewForOrientation(LayoutInflater inflater,
+			ViewGroup viewGroup) {
+		viewGroup.removeAllViewsInLayout();
+		View subview = inflater.inflate(R.layout.fragment_segnala, viewGroup);
+
+		mTxt = (TextView) subview.findViewById(R.id.txtTitle);
+		mTxt.setText(obj.getName());
+		mPickerFree = (NumberPicker) subview.findViewById(R.id.NumberPicker01);
+		mPickerWork = (NumberPicker) subview.findViewById(R.id.NumberPicker04);
+		LinearLayout btnsStreet = (LinearLayout) subview
+				.findViewById(R.id.streetBtns);
+		if (Parking.class.isInstance(obj)) {
+			btnsStreet.setVisibility(View.GONE);
+			View separatore = subview.findViewById(R.id.separatore);
+			if (separatore != null)
+				separatore.setVisibility(View.GONE);
+		}
+		mPickerPayment = (NumberPicker) subview
+				.findViewById(R.id.NumberPicker02);
+		mPickerTimed = (NumberPicker) subview.findViewById(R.id.NumberPicker03);
+		btnAnnulla = (Button) subview.findViewById(R.id.btnReset);
+		btnAnnulla.setOnClickListener(new MyCLickListener());
+
+		txtFree = (TextView) subview.findViewById(R.id.txtMaxFree);
+		txtPayment = (TextView) subview.findViewById(R.id.txtMaxPayment);
+		txtTimed = (TextView) subview.findViewById(R.id.txtMaxTimed);
+		int a = 0;
+		if (Parking.class.isInstance(obj)) {
+			txtFree.setText("/" + ((Parking) obj).getSlotsTotal());
+			mPickerFree.setRange(0, ((Parking) obj).getSlotsTotal());
+			a += ((Parking) obj).getSlotsTotal();
+		} else {
+			a += ((Street) obj).getSlotsFree()
+					+ ((Street) obj).getSlotsPaying()
+					+ ((Street) obj).getSlotsTimed();
+			txtFree.setText("/" + ((Street) obj).getSlotsFree());
+			mPickerFree.setRange(0, ((Street) obj).getSlotsFree());
+			txtPayment.setText("/" + ((Street) obj).getSlotsPaying());
+			mPickerPayment.setRange(0, ((Street) obj).getSlotsPaying());
+			txtTimed.setText("/" + ((Street) obj).getSlotsTimed());
+			mPickerTimed.setRange(0, ((Street) obj).getSlotsTimed());
+		}
+		mPickerWork.setRange(0, a);
+
+		btnSend = (Button) subview.findViewById(R.id.btnSend);
+		btnSend.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				new ConfirmPopup("Segnalazione",
+						"Stai per fare una segnalazione. Continuare?",
+						R.drawable.ic_invia) {
+
+					@Override
+					public void confirm() {
+						clearFocus();
+						updateObject();
+						new AusiliariHelper(getActivity()).sendData(obj);
+						Toast.makeText(getActivity(), "Data Sent",
+								Toast.LENGTH_SHORT).show();
+						getActivity()
+								.getSharedPreferences(MY_PREFERENCES,
+										Context.MODE_PRIVATE).edit()
+								.remove(obj.getId()).commit();
+						resetPickers();
+						refresh();
+					}
+				}.show(getFragmentManager(), null);
+			}
+		});
+
+		mPickerFree.setOnChangeListener(new MyOnChangeListener());
+		mPickerPayment.setOnChangeListener(new MyOnChangeListener());
+		mPickerTimed.setOnChangeListener(new MyOnChangeListener());
+		mPickerWork.setOnChangeListener(new MyOnChangeListener());
+		restoreValues();
+	}
+
 	static SegnalaFragment newInstance(GeoObject obj) {
 		SegnalaFragment f = new SegnalaFragment(obj);
 		Bundle args = new Bundle();
@@ -63,7 +169,7 @@ public class SegnalaFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_segnala, container,
 				false);
-		//setRetainInstance(true);
+		// setRetainInstance(true);
 		mTxt = (TextView) rootView.findViewById(R.id.txtTitle);
 		mTxt.setText(obj.getName());
 		mPickerFree = (NumberPicker) rootView.findViewById(R.id.NumberPicker01);
@@ -118,7 +224,7 @@ public class SegnalaFragment extends Fragment {
 						updateObject();
 						new AusiliariHelper(getActivity()).sendData(obj);
 						Toast.makeText(getActivity(), "Data Sent",
-								Toast.LENGTH_LONG).show();
+								Toast.LENGTH_SHORT).show();
 						getActivity()
 								.getSharedPreferences(MY_PREFERENCES,
 										Context.MODE_PRIVATE).edit()
@@ -215,10 +321,10 @@ public class SegnalaFragment extends Fragment {
 	}
 
 	public void updateData() {
-		SharedPreferences prefs = getActivity().getSharedPreferences(
-				MY_PREFERENCES, Context.MODE_PRIVATE);
+		SharedPreferences prefs = getActivity().getPreferences(
+				Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		if (Parking.class.isInstance(obj))
+		if (Street.class.isInstance(obj))
 			editor.putString(
 					obj.getId(),
 					"" + mPickerFree.getCurrent() + " "
@@ -235,15 +341,15 @@ public class SegnalaFragment extends Fragment {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		SharedPreferences prefs = getActivity().getSharedPreferences(
-				MY_PREFERENCES, Context.MODE_PRIVATE);
+		SharedPreferences prefs = getActivity().getPreferences(
+				Context.MODE_PRIVATE);
 		String load = prefs.getString(obj.getId(), null);
 		if (load != null) {
 			Log.e("LOAD", load);
 			String[] splitted = load.split(" ");
 			mPickerFree.setCurrent(Integer.parseInt(splitted[0]));
 			mPickerWork.setCurrent(Integer.parseInt(splitted[1]));
-			if (splitted.length > 4) {
+			if (splitted.length > 2) {
 				mPickerPayment.setCurrent(Integer.parseInt(splitted[2]));
 				mPickerTimed.setCurrent(Integer.parseInt(splitted[3]));
 			}

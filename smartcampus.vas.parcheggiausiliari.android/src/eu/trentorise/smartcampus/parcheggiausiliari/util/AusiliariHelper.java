@@ -2,6 +2,7 @@ package eu.trentorise.smartcampus.parcheggiausiliari.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
@@ -12,6 +13,7 @@ import android.content.res.Resources.NotFoundException;
 import android.os.AsyncTask;
 import android.util.Log;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.LogObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
@@ -62,8 +64,8 @@ public class AusiliariHelper implements Parcheggi_Services {
 		return toRtn;
 	}
 
-	public static List<ParkingLog> getStoricoAgente() {
-		List<ParkingLog> toRtn = new ArrayList<ParkingLog>();
+	public static List<Map> getStoricoAgente() {
+		List<Map> toRtn = new ArrayList<Map>();
 		try {
 			GetStoricoAgenteTask ast = new GetStoricoAgenteTask();
 			ast.execute();
@@ -84,6 +86,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 		@Override
 		protected Void doInBackground(GeoObject... params) {
 			try {
+				Log.d("DEBUG",JsonUtils.toJSON(params[0]));
 				if (Parking.class.isInstance(params[0])) {
 					RemoteConnector.postJSON(HOST,"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
 							UPDATEPARK + params[0].getId() + "/" + new AusiliariHelper(mContext).getUsername(),
@@ -223,11 +226,11 @@ public class AusiliariHelper implements Parcheggi_Services {
 	}
 
 	private static class GetStoricoAgenteTask extends
-			AsyncTask<Void, Void, List<ParkingLog>> {
+			AsyncTask<Void, Void, List<Map>> {
 		ProgressDialog pd;
 
 		@Override
-		protected List<ParkingLog> doInBackground(Void... params) {
+		protected List<Map> doInBackground(Void... params) {
 			String request = null;
 			try {
 				Log.d("DEBUG", HOST +"parcheggiausiliari/"+mContext.getResources().getString(R.string.applocation)+
@@ -241,7 +244,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return JsonUtils.toObjectList(request, ParkingLog.class);
+			return JsonUtils.toObjectList(request, Map.class);
 
 		}
 
@@ -255,7 +258,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 		}
 
 		@Override
-		protected void onPostExecute(List<ParkingLog> result) {
+		protected void onPostExecute(List<Map> result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 

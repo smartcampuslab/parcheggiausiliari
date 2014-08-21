@@ -108,6 +108,12 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <View
+                android:id="@+id/separatore"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#696969" />
+
             <LinearLayout
                 android:id="@+id/streetBtns"
                 android:layout_width="0dp"

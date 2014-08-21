@@ -6,29 +6,23 @@ import java.util.Arrays;
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -85,7 +79,8 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				if (arg2 == 0) {
+				FragmentManager fm = getSupportFragmentManager();
+				if (arg2 == 0 && !(fm.findFragmentById(R.id.container) instanceof MapFragment)) {
 					getSupportActionBar().setTitle("Mappa");
 					FragmentTransaction ft = getSupportFragmentManager()
 							.beginTransaction();
@@ -93,7 +88,7 @@ public class MainActivity extends ActionBarActivity {
 					ft.replace(R.id.container, new MapFragment(),
 							getString(R.string.map_fragment))
 							.addToBackStack(null).commit();
-				} else if (arg2 == 1) {
+				} else if (arg2 == 1 &&  !(fm.findFragmentById(R.id.container) instanceof StoricoAgenteFragment)) {
 					getSupportActionBar().setTitle("Storico");
 					FragmentTransaction ft = getSupportFragmentManager()
 							.beginTransaction();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
@@ -15,9 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.LastChange;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.LogObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
-import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
@@ -41,11 +42,11 @@ public class StoricoAgenteFragment extends Fragment {
 	public void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		ArrayList<LogObject> result = new ArrayList<LogObject>();
-		List<ParkingLog> list = new AusiliariHelper(getActivity())
+		ArrayList<Map> result = new ArrayList<Map>();
+		List<Map> list = new AusiliariHelper(getActivity())
 				.getStoricoAgente();
 		if (!list.isEmpty()) {
-			for (ParkingLog lc : list) {
+			for (Map lc : list) {
 				result.add(lc);
 			}
 			tv.setVisibility(View.GONE);
@@ -61,20 +62,20 @@ public class StoricoAgenteFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
-	public static class MySimpleArrayAdapter extends ArrayAdapter<LogObject> {
+	public static class MySimpleArrayAdapter extends ArrayAdapter<Map> {
 		private final Context context;
-		private final ArrayList<LogObject> values;
+		private final ArrayList<Map> values;
 
-		public MySimpleArrayAdapter(Context context, ArrayList<LogObject> values) {
+		public MySimpleArrayAdapter(Context context, ArrayList<Map> values) {
 			super(context, R.layout.storicorow, values);
 			this.context = context;
 			this.values = values;
 		}
 
-		public MySimpleArrayAdapter(Context context, LogObject[] values) {
+		public MySimpleArrayAdapter(Context context, Map[] values) {
 			super(context, R.layout.storicorow, values);
 			this.context = context;
-			this.values = new ArrayList<LogObject>(Arrays.asList(values));
+			this.values = new ArrayList<Map>(Arrays.asList(values));
 		}
 
 		@Override
@@ -84,33 +85,57 @@ public class StoricoAgenteFragment extends Fragment {
 			View rowView = inflater.inflate(R.layout.storicorow, parent, false);
 			TextView textView = (TextView) rowView
 					.findViewById(R.id.storicotitle);
-			Date d = new Date(values.get(position).getTime());
-			textView.setText(values.get(position).getValue().getName()
-					+ " - ore " + String.format("%02d", d.getHours()) + ":"
-					+ String.format("%02d", d.getMinutes()) + " - "
-					+ String.format("%02d", d.getDate()) + "/"
-					+ String.format("%02d", (d.getMonth() + 1)) + "/"
-					+ (d.getYear() + 1900));
 			TextView valFree = (TextView) rowView.findViewById(R.id.valueFree);
 			TextView valWork = (TextView) rowView.findViewById(R.id.valueWork);
 
 			TextView valPay;
 			TextView valTime;
-			if (values.get(position) instanceof ParkingLog) {
+			
+			Date d = new Date((Long) values.get(position).get("time"));
+			textView.setText(((Map) values.get(position).get("value")).get("name")
+					+ " - ore " + String.format("%02d", d.getHours()) + ":"
+					+ String.format("%02d", d.getMinutes()) + " - "
+					+ String.format("%02d", d.getDate()) + "/"
+					+ String.format("%02d", (d.getMonth() + 1)) + "/"
+					+ (d.getYear() + 1900));
+
+			if (((Map) values.get(position).get("value")).containsKey("slotsTotal")) {
 				rowView.findViewById(R.id.txtStreet).setVisibility(View.GONE);
-				Parking p = (Parking) values.get(position).getValue();
+				Parking p = populateParking((Map) values.get(position).get("value"));
 				valFree.setText("" + p.getSlotsOccupiedOnTotal());
 				valWork.setText("" + p.getSlotsUnavailable());
 			} else {
+				rowView.findViewById(R.id.txtStreet).setVisibility(View.VISIBLE);
 				valPay = (TextView) rowView.findViewById(R.id.valuePay);
 				valTime = (TextView) rowView.findViewById(R.id.valueTime);
-				Street s = (Street) values.get(position).getValue();
+				Street s = populateStreet((Map) values.get(position).get("value"));
 				valFree.setText("" + s.getSlotsOccupiedOnFree());
 				valWork.setText("" + s.getSlotsUnavailable());
 				valTime.setText("" + s.getSlotsOccupiedOnTimed());
 				valPay.setText("" + s.getSlotsOccupiedOnPaying());
 			}
 			return rowView;
+		}
+		public Parking populateParking(Map m){
+			Parking p = new Parking();
+			p.setSlotsTotal((Integer) m.get("slotsTotal"));
+			p.setSlotsOccupiedOnTotal((Integer) m.get("slotsOccupiedOnTotal"));
+			p.setName((String) m.get("name"));
+			p.setSlotsUnavailable((Integer) m.get("slotsUnavailable"));
+			return p;
+		}
+		
+		public Street populateStreet(Map m){
+			Street s = new Street();
+			s.setSlotsFree((Integer) m.get("slotsFree"));
+			s.setSlotsOccupiedOnFree((Integer) m.get("slotsOccupiedOnFree"));
+			s.setName((String) m.get("name"));
+			s.setSlotsUnavailable((Integer) m.get("slotsUnavailable"));
+			s.setSlotsOccupiedOnPaying((Integer) m.get("slotsOccupiedOnPaying"));
+			s.setSlotsPaying((Integer) m.get("slotsPaying"));
+			s.setSlotsOccupiedOnTimed((Integer) m.get("slotsOccupiedOnTimed"));
+			s.setSlotsTimed((Integer) m.get("slotsTimed"));
+			return s;
 		}
 	}
 }

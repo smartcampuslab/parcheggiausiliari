@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="fill_horizontal"
+    android:layout_gravity="right"
     android:focusable="true"
+    android:orientation="horizontal"
     android:gravity="center|right" >
- 
+
     <eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView
         android:id="@+id/search_box"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_toLeftOf="@+id/search_icon"
+        android:completionThreshold="3"
         android:dropDownVerticalOffset="5dp"
         android:dropDownWidth="wrap_content"
         android:inputType="textAutoComplete|textAutoCorrect"
         android:textColor="#FFFFFF"
-        android:visibility="invisible"
-		android:completionThreshold="1" >
+        android:visibility="gone" >
 
+        <requestFocus />
     </eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView>
 
     <ImageView
@@ -31,4 +31,4 @@
         android:scaleType="center"
         android:src="@android:drawable/ic_menu_search" />
 
-</RelativeLayout>
+</RelativeLayout >

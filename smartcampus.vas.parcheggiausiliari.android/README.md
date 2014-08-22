@@ -26,3 +26,5 @@ If the users clicks on one of the two buttons on the bottom of the screen instea
 ##Known problems:
 	
 	-	Sometimes when the user returns to a previous page the views glitches showing the two Fragments overlapping. A restart of the application is needed.
+	-	Research in the MapFragment may be very slow on some devices
+	-	If the device is not connected to the Internet the app crashes, a control on the connection and a relative error message should be made

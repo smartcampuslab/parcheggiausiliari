@@ -4,7 +4,7 @@ smartcampus.vas.parcheggiausiliari.android
 ##App which eases the reporting of occupied parkings in Rovereto
 
 The user can make a report for a street or a parking by clicking on the street itself or on the marker of the parking, a popup will open showing the last report.
-If the users clicks on one of the two buttons on the bottom of the screen instead a list will show up and if an item is clicked his page will show up
+If the users clicks on one of the two buttons on the bottom of the screen instead a list will show up and if an item is clicked his page will show up.
 
 
 ##It consists in 2 activities:

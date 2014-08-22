@@ -27,27 +27,25 @@ public class MyPolyline extends Polyline {
 		this.iPopup = iPopup;
 	}
 
-	public MyPolyline(ResourceProxy resourceProxy, Street obj, SinglePopup iPopup) {
+	public MyPolyline(ResourceProxy resourceProxy, Street obj,
+			SinglePopup iPopup) {
 		super(resourceProxy);
 		// TODO Auto-generated constructor stub
 		this.obj = obj;
 		this.iPopup = iPopup;
 	}
 
-	
-
 	@Override
 	public boolean onSingleTapUp(MotionEvent e, MapView mapView) {
 		// TODO Auto-generated method stub
-		
+
 		if (isOnLine(mapView.getProjection().fromPixels((int) e.getX(),
-				(int) e.getY())))
-		{
+				(int) e.getY()))) {
 			iPopup.openPopup(obj);
 		}
 		return super.onLongPress(e, mapView);
 	}
-	
+
 	public boolean isOnLine(IGeoPoint point) {
 		boolean toRtn = false;
 		ArrayList<GeoPoint> mPoints = (ArrayList<GeoPoint>) getPoints();
@@ -58,7 +56,7 @@ public class MyPolyline extends Polyline {
 		}
 		return toRtn;
 	}
-	
+
 	// Compute the dot product AB x AC
 	private double dot(IGeoPoint A, IGeoPoint B, IGeoPoint C) {
 		double[] AB = new double[2];
@@ -134,23 +132,23 @@ public class MyPolyline extends Polyline {
 			} while (b >= 0x20);
 			int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
 			lng += dlng;
-			
-			GeoPoint p = new GeoPoint(lat*10, lng*10);
+
+			GeoPoint p = new GeoPoint(lat * 10, lng * 10);
 			poly.add(p);
 		}
 
 		return poly;
 	}
-	
-	public static MyPolyline decode(Context ctx, String encoded, Street obj, SinglePopup iPopup)
-	{
+
+	public static MyPolyline decode(Context ctx, String encoded, Street obj,
+			SinglePopup iPopup) {
 		MyPolyline toRtn = new MyPolyline(ctx, obj, iPopup);
 		toRtn.setPoints(decodePoly(encoded));
 		toRtn.setWidth(5.5f);
 		int c = ctx.getResources().getColor(R.color.action_bar);
-		toRtn.setColor(Color.argb(100, Color.red(c), Color.green(c), Color.blue(c)));
+		toRtn.setColor(Color.argb(100, Color.red(c), Color.green(c),
+				Color.blue(c)));
 		return toRtn;
 	}
 
-	
 }

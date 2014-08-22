@@ -73,13 +73,16 @@ public class RemoteConnector {
 
 	/**
 	 * {@link HttpClient} certificate verifier type. Use with caution.
+	 * 
 	 * @author raman
-	 *
+	 * 
 	 */
-	public enum CLIENT_TYPE {CLIENT_NORMAL, CLIENT_WILDCARD, CLIENT_ACCEPTALL};
-	
+	public enum CLIENT_TYPE {
+		CLIENT_NORMAL, CLIENT_WILDCARD, CLIENT_ACCEPTALL
+	};
+
 	private static CLIENT_TYPE clientType = CLIENT_TYPE.CLIENT_NORMAL;
-	
+
 	/**
 	 * 
 	 */
@@ -105,22 +108,24 @@ public class RemoteConnector {
 		default:
 			httpClient = getDefaultHttpClient(null);
 		}
-		
+
 		final HttpParams params = httpClient.getParams();
-		HttpConnectionParams.setConnectionTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
+		HttpConnectionParams.setConnectionTimeout(params,
+				HTTP_REQUEST_TIMEOUT_MS);
 		HttpConnectionParams.setSoTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
 		ConnManagerParams.setTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
 		return httpClient;
 	}
 
 	/**
-	 * Set the way the SSL certificates are managed for the HTTP calls. 
+	 * Set the way the SSL certificates are managed for the HTTP calls.
+	 * 
 	 * @param type
 	 */
 	public static void setClientType(CLIENT_TYPE type) {
 		clientType = type;
 	}
-	
+
 	public static String getJSON(String host, String service, String token)
 			throws SecurityException, RemoteException {
 		return getJSON(host, service, token, null);
@@ -132,12 +137,14 @@ public class RemoteConnector {
 
 		try {
 			String queryString = generateQueryString(parameters);
-			final HttpGet get = new HttpGet(normalizeURL(host + service) + queryString);
+			final HttpGet get = new HttpGet(normalizeURL(host + service)
+					+ queryString);
 			get.setHeader(RH_ACCEPT, "application/json");
 			get.setHeader(RH_AUTH_TOKEN, bearer(token));
 
 			resp = getHttpClient().execute(get);
-			String response = EntityUtils.toString(resp.getEntity(),DEFAULT_CHARSET);
+			String response = EntityUtils.toString(resp.getEntity(),
+					DEFAULT_CHARSET);
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				return response;
 			}
@@ -176,7 +183,8 @@ public class RemoteConnector {
 
 		String queryString = generateQueryString(parameters);
 		final HttpResponse resp;
-		final HttpPost post = new HttpPost(normalizeURL(host + service) + queryString);
+		final HttpPost post = new HttpPost(normalizeURL(host + service)
+				+ queryString);
 
 		post.setHeader(RH_ACCEPT, "application/json");
 		post.setHeader(RH_AUTH_TOKEN, bearer(token));
@@ -187,7 +195,8 @@ public class RemoteConnector {
 			post.setEntity(input);
 
 			resp = getHttpClient().execute(post);
-			String response = EntityUtils.toString(resp.getEntity(),DEFAULT_CHARSET);
+			String response = EntityUtils.toString(resp.getEntity(),
+					DEFAULT_CHARSET);
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				return response;
 			}
@@ -244,7 +253,8 @@ public class RemoteConnector {
 			}
 
 			resp = getHttpClient().execute(put);
-			String response = EntityUtils.toString(resp.getEntity(),DEFAULT_CHARSET);
+			String response = EntityUtils.toString(resp.getEntity(),
+					DEFAULT_CHARSET);
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				return response;
 			}
@@ -262,7 +272,9 @@ public class RemoteConnector {
 	private static String normalizeURL(String uriString) throws RemoteException {
 		try {
 			URL url = new URL(uriString);
-			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+			URI uri = new URI(url.getProtocol(), url.getUserInfo(),
+					url.getHost(), url.getPort(), url.getPath(),
+					url.getQuery(), url.getRef());
 			uriString = uri.toURL().toString();
 		} catch (Exception e) {
 			throw new RemoteException(e.getMessage());
@@ -281,14 +293,16 @@ public class RemoteConnector {
 		final HttpResponse resp;
 		String queryString = generateQueryString(parameters);
 
-		final HttpDelete delete = new HttpDelete(normalizeURL(host + service) + queryString);
+		final HttpDelete delete = new HttpDelete(normalizeURL(host + service)
+				+ queryString);
 
 		delete.setHeader(RH_ACCEPT, "application/json");
 		delete.setHeader(RH_AUTH_TOKEN, bearer(token));
 
 		try {
 			resp = getHttpClient().execute(delete);
-			String response = EntityUtils.toString(resp.getEntity(),DEFAULT_CHARSET);
+			String response = EntityUtils.toString(resp.getEntity(),
+					DEFAULT_CHARSET);
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				return response;
 			}
@@ -343,7 +357,7 @@ public class RemoteConnector {
 			return value;
 		}
 	}
-	
+
 	private static HttpClient getDefaultHttpClient(HttpParams inParams) {
 		if (inParams != null) {
 			return new DefaultHttpClient(inParams);
@@ -358,18 +372,23 @@ public class RemoteConnector {
 		HttpParams params = inParams != null ? inParams : new BasicHttpParams();
 
 		try {
-			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+			KeyStore trustStore = KeyStore.getInstance(KeyStore
+					.getDefaultType());
 			trustStore.load(null, null);
 
 			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+			registry.register(new Scheme("http", PlainSocketFactory
+					.getSocketFactory(), 80));
 
 			// IMPORTANT: use CustolSSLSocketFactory for 2.2
-			SSLSocketFactory sslSocketFactory = new CustomSSLSocketFactory(trustStore);
-			sslSocketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			SSLSocketFactory sslSocketFactory = new CustomSSLSocketFactory(
+					trustStore);
+			sslSocketFactory
+					.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 			registry.register(new Scheme("https", sslSocketFactory, 443));
 
-			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+			ClientConnectionManager ccm = new ThreadSafeClientConnManager(
+					params, registry);
 
 			client = new DefaultHttpClient(ccm, params);
 		} catch (Exception e) {
@@ -385,20 +404,26 @@ public class RemoteConnector {
 		HttpParams params = inParams != null ? inParams : new BasicHttpParams();
 
 		try {
-			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+			KeyStore trustStore = KeyStore.getInstance(KeyStore
+					.getDefaultType());
 			trustStore.load(null, null);
 
 			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+			registry.register(new Scheme("http", PlainSocketFactory
+					.getSocketFactory(), 80));
 
-			SSLSocketFactory sslSocketFactory = new CustomSSLSocketFactory(trustStore);
-			final X509HostnameVerifier delegate = sslSocketFactory.getHostnameVerifier();
+			SSLSocketFactory sslSocketFactory = new CustomSSLSocketFactory(
+					trustStore);
+			final X509HostnameVerifier delegate = sslSocketFactory
+					.getHostnameVerifier();
 			if (!(delegate instanceof WildcardVerifier)) {
-				sslSocketFactory.setHostnameVerifier(new WildcardVerifier(delegate));
+				sslSocketFactory.setHostnameVerifier(new WildcardVerifier(
+						delegate));
 			}
 			registry.register(new Scheme("https", sslSocketFactory, 443));
 
-			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+			ClientConnectionManager ccm = new ThreadSafeClientConnManager(
+					params, registry);
 
 			client = new DefaultHttpClient(ccm, params);
 		} catch (Exception e) {
@@ -419,7 +444,8 @@ public class RemoteConnector {
 		}
 
 		@Override
-		public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+		public void verify(String host, String[] cns, String[] subjectAlts)
+				throws SSLException {
 			boolean ok = false;
 			try {
 				delegate.verify(host, cns, subjectAlts);
@@ -427,7 +453,9 @@ public class RemoteConnector {
 				for (String cn : cns) {
 					if (cn.startsWith("*.")) {
 						try {
-							delegate.verify(host, new String[] { cn.substring(2) }, subjectAlts);
+							delegate.verify(host,
+									new String[] { cn.substring(2) },
+									subjectAlts);
 							ok = true;
 						} catch (Exception e1) {
 							throw new SSLException(e1);
@@ -444,15 +472,18 @@ public class RemoteConnector {
 	private static class CustomSSLSocketFactory extends SSLSocketFactory {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 
-		public CustomSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException,
+		public CustomSSLSocketFactory(KeyStore truststore)
+				throws NoSuchAlgorithmException, KeyManagementException,
 				KeyStoreException, UnrecoverableKeyException {
 			super(truststore);
 
 			TrustManager tm = new X509TrustManager() {
-				public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+				public void checkClientTrusted(X509Certificate[] chain,
+						String authType) throws CertificateException {
 				}
 
-				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+				public void checkServerTrusted(X509Certificate[] chain,
+						String authType) throws CertificateException {
 				}
 
 				public X509Certificate[] getAcceptedIssuers() {
@@ -464,9 +495,10 @@ public class RemoteConnector {
 		}
 
 		@Override
-		public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException,
-				UnknownHostException {
-			return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
+		public Socket createSocket(Socket socket, String host, int port,
+				boolean autoClose) throws IOException, UnknownHostException {
+			return sslContext.getSocketFactory().createSocket(socket, host,
+					port, autoClose);
 		}
 
 		@Override

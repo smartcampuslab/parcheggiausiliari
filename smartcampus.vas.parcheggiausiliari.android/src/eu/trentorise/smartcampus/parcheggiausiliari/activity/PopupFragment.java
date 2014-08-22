@@ -3,7 +3,7 @@ package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 import java.util.Date;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
-import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
@@ -48,20 +48,36 @@ public class PopupFragment extends DialogFragment {
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_LEFT_ICON);
 		View v = inflater.inflate(R.layout.popup_fragment, container, false);
-		//setRetainInstance(true);
+		// setRetainInstance(true);
+
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
 		if (Parking.class.isInstance(obj)) {
-			tv.setText(((Parking) obj).getLastChange() != null ? ((Parking) obj)
+			Date d = new Date(((Parking) obj).getLastChange().getTime());
+			tv.setText(((Parking) obj).getLastChange() != null ? (((Parking) obj)
 					.getLastChange().getAuthor()
-					+ " "
-					+ new Date(((Parking) obj).getLastChange().getTime())
+					+ " - ore "
+					+ String.format("%02d", d.getHours())
+					+ ":"
+					+ String.format("%02d", d.getMinutes())
+					+ " - "
+					+ String.format("%02d", d.getDate())
+					+ "/"
+					+ String.format("%02d", (d.getMonth() + 1)) + "/" + (d
+					.getYear() + 1900))
 					: "Not recently updated");
 		} else {
-			tv.setText(((Street) obj).getLastChange() != null ? ((Street) obj)
+			Date d = new Date(((Street) obj).getLastChange().getTime());
+			tv.setText(((Street) obj).getLastChange() != null ? (((Street) obj)
 					.getLastChange().getAuthor()
-					+ " "
-					+ new Date(((Street) obj).getLastChange().getTime())
-					: "Not recently updated");
+					+ " - ore "
+					+ String.format("%02d", d.getHours())
+					+ ":"
+					+ String.format("%02d", d.getMinutes())
+					+ " - "
+					+ String.format("%02d", d.getDate())
+					+ "/"
+					+ String.format("%02d", (d.getMonth() + 1)) + "/" + (d
+					.getYear() + 1900)) : "Not recently updated");
 		}
 		Button btnStorico = (Button) v.findViewById(R.id.btnStorico);
 		btnStorico.setOnClickListener(new OnClickListener() {
@@ -94,13 +110,26 @@ public class PopupFragment extends DialogFragment {
 		getDialog().setTitle(
 				Html.fromHtml("<font color='#E84E26'>" + obj.getName()
 						+ "</font>"));
-		getDialog()
+
+		if (getDialog()
 				.getWindow()
 				.getDecorView()
 				.findViewById(
 						getActivity().getResources().getIdentifier(
-								"titleDivider", "id", "android"))
-				.setBackgroundColor(c);
+								"titleDivider", "id", "android")) != null) {
+			getDialog()
+					.getWindow()
+					.getDecorView()
+					.findViewById(
+							getActivity().getResources().getIdentifier(
+									"titleDivider", "id", "android"))
+					.setBackgroundColor(c);
+			Rect displayRectangle = new Rect();
+			Window window = getActivity().getWindow();
+			window.getDecorView()
+					.getWindowVisibleDisplayFrame(displayRectangle);
+			v.setMinimumWidth((int) (displayRectangle.width() * 0.9f));
+		}
 		return v;
 	}
 

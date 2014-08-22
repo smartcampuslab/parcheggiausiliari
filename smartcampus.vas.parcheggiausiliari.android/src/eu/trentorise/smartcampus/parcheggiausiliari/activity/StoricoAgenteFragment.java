@@ -16,8 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import eu.trentorise.smartcampus.parcheggiausiliari.model.LastChange;
-import eu.trentorise.smartcampus.parcheggiausiliari.model.LogObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
@@ -32,7 +30,7 @@ public class StoricoAgenteFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_storico, container,
 				false);
-		//setRetainInstance(true);
+		// setRetainInstance(true);
 		lv = (ListView) rootView.findViewById(R.id.listView1);
 		tv = (TextView) rootView.findViewById(R.id.txtNoData);
 		return rootView;
@@ -43,8 +41,7 @@ public class StoricoAgenteFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onStart();
 		ArrayList<Map> result = new ArrayList<Map>();
-		List<Map> list = new AusiliariHelper(getActivity())
-				.getStoricoAgente();
+		List<Map> list = new AusiliariHelper(getActivity()).getStoricoAgente();
 		if (!list.isEmpty()) {
 			for (Map lc : list) {
 				result.add(lc);
@@ -90,25 +87,35 @@ public class StoricoAgenteFragment extends Fragment {
 
 			TextView valPay;
 			TextView valTime;
-			
+
 			Date d = new Date((Long) values.get(position).get("time"));
-			textView.setText(((Map) values.get(position).get("value")).get("name")
-					+ " - ore " + String.format("%02d", d.getHours()) + ":"
-					+ String.format("%02d", d.getMinutes()) + " - "
-					+ String.format("%02d", d.getDate()) + "/"
-					+ String.format("%02d", (d.getMonth() + 1)) + "/"
+			textView.setText(((Map) values.get(position).get("value"))
+					.get("name")
+					+ " - ore "
+					+ String.format("%02d", d.getHours())
+					+ ":"
+					+ String.format("%02d", d.getMinutes())
+					+ " - "
+					+ String.format("%02d", d.getDate())
+					+ "/"
+					+ String.format("%02d", (d.getMonth() + 1))
+					+ "/"
 					+ (d.getYear() + 1900));
 
-			if (((Map) values.get(position).get("value")).containsKey("slotsTotal")) {
+			if (((Map) values.get(position).get("value"))
+					.containsKey("slotsTotal")) {
 				rowView.findViewById(R.id.txtStreet).setVisibility(View.GONE);
-				Parking p = populateParking((Map) values.get(position).get("value"));
+				Parking p = populateParking((Map) values.get(position).get(
+						"value"));
 				valFree.setText("" + p.getSlotsOccupiedOnTotal());
 				valWork.setText("" + p.getSlotsUnavailable());
 			} else {
-				rowView.findViewById(R.id.txtStreet).setVisibility(View.VISIBLE);
+				rowView.findViewById(R.id.txtStreet)
+						.setVisibility(View.VISIBLE);
 				valPay = (TextView) rowView.findViewById(R.id.valuePay);
 				valTime = (TextView) rowView.findViewById(R.id.valueTime);
-				Street s = populateStreet((Map) values.get(position).get("value"));
+				Street s = populateStreet((Map) values.get(position).get(
+						"value"));
 				valFree.setText("" + s.getSlotsOccupiedOnFree());
 				valWork.setText("" + s.getSlotsUnavailable());
 				valTime.setText("" + s.getSlotsOccupiedOnTimed());
@@ -116,7 +123,8 @@ public class StoricoAgenteFragment extends Fragment {
 			}
 			return rowView;
 		}
-		public Parking populateParking(Map m){
+
+		public Parking populateParking(Map m) {
 			Parking p = new Parking();
 			p.setSlotsTotal((Integer) m.get("slotsTotal"));
 			p.setSlotsOccupiedOnTotal((Integer) m.get("slotsOccupiedOnTotal"));
@@ -124,8 +132,8 @@ public class StoricoAgenteFragment extends Fragment {
 			p.setSlotsUnavailable((Integer) m.get("slotsUnavailable"));
 			return p;
 		}
-		
-		public Street populateStreet(Map m){
+
+		public Street populateStreet(Map m) {
 			Street s = new Street();
 			s.setSlotsFree((Integer) m.get("slotsFree"));
 			s.setSlotsOccupiedOnFree((Integer) m.get("slotsOccupiedOnFree"));

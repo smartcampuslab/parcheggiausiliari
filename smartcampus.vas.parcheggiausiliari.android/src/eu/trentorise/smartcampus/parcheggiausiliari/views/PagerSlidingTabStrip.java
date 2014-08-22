@@ -86,7 +86,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 	private int dividerWidth = 1;
 
 	private int tabTextSize = 12;
-	//private int tabTextColor = 0xFF666666;
+	// private int tabTextColor = 0xFF666666;
 	private ColorStateList tabTextColor = null;
 	private Typeface tabTypeface = null;
 	private int tabTypefaceStyle = Typeface.BOLD;
@@ -140,7 +140,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 		TypedArray a = context.obtainStyledAttributes(attrs, ATTRS);
 
 		tabTextSize = a.getDimensionPixelSize(0, tabTextSize);
-		//tabTextColor = a.getColor(1, tabTextColor);
+		// tabTextColor = a.getColor(1, tabTextColor);
 		tabTextColor = a.getColorStateList(1);
 
 		a.recycle();
@@ -312,13 +312,12 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 				TextView tab = (TextView) v;
 				tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize);
 				tab.setTypeface(tabTypeface, tabTypefaceStyle);
-				//tab.setTextColor(tabTextColor);
+				// tab.setTextColor(tabTextColor);
 
-				if(tabTextColor != null){
+				if (tabTextColor != null) {
 					tab.setTextColor(tabTextColor);
 				}
-				
-				
+
 				// setAllCaps() is only available from API 14, so the upper case
 				// is made manually if we are on a
 				// pre-ICS-build
@@ -452,6 +451,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 			tv.setSelected(i == position);
 		}
 	}
+
 	public void setIndicatorColor(int indicatorColor) {
 		this.indicatorColor = indicatorColor;
 		invalidate();
@@ -556,7 +556,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 		return tabTextSize;
 	}
 
-	//public void setTextColor(int textColor) {
+	// public void setTextColor(int textColor) {
 	public void setTextColor(ColorStateList textColor) {
 		this.tabTextColor = textColor;
 		updateTabStyles();

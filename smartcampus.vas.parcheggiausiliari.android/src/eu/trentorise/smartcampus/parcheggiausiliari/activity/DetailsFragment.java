@@ -22,7 +22,7 @@ public class DetailsFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_details, container,
 				false);
-		//setRetainInstance(true);
+		// setRetainInstance(true);
 		ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
 		tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
 		tabs.setTextColor(getResources().getColorStateList(
@@ -44,7 +44,7 @@ public class DetailsFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
-	
+
 	public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
 		private final String[] TITLES = { "Segnala", "Storico" };

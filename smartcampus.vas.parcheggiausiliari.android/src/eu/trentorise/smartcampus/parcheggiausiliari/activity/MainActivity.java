@@ -80,7 +80,8 @@ public class MainActivity extends ActionBarActivity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				FragmentManager fm = getSupportFragmentManager();
-				if (arg2 == 0 && !(fm.findFragmentById(R.id.container) instanceof MapFragment)) {
+				if (arg2 == 0
+						&& !(fm.findFragmentById(R.id.container) instanceof MapFragment)) {
 					getSupportActionBar().setTitle("Mappa");
 					FragmentTransaction ft = getSupportFragmentManager()
 							.beginTransaction();
@@ -88,7 +89,8 @@ public class MainActivity extends ActionBarActivity {
 					ft.replace(R.id.container, new MapFragment(),
 							getString(R.string.map_fragment))
 							.addToBackStack(null).commit();
-				} else if (arg2 == 1 &&  !(fm.findFragmentById(R.id.container) instanceof StoricoAgenteFragment)) {
+				} else if (arg2 == 1
+						&& !(fm.findFragmentById(R.id.container) instanceof StoricoAgenteFragment)) {
 					getSupportActionBar().setTitle("Storico");
 					FragmentTransaction ft = getSupportFragmentManager()
 							.beginTransaction();

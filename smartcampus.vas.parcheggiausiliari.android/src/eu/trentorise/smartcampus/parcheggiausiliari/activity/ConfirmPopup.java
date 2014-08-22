@@ -1,6 +1,7 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Html;
@@ -33,9 +34,10 @@ public abstract class ConfirmPopup extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_LEFT_ICON);
-		
+
 		View v = inflater.inflate(R.layout.popup_fragment, container, false);
-		//setRetainInstance(true);
+		// setRetainInstance(true);
+
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
 		tv.setText(message);
 		v.findViewById(R.id.txtLastDataHeader).setVisibility(View.GONE);
@@ -62,13 +64,26 @@ public abstract class ConfirmPopup extends DialogFragment {
 		int c = getActivity().getResources().getColor(R.color.button_pressed);
 		getDialog().setTitle(
 				Html.fromHtml("<font color='#E84E26'>" + title + "</font>"));
-		getDialog()
+
+		if (getDialog()
 				.getWindow()
 				.getDecorView()
 				.findViewById(
 						getActivity().getResources().getIdentifier(
-								"titleDivider", "id", "android"))
-				.setBackgroundColor(c);
+								"titleDivider", "id", "android")) != null) {
+			getDialog()
+					.getWindow()
+					.getDecorView()
+					.findViewById(
+							getActivity().getResources().getIdentifier(
+									"titleDivider", "id", "android"))
+					.setBackgroundColor(c);
+			Rect displayRectangle = new Rect();
+			Window window = getActivity().getWindow();
+			window.getDecorView()
+					.getWindowVisibleDisplayFrame(displayRectangle);
+			v.setMinimumWidth((int) (displayRectangle.width() * 0.9f));
+		}
 		return v;
 	}
 

@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.osmdroid.bonuspack.cachemanager.CacheManager;
-
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.os.Bundle;
@@ -40,7 +38,7 @@ public class StoricoFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_storico, container,
 				false);
-		//setRetainInstance(true);
+		// setRetainInstance(true);
 		lv = (ListView) rootView.findViewById(R.id.listView1);
 		tv = (TextView) rootView.findViewById(R.id.txtNoData);
 		return rootView;

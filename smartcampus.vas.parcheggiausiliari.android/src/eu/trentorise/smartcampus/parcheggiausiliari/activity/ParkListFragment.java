@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.codehaus.jackson.format.InputAccessor;
-
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.os.Bundle;
@@ -72,7 +70,7 @@ public class ParkListFragment extends Fragment {
 		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_parklist, container,
 				false);
-		//setRetainInstance(true);
+		// setRetainInstance(true);
 		list = (ListView) rootView.findViewById(R.id.listParkings);
 		list.setAdapter(new MySimpleArrayAdapter(getActivity(),
 				new AusiliariHelper(getActivity()).getParklist()));

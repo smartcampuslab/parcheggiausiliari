@@ -110,7 +110,7 @@ public class ParkListFragment extends Fragment {
 		private List<Parking> filtered = new ArrayList<Parking>();
 
 		public ParkListAdapter(Context context, List<Parking> values) {
-			super(context, R.layout.rowlayout, values);
+			super(context, R.layout.listrow, values);
 			this.context = context;
 			this.filtered.addAll(values);
 			this.items.addAll(values);
@@ -121,7 +121,7 @@ public class ParkListFragment extends Fragment {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(R.layout.rowlayout, parent, false);
+			View rowView = inflater.inflate(R.layout.listrow, parent, false);
 			TextView textView = (TextView) rowView.findViewById(R.id.txt1);
 			textView.setText(filtered.get(position).getName());
 

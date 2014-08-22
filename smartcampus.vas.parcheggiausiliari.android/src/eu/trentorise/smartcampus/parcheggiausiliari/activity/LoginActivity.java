@@ -27,7 +27,7 @@ public class LoginActivity extends ActionBarActivity {
 		if (sp.getString("User", null) != null) {
 			startMap();
 		}
-		setContentView(R.layout.fragment_login);
+		setContentView(R.layout.activity_login);
 		tvUser = (EditText) findViewById(R.id.editText1);
 		Button btnLogin = (Button) findViewById(R.id.button1);
 		btnLogin.setOnClickListener(new OnClickListener() {

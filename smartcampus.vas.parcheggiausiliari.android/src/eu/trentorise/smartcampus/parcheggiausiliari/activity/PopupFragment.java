@@ -21,7 +21,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 
 /**
  * subclass of {@link DialogFragment} to show details about a Street or a Parking
- * @author user
+ * @author Michele Armellini
  *
  */
 public class PopupFragment extends DialogFragment {
@@ -41,7 +41,7 @@ public class PopupFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_LEFT_ICON);
-		View v = inflater.inflate(R.layout.popup_fragment, container, false);
+		View v = inflater.inflate(R.layout.fragment_popup, container, false);
 		// setRetainInstance(true);
 
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
@@ -106,19 +106,12 @@ public class PopupFragment extends DialogFragment {
 						+ "</font>"));
 
 		/* ***True only if run on API<11*** */
-		if (getDialog()
-				.getWindow()
-				.getDecorView()
-				.findViewById(
-						getActivity().getResources().getIdentifier(
-								"titleDivider", "id", "android")) != null) {
-			getDialog()
-					.getWindow()
-					.getDecorView()
-					.findViewById(
-							getActivity().getResources().getIdentifier(
-									"titleDivider", "id", "android"))
-					.setBackgroundColor(c);
+		if (getDialog().getWindow().getDecorView().findViewById(
+						getActivity().getResources().getIdentifier("titleDivider", "id", "android")) != null) {
+			/*  sets the color of the line under the title*/
+			getDialog().getWindow().getDecorView().findViewById(
+							getActivity().getResources().getIdentifier("titleDivider", "id", "android")).setBackgroundColor(c);
+			/*  fixes the dimension problem in old API*/
 			Rect displayRectangle = new Rect();
 			Window window = getActivity().getWindow();
 			window.getDecorView()

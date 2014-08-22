@@ -13,9 +13,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 /**
- * @author Michele Armellini	
- * 
- *	class to handle the creation of confirmation dialogs similar to AlertDialogs
+ * class to handle the creation of confirmation dialogs similar to AlertDialogs
+ * @author Michele Armellini
  */
 public abstract class ConfirmPopup extends DialogFragment {
 
@@ -39,7 +38,7 @@ public abstract class ConfirmPopup extends DialogFragment {
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_LEFT_ICON);
 
-		View v = inflater.inflate(R.layout.popup_fragment, container, false);
+		View v = inflater.inflate(R.layout.fragment_popup, container, false);
 		// setRetainInstance(true);
 
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
@@ -69,19 +68,12 @@ public abstract class ConfirmPopup extends DialogFragment {
 		getDialog().setTitle(
 				Html.fromHtml("<font color='#E84E26'>" + title + "</font>"));
 
-		if (getDialog()
-				.getWindow()
-				.getDecorView()
-				.findViewById(
-						getActivity().getResources().getIdentifier(
-								"titleDivider", "id", "android")) != null) {
-			getDialog()
-					.getWindow()
-					.getDecorView()
-					.findViewById(
-							getActivity().getResources().getIdentifier(
-									"titleDivider", "id", "android"))
-					.setBackgroundColor(c);
+		if (getDialog().getWindow().getDecorView().findViewById(
+						getActivity().getResources().getIdentifier("titleDivider", "id", "android")) != null) {
+			/*  sets the color of the line under the title*/
+			getDialog().getWindow().getDecorView().findViewById(
+					getActivity().getResources().getIdentifier("titleDivider", "id", "android")).setBackgroundColor(c);
+			/*  fixes the dimension problem in old API*/
 			Rect displayRectangle = new Rect();
 			Window window = getActivity().getWindow();
 			window.getDecorView()

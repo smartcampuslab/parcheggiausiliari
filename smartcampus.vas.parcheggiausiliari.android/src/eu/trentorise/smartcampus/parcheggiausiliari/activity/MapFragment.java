@@ -42,6 +42,13 @@ import eu.trentorise.smartcampus.parcheggiausiliari.util.SinglePopup;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView.OnClearListener;
 
+/**
+ * Fragment containing the map. It implements {@link SinglePopup} to make sure
+ * only one {@link PopupFragment popup} will show
+ * 
+ * @author Michele Armellini
+ * 
+ */
 public class MapFragment extends Fragment implements SinglePopup {
 
 	private boolean opened = false;
@@ -54,47 +61,36 @@ public class MapFragment extends Fragment implements SinglePopup {
 	private List<Parking> parks;
 	private View vNew;
 
-	// ClearableAutoCompleteTextView search;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+
+		/*
+		 *  ***Setting up the custom layout of the actionbar and implementing
+		 * search functionality***
+		 */
+
 		ActionBar actionBar = ((MainActivity) getActivity())
-				.getSupportActionBar(); // you can use ABS or the non-bc
-										// ActionBar
+				.getSupportActionBar();
 		v = actionBar.getCustomView();
-		actionBar.setDisplayOptions(
-				 ActionBar.DISPLAY_SHOW_CUSTOM |ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME
-				| ActionBar.DISPLAY_HOME_AS_UP); // what's
-													// mainly
-													// important
-													// here
-													// is
-													// DISPLAY_SHOW_CUSTOM.
-													// the
-													// rest
-													// is
-													// optional
-		//LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM
+				| ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME
+				| ActionBar.DISPLAY_HOME_AS_UP);
 		LayoutInflater inflater = (LayoutInflater) getActivity()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		// inflate the view that we created before
 		vNew = inflater.inflate(R.layout.actionbar_search, null);
-		// the view that contains the search "magnifier" icon
 		searchIcon = (ImageView) vNew.findViewById(R.id.search_icon);
-		// the view that contains the new clearable autocomplete text view
 		searchBox = (ClearableAutoCompleteTextView) vNew
 				.findViewById(R.id.search_box);
-
-		// start with the text view hidden in the action bar
 		searchBox.setVisibility(View.GONE);
 
+		/* Non static calls are needed in order for the Helper to have the context and show the ProgressDialog correctly */
 		streets = new AusiliariHelper(getActivity()).getStreetlist();
 		parks = new AusiliariHelper(getActivity()).getParklist();
+
 		list.addAll(parks);
 		list.addAll(streets);
 
-		searchBox.setAdapter(new MySimpleArrayAdapter(getActivity(), list));
+		searchBox.setAdapter(new GeoObjectAdapter(getActivity(), list));
 		searchIcon.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -137,28 +133,24 @@ public class MapFragment extends Fragment implements SinglePopup {
 		super.onCreate(savedInstanceState);
 	}
 
+	/**
+	 * method to toggle between showing the searchBar and the search icon
+	 * 
+	 * @param reset
+	 *            true -> searchBar visible , false -> searchBar not visible
+	 */
 	private void toggleSearch(boolean reset) {
 		if (reset) {
-			// hide search box and show search icon
 			searchBox.setText("");
 			searchBox.setVisibility(View.GONE);
-			//LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-			//params.gravity = Gravity.RIGHT;
-			//((View)searchBox.getParent()).setLayoutParams(params);
 			searchIcon.setVisibility(View.VISIBLE);
-			// hide the keyboard
 			InputMethodManager imm = (InputMethodManager) getActivity()
 					.getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
 		} else {
-			// hide search icon and show search box
 			searchIcon.setVisibility(View.GONE);
 			searchBox.setVisibility(View.VISIBLE);
-			//LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			//params.gravity = Gravity.RIGHT;
-			//((View)searchBox.getParent()).setLayoutParams(params);
 			searchBox.requestFocus();
-			// show the keyboard
 			InputMethodManager imm = (InputMethodManager) getActivity()
 					.getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT);
@@ -172,23 +164,25 @@ public class MapFragment extends Fragment implements SinglePopup {
 		searchIcon.setVisibility(View.VISIBLE);
 		View rootView = inflater.inflate(R.layout.fragment_map, container,
 				false);
+
+		/* ***Populating view*** */
+
 		Button btnParkings = (Button) rootView.findViewById(R.id.btnParking);
 		Button btnStreets = (Button) rootView.findViewById(R.id.btnVie);
-		// btnStreets.setBackgroundColor(getResources().getColor(R.color.button_normal));
 		btnStreets.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				FragmentTransaction ft = getFragmentManager()
 						.beginTransaction();
 				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
 				ft.replace(R.id.container, new StreetListFragment(),
 						getString(R.string.streetlist_fragment))
-						.addToBackStack(null)// Start the animated transition.
-						.commit();
+						.addToBackStack(null).commit();
 			}
 		});
+
+		/* ***Map Settings*** */
 
 		map = (MapView) rootView.findViewById(R.id.mapview);
 		map.setTileSource(TileSourceFactory.MAPQUESTOSM);
@@ -197,7 +191,11 @@ public class MapFragment extends Fragment implements SinglePopup {
 		MyLocationNewOverlay myLoc = new MyLocationNewOverlay(getActivity(),
 				new CustomLocationProvider(getActivity()), map);
 		myLoc.enableMyLocation();
+		map.getOverlays().add(myLoc);
 		map.getController().setZoom(18);
+
+		/* ***Adding Markers*** */
+
 		ArrayList<ParkingMarker> items = new ArrayList<ParkingMarker>();
 		for (Parking mPark : parks) {
 			ParkingMarker item = new ParkingMarker(mPark);
@@ -213,7 +211,6 @@ public class MapFragment extends Fragment implements SinglePopup {
 							@Override
 							public boolean onItemLongPress(int arg0,
 									ParkingMarker arg1) {
-								// TODO Auto-generated method stub
 								return false;
 							}
 
@@ -224,7 +221,9 @@ public class MapFragment extends Fragment implements SinglePopup {
 								return true;
 							}
 						}, map.getResourceProxy()));
-		map.getOverlays().add(myLoc);
+
+		/* ***Setting up "go to my location" button*** */
+
 		Button myLocButton = (Button) rootView.findViewById(R.id.btMyLocation);
 		myLocButton.setBackgroundResource(R.drawable.ic_menu_mylocation);
 		myLocButton.setOnClickListener(new OnClickListener() {
@@ -238,23 +237,18 @@ public class MapFragment extends Fragment implements SinglePopup {
 						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
 			}
 		});
-		GPSTracker pos = new GPSTracker(getActivity());
-		center(new GeoPoint(pos.getLatitude(), pos.getLongitude()));
-		center(new GeoPoint(pos.getLatitude(), pos.getLongitude()));
-		// btnParkings.setBackgroundColor(getResources().getColor(R.color.button_normal));
+		myLocButton.callOnClick();
+		myLocButton.callOnClick();
 		btnParkings.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				FragmentTransaction ft = getFragmentManager()
 						.beginTransaction();
 				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
 				ft.replace(R.id.container, new ParkListFragment(),
 						getString(R.string.parklist_fragment))
-						.addToBackStack(null)
-						// Start the animated transition.
-						.commit();
+						.addToBackStack(null).commit();
 			}
 		});
 		addLinee(streets);
@@ -268,17 +262,10 @@ public class MapFragment extends Fragment implements SinglePopup {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
 
-	public void center(GeoPoint geopoint) {
-		map.getController().animateTo(geopoint);
-		map.getController().animateTo(geopoint);
-	}
-
 	private class CustomLocationProvider extends GpsMyLocationProvider {
-
 		public CustomLocationProvider(Context context) {
 			super(context);
 		}
@@ -286,7 +273,6 @@ public class MapFragment extends Fragment implements SinglePopup {
 	}
 
 	private class ParkingMarker extends OverlayItem {
-
 		private Parking mParking;
 
 		public ParkingMarker(Parking parking) {
@@ -300,6 +286,13 @@ public class MapFragment extends Fragment implements SinglePopup {
 		}
 	}
 
+	/**
+	 * method which adds polylines to the map by decoding them from every
+	 * {@link Street} object passed
+	 * 
+	 * @param data
+	 *            List of {@link Street} to decode from
+	 */
 	private void addLinee(List<Street> data) {
 		FolderOverlay fo = new FolderOverlay(map.getContext());
 		for (Street street : data) {
@@ -330,30 +323,36 @@ public class MapFragment extends Fragment implements SinglePopup {
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		ActionBar actionBar = ((MainActivity) getActivity())
 				.getSupportActionBar();
 		actionBar.setCustomView(vNew);
 	}
 
+	
 	@Override
 	public void onPause() {
 		super.onPause();
-		// TODO Auto-generated method stub
+		/* ***Restore "original" actionBar*** */
 		ActionBar actionBar = ((MainActivity) getActivity())
-				.getSupportActionBar(); // you can use ABS or the non-bc
-										// ActionBar
+				.getSupportActionBar();
 		actionBar.setCustomView(v);
 	}
 
-	public static class MySimpleArrayAdapter extends ArrayAdapter<GeoObject> {
+	
+	/**
+	 * 
+	 * Class which populates the suggestion dropdown and performs the filtering
+	 * 
+	 * @author Michele Armellini
+	 */
+	public static class GeoObjectAdapter extends ArrayAdapter<GeoObject> {
 		private Filter filter;
 		private final Context context;
 		private List<GeoObject> items = new ArrayList<GeoObject>();
 		private List<GeoObject> filtered = new ArrayList<GeoObject>();
 
-		public MySimpleArrayAdapter(Context context, List<GeoObject> values) {
+		public GeoObjectAdapter(Context context, List<GeoObject> values) {
 			super(context, R.layout.search_item, values);
 			this.context = context;
 			this.filtered.addAll(values);

@@ -15,6 +15,14 @@ import android.graphics.Color;
 import android.view.MotionEvent;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 
+/**
+ * subclass of {@link Polyline} which adds the possibility to check if the click
+ * made may be referring to the line ( by checking the distance from it) and the
+ * possibility to create a new Polyline from a <a href="https://developers.google.com/maps/documentation/utilities/polylinealgorithm">encoded polyline</a>
+ * 
+ * @author Michele Armellini
+ * 
+ */
 public class MyPolyline extends Polyline {
 
 	private Street obj;
@@ -46,6 +54,11 @@ public class MyPolyline extends Polyline {
 		return super.onLongPress(e, mapView);
 	}
 
+	/**
+	 * method to check if the touch happened near the line
+	 * @param Geopoint containing the coordinates of where the user touched
+	 * @return true if the point is near the line, otherwhise false
+	 */
 	public boolean isOnLine(IGeoPoint point) {
 		boolean toRtn = false;
 		ArrayList<GeoPoint> mPoints = (ArrayList<GeoPoint>) getPoints();
@@ -104,6 +117,11 @@ public class MyPolyline extends Polyline {
 		return Math.abs(dist);
 	}
 
+	/**
+	 * method to decode an encoded polyline into a list of geopoint on which the line passes on
+	 * @param encoded the encoded polyline
+	 * @return a {@link List} of {@link GeoPoint} the line passes on
+	 */
 	private static List<GeoPoint> decodePoly(String encoded) {
 		List<GeoPoint> poly = new ArrayList<GeoPoint>();
 
@@ -140,6 +158,14 @@ public class MyPolyline extends Polyline {
 		return poly;
 	}
 
+	/**
+	 * method who creates a polyline from an encoded string
+	 * @param ctx
+	 * @param encoded the encoded polyline
+	 * @param obj the Street related to the line
+	 * @param iPopup Interface used to keep only one popup open at a time
+	 * @return a {@link MyPolyline} created from the encoded points
+	 */
 	public static MyPolyline decode(Context ctx, String encoded, Street obj,
 			SinglePopup iPopup) {
 		MyPolyline toRtn = new MyPolyline(ctx, obj, iPopup);

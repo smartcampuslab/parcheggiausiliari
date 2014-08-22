@@ -1,5 +1,7 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.util;
 
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +13,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
+/**
+ * Class for getting the user's position, as the {@link MyLocationNewOverlay}
+ * one is not always working
+ */
 public final class GPSTracker implements LocationListener {
 
 	private final Context mContext;

@@ -1,7 +1,6 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
@@ -11,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +55,7 @@ public class ParkListFragment extends Fragment {
 
 			@Override
 			public boolean onQueryTextChange(String arg0) {
-				((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(
+				((ParkListAdapter) list.getAdapter()).getFilter().filter(
 						arg0);
 				return true;
 			}
@@ -70,9 +68,10 @@ public class ParkListFragment extends Fragment {
 		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_parklist, container,
 				false);
-		// setRetainInstance(true);
 		list = (ListView) rootView.findViewById(R.id.listParkings);
-		list.setAdapter(new MySimpleArrayAdapter(getActivity(),
+
+		/* Non static call is needed in order for the Helper to have the context and show the ProgressDialog correctly */
+		list.setAdapter(new ParkListAdapter(getActivity(),
 				new AusiliariHelper(getActivity()).getParklist()));
 		list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -88,7 +87,6 @@ public class ParkListFragment extends Fragment {
 								new DetailsFragment((GeoObject) list
 										.getAdapter().getItem(arg2)))
 						.addToBackStack(null).commit();
-				Log.d("DEBUG", "Passed");
 			}
 		});
 		return rootView;
@@ -99,25 +97,23 @@ public class ParkListFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
-	public static class MySimpleArrayAdapter extends ArrayAdapter<Parking> {
+	
+	/**
+	 * adapter for populating the ListView and performing the research
+	 * @author Michele Armellini
+	 *
+	 */
+	public static class ParkListAdapter extends ArrayAdapter<Parking> {
 		private Filter filter;
 		private final Context context;
 		private List<Parking> items = new ArrayList<Parking>();
 		private List<Parking> filtered = new ArrayList<Parking>();
 
-		public MySimpleArrayAdapter(Context context, List<Parking> values) {
+		public ParkListAdapter(Context context, List<Parking> values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
 			this.filtered.addAll(values);
 			this.items.addAll(values);
-			this.filter = new MyFilter();
-		}
-
-		public MySimpleArrayAdapter(Context context, Parking[] values) {
-			super(context, R.layout.rowlayout, values);
-			this.context = context;
-			this.filtered = new ArrayList<Parking>(Arrays.asList(values));
-			this.items.addAll(this.filtered);
 			this.filter = new MyFilter();
 		}
 
@@ -143,9 +139,6 @@ public class ParkListFragment extends Fragment {
 
 			@Override
 			protected FilterResults performFiltering(CharSequence constraint) {
-				// NOTE: this function is *always* called from a background
-				// thread, and
-				// not the UI thread.
 				filtered.clear();
 				filtered.addAll(items);
 				constraint = constraint.toString().toLowerCase();
@@ -177,7 +170,6 @@ public class ParkListFragment extends Fragment {
 			@Override
 			protected void publishResults(CharSequence constraint,
 					FilterResults results) {
-				// NOTE: this function is *always* called from the UI thread.
 				filtered = (ArrayList<Parking>) results.values;
 				ArrayList<Parking> temp = new ArrayList<Parking>();
 				temp.addAll(filtered);
@@ -186,7 +178,7 @@ public class ParkListFragment extends Fragment {
 				for (int i = 0, l = temp.size(); i < l; i++) {
 					add(temp.get(i));
 				}
-
+				
 				notifyDataSetInvalidated();
 			}
 

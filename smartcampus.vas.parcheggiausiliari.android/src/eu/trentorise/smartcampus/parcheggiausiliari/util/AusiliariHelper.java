@@ -11,7 +11,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.os.AsyncTask;
-import android.util.Log;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
@@ -19,6 +18,11 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.StreetLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.constants.Parcheggi_Services;
 
+/**
+ * Class containing all methods which make use of the Services listed in the interface {@link Parcheggi_Services}
+ * @author Michele Armellini
+ *
+ */
 public class AusiliariHelper implements Parcheggi_Services {
 	private static Context mContext;
 
@@ -79,13 +83,49 @@ public class AusiliariHelper implements Parcheggi_Services {
 		return toRtn;
 	}
 
+	public static List<Parking> getParklist() {
+		List<Parking> array = null;
+		try {
+			GetParkingTask ast = new GetParkingTask();
+			ast.execute();
+			array = ast.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return array;
+	}
+
+	public static List<Street> getStreetlist() {
+		List<Street> array = null;
+		try {
+			GetStreetsTask ast = new GetStreetsTask();
+			ast.execute();
+			array = ast.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return array;
+	}
+
+	public static String getUsername() {
+		return ((Activity) mContext).getSharedPreferences("Login", 0)
+				.getString("User", null);
+	}
+	
 	private static class SetDataTask extends AsyncTask<GeoObject, Void, Void> {
 		ProgressDialog pd;
 
 		@Override
 		protected Void doInBackground(GeoObject... params) {
 			try {
-				Log.d("DEBUG", JsonUtils.toJSON(params[0]));
 				if (Parking.class.isInstance(params[0])) {
 					RemoteConnector.postJSON(
 							HOST,
@@ -155,12 +195,6 @@ public class AusiliariHelper implements Parcheggi_Services {
 			String request = null;
 			List<StreetLog> list = null;
 			try {
-				Log.d("DEBUG",
-						HOST
-								+ "parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + STREETLOGLIST
-								+ params[0].getId());
 				request = RemoteConnector.getJSON(
 						HOST,
 						"parcheggiausiliari/"
@@ -210,12 +244,6 @@ public class AusiliariHelper implements Parcheggi_Services {
 			String request = null;
 			List<ParkingLog> list = null;
 			try {
-				Log.d("DEBUG",
-						HOST
-								+ "parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + PARKLOGLIST
-								+ params[0].getId());
 				request = RemoteConnector.getJSON(
 						HOST,
 						"parcheggiausiliari/"
@@ -264,12 +292,6 @@ public class AusiliariHelper implements Parcheggi_Services {
 		protected List<Map> doInBackground(Void... params) {
 			String request = null;
 			try {
-				Log.d("DEBUG",
-						HOST
-								+ "parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + AUSLOGLIST
-								+ new AusiliariHelper(mContext).getUsername());
 				request = RemoteConnector.getJSON(
 						HOST,
 						"parcheggiausiliari/"
@@ -307,38 +329,6 @@ public class AusiliariHelper implements Parcheggi_Services {
 		}
 	}
 
-	public static List<Parking> getParklist() {
-		List<Parking> array = null;
-		try {
-			GetParkingTask ast = new GetParkingTask();
-			ast.execute();
-			array = ast.get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return array;
-	}
-
-	public static List<Street> getStreetlist() {
-		List<Street> array = null;
-		try {
-			GetStreetsTask ast = new GetStreetsTask();
-			ast.execute();
-			array = ast.get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return array;
-	}
-
 	private static class GetStreetsTask extends
 			AsyncTask<Void, Void, List<Street>> {
 		ProgressDialog pd;
@@ -347,11 +337,6 @@ public class AusiliariHelper implements Parcheggi_Services {
 		protected List<Street> doInBackground(Void... params) {
 			String request = null;
 			try {
-				Log.d("DEBUG",
-						HOST
-								+ "parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + STREETLIST);
 				request = RemoteConnector.getJSON(
 						HOST,
 						"parcheggiausiliari/"
@@ -395,11 +380,6 @@ public class AusiliariHelper implements Parcheggi_Services {
 		protected List<Parking> doInBackground(Void... params) {
 			String request = null;
 			try {
-				Log.d("DEBUG",
-						HOST
-								+ "parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + PARKLIST);
 				request = RemoteConnector.getJSON(
 						HOST,
 						"parcheggiausiliari/"
@@ -435,9 +415,5 @@ public class AusiliariHelper implements Parcheggi_Services {
 		}
 	}
 
-	public static String getUsername() {
-		return ((Activity) mContext).getSharedPreferences("Login", 0)
-				.getString("User", null);
-	}
 
 }

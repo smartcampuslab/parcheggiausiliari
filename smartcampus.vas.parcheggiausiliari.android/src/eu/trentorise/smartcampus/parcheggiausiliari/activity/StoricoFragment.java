@@ -38,7 +38,6 @@ public class StoricoFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_storico, container,
 				false);
-		// setRetainInstance(true);
 		lv = (ListView) rootView.findViewById(R.id.listView1);
 		tv = (TextView) rootView.findViewById(R.id.txtNoData);
 		return rootView;
@@ -46,7 +45,6 @@ public class StoricoFragment extends Fragment {
 
 	@Override
 	public void onStart() {
-		// TODO Auto-generated method stub
 		super.onStart();
 		ArrayList<LogObject> result = new ArrayList<LogObject>();
 		if (Parking.class.isInstance(obj)) {
@@ -69,31 +67,25 @@ public class StoricoFragment extends Fragment {
 			}
 		}
 
-		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(),
+		StoricoAdapter adapter = new StoricoAdapter(getActivity(),
 				result);
 		lv.setAdapter(adapter);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
 
-	public static class MySimpleArrayAdapter extends ArrayAdapter<LogObject> {
+	
+	public static class StoricoAdapter extends ArrayAdapter<LogObject> {
 		private final Context context;
 		private final ArrayList<LogObject> values;
 
-		public MySimpleArrayAdapter(Context context, ArrayList<LogObject> values) {
+		public StoricoAdapter(Context context, ArrayList<LogObject> values) {
 			super(context, R.layout.storicorow, values);
 			this.context = context;
 			this.values = values;
-		}
-
-		public MySimpleArrayAdapter(Context context, LogObject[] values) {
-			super(context, R.layout.storicorow, values);
-			this.context = context;
-			this.values = new ArrayList<LogObject>(Arrays.asList(values));
 		}
 
 		@Override

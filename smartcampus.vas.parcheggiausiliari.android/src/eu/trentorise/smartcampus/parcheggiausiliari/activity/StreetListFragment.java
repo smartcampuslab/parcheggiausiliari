@@ -1,7 +1,6 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
@@ -34,7 +33,6 @@ public class StreetListFragment extends Fragment {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 	}
 
@@ -57,7 +55,7 @@ public class StreetListFragment extends Fragment {
 
 			@Override
 			public boolean onQueryTextChange(String arg0) {
-				((MySimpleArrayAdapter) list.getAdapter()).getFilter().filter(
+				((StreetListAdapter) list.getAdapter()).getFilter().filter(
 						arg0);
 				return true;
 			}
@@ -70,9 +68,10 @@ public class StreetListFragment extends Fragment {
 		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_streetlist,
 				container, false);
-		// setRetainInstance(true);
 		list = (ListView) rootView.findViewById(R.id.listStreets);
-		list.setAdapter(new MySimpleArrayAdapter(getActivity(),
+		
+		/* Non static call is needed in order for the Helper to have the context and show the ProgressDialog correctly */
+		list.setAdapter(new StreetListAdapter(getActivity(),
 				new AusiliariHelper(getActivity()).getStreetlist()));
 		list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -98,26 +97,23 @@ public class StreetListFragment extends Fragment {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 	}
-
-	public static class MySimpleArrayAdapter extends ArrayAdapter<Street> {
+	
+	/**
+	 * adapter for populating the ListView and performing the research
+	 * @author Michele Armellini
+	 *
+	 */
+	public static class StreetListAdapter extends ArrayAdapter<Street> {
 		private Filter filter;
 		private final Context context;
 		private List<Street> items = new ArrayList<Street>();
 		private List<Street> filtered = new ArrayList<Street>();
 
-		public MySimpleArrayAdapter(Context context, List<Street> values) {
+		public StreetListAdapter(Context context, List<Street> values) {
 			super(context, R.layout.rowlayout, values);
 			this.context = context;
 			this.filtered.addAll(values);
 			this.items.addAll(values);
-			this.filter = new MyFilter();
-		}
-
-		public MySimpleArrayAdapter(Context context, Street[] values) {
-			super(context, R.layout.rowlayout, values);
-			this.context = context;
-			this.filtered = new ArrayList<Street>(Arrays.asList(values));
-			this.items.addAll(this.filtered);
 			this.filter = new MyFilter();
 		}
 
@@ -143,9 +139,6 @@ public class StreetListFragment extends Fragment {
 
 			@Override
 			protected FilterResults performFiltering(CharSequence constraint) {
-				// NOTE: this function is *always* called from a background
-				// thread, and
-				// not the UI thread.
 				filtered.clear();
 				filtered.addAll(items);
 				constraint = constraint.toString().toLowerCase();
@@ -177,7 +170,6 @@ public class StreetListFragment extends Fragment {
 			@Override
 			protected void publishResults(CharSequence constraint,
 					FilterResults results) {
-				// NOTE: this function is *always* called from the UI thread.
 				filtered = (ArrayList<Street>) results.values;
 				ArrayList<Street> temp = new ArrayList<Street>();
 				temp.addAll(filtered);

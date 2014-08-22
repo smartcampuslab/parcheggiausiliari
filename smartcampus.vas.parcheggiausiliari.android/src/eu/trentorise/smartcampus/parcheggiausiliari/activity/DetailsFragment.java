@@ -22,7 +22,6 @@ public class DetailsFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_details, container,
 				false);
-		// setRetainInstance(true);
 		ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
 		tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
 		tabs.setTextColor(getResources().getColorStateList(
@@ -35,13 +34,11 @@ public class DetailsFragment extends Fragment {
 	}
 
 	public DetailsFragment(GeoObject obj) {
-		// TODO Auto-generated constructor stub
 		this.obj = obj;
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
 

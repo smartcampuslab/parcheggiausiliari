@@ -12,7 +12,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
-
+/**
+ * @author Michele Armellini	
+ * 
+ *	class to handle the creation of confirmation dialogs similar to AlertDialogs
+ */
 public abstract class ConfirmPopup extends DialogFragment {
 
 	private int icon;

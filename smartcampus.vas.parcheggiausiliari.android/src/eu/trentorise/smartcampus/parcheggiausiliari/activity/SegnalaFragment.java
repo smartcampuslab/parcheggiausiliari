@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,6 +42,9 @@ public class SegnalaFragment extends Fragment {
 		this.obj = obj;
 	}
 
+	/**
+	 * method called only in onConfigurationChanged to save  current values 
+	 */
 	private void saveValues() {
 		clearFocus();
 		SharedPreferences sp = getActivity().getPreferences(0);
@@ -55,7 +57,9 @@ public class SegnalaFragment extends Fragment {
 		sp.edit().putInt("WORK", mPickerWork.getCurrent()).apply();
 		;
 	}
-
+	/**
+	 * method called only in onConfigurationChanged to restore current values 
+	 */
 	private void restoreValues() {
 		SharedPreferences sp = getActivity().getPreferences(0);
 		mPickerFree.setCurrent(sp.getInt("FREE", 0));
@@ -72,6 +76,11 @@ public class SegnalaFragment extends Fragment {
 		populateViewForOrientation(inflater, (ViewGroup) getView());
 	}
 
+	/**
+	 * method called to load the correct layout when the device is rotated
+	 * @param inflater
+	 * @param viewGroup
+	 */
 	private void populateViewForOrientation(LayoutInflater inflater,
 			ViewGroup viewGroup) {
 		viewGroup.removeAllViewsInLayout();
@@ -93,7 +102,29 @@ public class SegnalaFragment extends Fragment {
 				.findViewById(R.id.NumberPicker02);
 		mPickerTimed = (NumberPicker) subview.findViewById(R.id.NumberPicker03);
 		btnAnnulla = (Button) subview.findViewById(R.id.btnReset);
-		btnAnnulla.setOnClickListener(new MyCLickListener());
+		btnAnnulla.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				new ConfirmPopup("Reset",
+						"Stai per cancellare i dati... Continuare?",
+						R.drawable.ic_rimuovi) {
+
+					@Override
+					public void confirm() {
+						// TODO Auto-generated method stub
+						resetPickers();
+						SharedPreferences prefs = getActivity()
+								.getSharedPreferences(MY_PREFERENCES,
+										Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = prefs.edit();
+						editor.remove(obj.getId()).commit();
+						Toast.makeText(getActivity(), "Dati cancellati",
+								Toast.LENGTH_LONG).show();
+					}
+				}.show(getFragmentManager(), null);
+			}
+		});
 
 		txtFree = (TextView) subview.findViewById(R.id.txtMaxFree);
 		txtPayment = (TextView) subview.findViewById(R.id.txtMaxPayment);
@@ -156,7 +187,7 @@ public class SegnalaFragment extends Fragment {
 		f.setArguments(args);
 		return f;
 	}
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -184,7 +215,29 @@ public class SegnalaFragment extends Fragment {
 		mPickerTimed = (NumberPicker) rootView
 				.findViewById(R.id.NumberPicker03);
 		btnAnnulla = (Button) rootView.findViewById(R.id.btnReset);
-		btnAnnulla.setOnClickListener(new MyCLickListener());
+		btnAnnulla.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				new ConfirmPopup("Reset",
+						"Stai per cancellare i dati... Continuare?",
+						R.drawable.ic_rimuovi) {
+
+					@Override
+					public void confirm() {
+						// TODO Auto-generated method stub
+						resetPickers();
+						SharedPreferences prefs = getActivity()
+								.getSharedPreferences(MY_PREFERENCES,
+										Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = prefs.edit();
+						editor.remove(obj.getId()).commit();
+						Toast.makeText(getActivity(), "Dati cancellati",
+								Toast.LENGTH_LONG).show();
+					}
+				}.show(getFragmentManager(), null);
+			}
+		});
 
 		txtFree = (TextView) rootView.findViewById(R.id.txtMaxFree);
 		txtPayment = (TextView) rootView.findViewById(R.id.txtMaxPayment);
@@ -206,7 +259,6 @@ public class SegnalaFragment extends Fragment {
 			mPickerTimed.setRange(0, ((Street) obj).getSlotsTimed());
 		}
 
-		// TODO ??????????????????
 		mPickerWork.setRange(0, a);
 
 		btnSend = (Button) rootView.findViewById(R.id.btnSend);
@@ -245,6 +297,9 @@ public class SegnalaFragment extends Fragment {
 
 	}
 
+	/**
+	 * method called after the signal is sent to repopulate the list in the StoricoFragment
+	 */
 	public void refresh() {
 		getFragmentManager().beginTransaction()
 				.replace(R.id.container, new DetailsFragment(obj)).commit();
@@ -255,16 +310,16 @@ public class SegnalaFragment extends Fragment {
 	 * written with the keyboard
 	 */
 	private void clearFocus() {
-		// TODO Auto-generated method stub
 		mPickerFree.clearFocus();
 		mPickerPayment.clearFocus();
 		mPickerTimed.clearFocus();
 		mPickerWork.clearFocus();
 	}
 
+	/**
+	 * method called to reset the number of the pickers, erasing the data saved
+	 */
 	private void resetPickers() {
-		// TODO Auto-generated method stub
-
 		mPickerFree.setCurrent(0);
 		mPickerWork.setCurrent(0);
 		mPickerPayment.setCurrent(0);
@@ -275,6 +330,9 @@ public class SegnalaFragment extends Fragment {
 		editor.remove(obj.getId()).commit();
 	}
 
+	/**
+	 * method called just befor sending the data to update all the values of the object
+	 */
 	private void updateObject() {
 		if (Parking.class.isInstance(obj)) {
 			((Parking) obj).setSlotsOccupiedOnTotal(mPickerFree.getCurrent());
@@ -289,34 +347,8 @@ public class SegnalaFragment extends Fragment {
 		}
 	}
 
-	private class MyCLickListener implements OnClickListener {
-
-		@Override
-		public void onClick(View v) {
-			new ConfirmPopup("Reset",
-					"Stai per cancellare i dati... Continuare?",
-					R.drawable.ic_rimuovi) {
-
-				@Override
-				public void confirm() {
-					// TODO Auto-generated method stub
-					resetPickers();
-					SharedPreferences prefs = getActivity()
-							.getSharedPreferences(MY_PREFERENCES,
-									Context.MODE_PRIVATE);
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.remove(obj.getId()).commit();
-					Toast.makeText(getActivity(), "Dati cancellati",
-							Toast.LENGTH_LONG).show();
-				}
-			}.show(getFragmentManager(), null);
-		}
-
-	}
-
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
 
@@ -339,13 +371,11 @@ public class SegnalaFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		SharedPreferences prefs = getActivity().getPreferences(
 				Context.MODE_PRIVATE);
 		String load = prefs.getString(obj.getId(), null);
 		if (load != null) {
-			Log.e("LOAD", load);
 			String[] splitted = load.split(" ");
 			mPickerFree.setCurrent(Integer.parseInt(splitted[0]));
 			mPickerWork.setCurrent(Integer.parseInt(splitted[1]));
@@ -357,7 +387,6 @@ public class SegnalaFragment extends Fragment {
 	}
 
 	private class MyOnChangeListener implements OnChangedListener {
-
 		@Override
 		public void onChanged(NumberPicker picker, int oldVal, int newVal) {
 			updateData();

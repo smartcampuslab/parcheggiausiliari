@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,21 +19,16 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 
+/**
+ * subclass of {@link DialogFragment} to show details about a Street or a Parking
+ * @author user
+ *
+ */
 public class PopupFragment extends DialogFragment {
 
 	private GeoObject obj = null;
 
 	public PopupFragment(GeoObject obj) {
-		// TODO Auto-generated constructor stub
-		this.obj = obj;
-	}
-
-	public static PopupFragment newInstance(GeoObject obj) {
-
-		return null;
-	}
-
-	public void setObj(GeoObject obj) {
 		this.obj = obj;
 	}
 
@@ -52,7 +46,9 @@ public class PopupFragment extends DialogFragment {
 
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
 		if (Parking.class.isInstance(obj)) {
-			Date d = new Date(((Parking) obj).getLastChange().getTime());
+			Date d = null;
+			if(((Parking) obj).getLastChange() != null)
+				d = new Date(((Parking) obj).getLastChange().getTime());
 			tv.setText(((Parking) obj).getLastChange() != null ? (((Parking) obj)
 					.getLastChange().getAuthor()
 					+ " - ore "
@@ -66,7 +62,9 @@ public class PopupFragment extends DialogFragment {
 					.getYear() + 1900))
 					: "Not recently updated");
 		} else {
-			Date d = new Date(((Street) obj).getLastChange().getTime());
+			Date d = null;
+			if(((Street) obj).getLastChange() != null)
+				d = new Date(((Street) obj).getLastChange().getTime());
 			tv.setText(((Street) obj).getLastChange() != null ? (((Street) obj)
 					.getLastChange().getAuthor()
 					+ " - ore "
@@ -84,12 +82,9 @@ public class PopupFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Log.wtf("TAG", "Pressed");
 				FragmentTransaction ft = getFragmentManager()
 						.beginTransaction();
 				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-
 				ft.replace(R.id.container, new DetailsFragment(obj),
 						getString(R.string.storico_fragment))
 						.addToBackStack(null).commit();
@@ -102,7 +97,6 @@ public class PopupFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				dismiss();
 			}
 		});
@@ -111,6 +105,7 @@ public class PopupFragment extends DialogFragment {
 				Html.fromHtml("<font color='#E84E26'>" + obj.getName()
 						+ "</font>"));
 
+		/* ***True only if run on API<11*** */
 		if (getDialog()
 				.getWindow()
 				.getDecorView()
@@ -135,13 +130,11 @@ public class PopupFragment extends DialogFragment {
 
 	@Override
 	public void onActivityCreated(Bundle arg0) {
-		// TODO Auto-generated method stub
 		super.onActivityCreated(arg0);
 
 		getDialog().setFeatureDrawableResource(
 				Window.FEATURE_LEFT_ICON,
-				obj instanceof Parking ? R.drawable.ic_parcheggi
-						: R.drawable.ic_vie);
+				obj instanceof Parking ? R.drawable.ic_parcheggi : R.drawable.ic_vie);
 
 	}
 }

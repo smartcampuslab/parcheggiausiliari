@@ -9,7 +9,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-
+/**
+ * Activity launched at first startup, which launches MainActivity if the user logs in
+ * Also, unless the user logs out, this activity will be "skipped" on next launches
+ * 
+ * @author Michele Armellini
+ */
 public class LoginActivity extends ActionBarActivity {
 
 	EditText tvUser;

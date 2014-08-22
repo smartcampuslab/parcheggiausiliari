@@ -42,7 +42,10 @@ public class MainActivity extends ActionBarActivity {
 					.add(R.id.container, new MapFragment(), "Mappa").commit();
 		else
 			mCurrent = savedInstanceState.getInt("current");
-
+		
+		
+		/* ***Drawer Settings*** */
+		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
@@ -109,6 +112,9 @@ public class MainActivity extends ActionBarActivity {
 		mTitle = getTitle();
 	}
 
+	/**
+	 * method used for logging out of the application, which opens a popup for asking confirmation of the action
+	 */
 	private void logout() {
 		new ConfirmPopup("Logout",
 				"Stai per effettuare il logout. Continuare?",
@@ -146,6 +152,9 @@ public class MainActivity extends ActionBarActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
+	/**
+	 * open the drawer when the "menu" key is pressed
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent e) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -166,15 +175,13 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * ArrayAdapter used to populate the Drawer
+	 *
+	 */
 	public static class DrawerArrayAdapter extends ArrayAdapter<String> {
 		private final Context context;
 		private final ArrayList<String> values;
-
-		public DrawerArrayAdapter(Context context, ArrayList<String> values) {
-			super(context, R.layout.drawerrow, values);
-			this.context = context;
-			this.values = values;
-		}
 
 		public DrawerArrayAdapter(Context context, String[] values) {
 			super(context, R.layout.drawerrow, values);

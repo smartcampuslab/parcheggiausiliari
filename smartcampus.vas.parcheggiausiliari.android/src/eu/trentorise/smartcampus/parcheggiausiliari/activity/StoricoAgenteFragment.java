@@ -30,7 +30,6 @@ public class StoricoAgenteFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_storico, container,
 				false);
-		// setRetainInstance(true);
 		lv = (ListView) rootView.findViewById(R.id.listView1);
 		tv = (TextView) rootView.findViewById(R.id.txtNoData);
 		return rootView;
@@ -38,7 +37,6 @@ public class StoricoAgenteFragment extends Fragment {
 
 	@Override
 	public void onStart() {
-		// TODO Auto-generated method stub
 		super.onStart();
 		ArrayList<Map> result = new ArrayList<Map>();
 		List<Map> list = new AusiliariHelper(getActivity()).getStoricoAgente();
@@ -48,31 +46,29 @@ public class StoricoAgenteFragment extends Fragment {
 			}
 			tv.setVisibility(View.GONE);
 		}
-		MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(),
+		MyStoricoAdapter adapter = new MyStoricoAdapter(getActivity(),
 				result);
 		lv.setAdapter(adapter);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
 
-	public static class MySimpleArrayAdapter extends ArrayAdapter<Map> {
+	/**
+	 * Adapter used for populating the {@link ListView} by converting the {@link Map} recieved (because of the mixed types of Data) into a {@link Parking} or a {@link Street}
+	 * @author Michele Armellini
+	 *
+	 */
+	public static class MyStoricoAdapter extends ArrayAdapter<Map> {
 		private final Context context;
 		private final ArrayList<Map> values;
 
-		public MySimpleArrayAdapter(Context context, ArrayList<Map> values) {
+		public MyStoricoAdapter(Context context, ArrayList<Map> values) {
 			super(context, R.layout.storicorow, values);
 			this.context = context;
 			this.values = values;
-		}
-
-		public MySimpleArrayAdapter(Context context, Map[] values) {
-			super(context, R.layout.storicorow, values);
-			this.context = context;
-			this.values = new ArrayList<Map>(Arrays.asList(values));
 		}
 
 		@Override
@@ -124,20 +120,28 @@ public class StoricoAgenteFragment extends Fragment {
 			return rowView;
 		}
 
+		/**
+		 * Method to convert a {@link Map} into a {@link Parking}
+		 * @param m map to convert
+		 * @return the Parking with values obtained from the map
+		 */
 		public Parking populateParking(Map m) {
 			Parking p = new Parking();
 			p.setSlotsTotal((Integer) m.get("slotsTotal"));
 			p.setSlotsOccupiedOnTotal((Integer) m.get("slotsOccupiedOnTotal"));
-			p.setName((String) m.get("name"));
 			p.setSlotsUnavailable((Integer) m.get("slotsUnavailable"));
 			return p;
 		}
 
+		/**
+		 * Method to convert a {@link Map} into a {@link Street}
+		 * @param m map to convert
+		 * @return the Parking with values obtained from the map
+		 */
 		public Street populateStreet(Map m) {
 			Street s = new Street();
 			s.setSlotsFree((Integer) m.get("slotsFree"));
 			s.setSlotsOccupiedOnFree((Integer) m.get("slotsOccupiedOnFree"));
-			s.setName((String) m.get("name"));
 			s.setSlotsUnavailable((Integer) m.get("slotsUnavailable"));
 			s.setSlotsOccupiedOnPaying((Integer) m.get("slotsOccupiedOnPaying"));
 			s.setSlotsPaying((Integer) m.get("slotsPaying"));

@@ -33,6 +33,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.StreetLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.services.DataService;
+import eu.trentorise.smartcampus.parcheggiausiliari.services.OrionService;
 import eu.trentorise.smartcampus.presentation.common.exception.DataException;
 import eu.trentorise.smartcampus.presentation.common.exception.NotFoundException;
 
@@ -43,55 +44,94 @@ public class ObjectController extends AbstractObjectController {
 
 	@Autowired
 	private LogMongoStorage logMongoStorage;
-	
-	@Autowired
-	private DataService dataService; 
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/ping") 
-	public @ResponseBody String ping() {
-		return "pong";
-	} 
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/log/parking/{id:.*}") 
-	public @ResponseBody List<ParkingLog> getParkingLogs(@PathVariable String agency, @PathVariable String id, @RequestParam(required=false) Integer count) {
-		if (count == null) count = DEFAULT_COUNT;
+	@Autowired
+	private DataService dataService;
+
+	@Autowired
+	private OrionService orionService;
+
+	@RequestMapping(method = RequestMethod.GET, value = "/ping")
+	public @ResponseBody
+	String ping() {
+		return "pong";
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/log/parking/{id:.*}")
+	public @ResponseBody
+	List<ParkingLog> getParkingLogs(@PathVariable String agency,
+			@PathVariable String id,
+			@RequestParam(required = false) Integer count) {
+		if (count == null)
+			count = DEFAULT_COUNT;
 		return logMongoStorage.getParkingLogsById(id, agency, count);
 	}
-	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/log/street/{id:.*}") 
-	public @ResponseBody List<StreetLog> getStreetLogs(@PathVariable String agency, @PathVariable String id, @RequestParam(required=false) Integer count) {
-		if (count == null) count = DEFAULT_COUNT;
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/log/street/{id:.*}")
+	public @ResponseBody
+	List<StreetLog> getStreetLogs(@PathVariable String agency,
+			@PathVariable String id,
+			@RequestParam(required = false) Integer count) {
+		if (count == null)
+			count = DEFAULT_COUNT;
 		return logMongoStorage.getStreetLogsById(id, agency, count);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/log/user/{id:.*}") 
-	public @ResponseBody List<LogObject<?>> getUserLogs(@PathVariable String agency, @PathVariable String id, @RequestParam(required=false) Integer count) {
-		if (count == null) count = DEFAULT_COUNT;
+	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/log/user/{id:.*}")
+	public @ResponseBody
+	List<LogObject<?>> getUserLogs(@PathVariable String agency,
+			@PathVariable String id,
+			@RequestParam(required = false) Integer count) {
+		if (count == null)
+			count = DEFAULT_COUNT;
 		return logMongoStorage.getLogsByAuthor(id, agency, count);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/streets") 
-	public @ResponseBody List<Street> getStreets(@PathVariable String agency, @RequestParam(required=false) Double lat, @RequestParam(required=false) Double lon, @RequestParam(required=false) Double radius) throws DataException {
+	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/streets")
+	public @ResponseBody
+	List<Street> getStreets(@PathVariable String agency,
+			@RequestParam(required = false) Double lat,
+			@RequestParam(required = false) Double lon,
+			@RequestParam(required = false) Double radius) throws DataException {
 		if (lat != null && lon != null && radius != null) {
 			return dataService.getStreets(agency, lat, lon, radius);
-		} 
+		}
 		return dataService.getStreets(agency);
 	}
-	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/parkings") 
-	public @ResponseBody List<Parking> getParkings(@PathVariable String agency, @RequestParam(required=false) Double lat, @RequestParam(required=false) Double lon, @RequestParam(required=false) Double radius) throws DataException {
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{agency}/parkings")
+	public @ResponseBody
+	List<Parking> getParkings(@PathVariable String agency,
+			@RequestParam(required = false) Double lat,
+			@RequestParam(required = false) Double lon,
+			@RequestParam(required = false) Double radius) throws DataException {
 		if (lat != null && lon != null && radius != null) {
 			return dataService.getParkings(agency, lat, lon, radius);
-		} 
+		}
 		return dataService.getParkings(agency);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/{agency}/parkings/{id}/{userId:.*}") 
-	public @ResponseBody void updateParking(@RequestBody Parking parking, @PathVariable String agency, @PathVariable String id, @PathVariable String userId) throws DataException, NotFoundException {
+	@RequestMapping(method = RequestMethod.POST, value = "/{agency}/parkings/{id}/{userId:.*}")
+	public @ResponseBody
+	void updateParking(@RequestBody Parking parking,
+			@PathVariable String agency, @PathVariable String id,
+			@PathVariable String userId) throws DataException,
+			NotFoundException {
 		dataService.updateParkingData(parking, agency, userId);
+
+		// add orion insertion
+		orionService.insert(parking);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/{agency}/streets/{id}/{userId:.*}") 
-	public @ResponseBody void updateStreet(@RequestBody Street street, @PathVariable String agency, @PathVariable String id, @PathVariable String userId) throws DataException, NotFoundException {
+	@RequestMapping(method = RequestMethod.POST, value = "/{agency}/streets/{id}/{userId:.*}")
+	public @ResponseBody
+	void updateStreet(@RequestBody Street street, @PathVariable String agency,
+			@PathVariable String id, @PathVariable String userId)
+			throws DataException, NotFoundException {
 		dataService.updateStreetData(street, agency, userId);
+
+		// add orion insertion
+		orionService.insert(street);
 	}
 
 }

@@ -3,14 +3,17 @@ package eu.trentorise.smartcampus.parcheggiausiliari.services;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
@@ -25,10 +28,23 @@ public class OrionService {
 
 	private Client client;
 
-	@Value("${orion.type}")
-	private String entityType;
+	@Value("${orion.parking.type}")
+	@Autowired
+	public String parkingType;
+
+	@Value("${orion.bike.type}")
+	@Autowired
+	public String bykeType;
+
+	@Value("${orion.bikerepo.type}")
+	@Autowired
+	public String bikerepoType;
+
+	private static final int T_BIKE = 1;
+	private static final int T_BIKEREPO = 2;
 
 	@PostConstruct
+	@SuppressWarnings("unused")
 	private void init() {
 		ClientConfig clientConfig = new DefaultClientConfig();
 		clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
@@ -36,21 +52,107 @@ public class OrionService {
 		client = Client.create(clientConfig);
 	}
 
-	public void insert(Parking o) {
-		client.asyncResource("http://orion:1026/NGSI10/updateContext")
-				.type("application/json").accept("application/json")
-				.post(convert(o));
-		logger.info("orion insert DONE");
+	private boolean updateFailed(ClientResponse resp) {
+		Map r = resp.getEntity(Map.class);
+		return "404".equalsIgnoreCase((String) ((Map) ((Map) ((List) r
+				.get("contextResponses")).get(0)).get("statusCode"))
+				.get("code"));
 	}
 
-	public void insert(Street o) {
-		client.asyncResource("http://orion:1026/NGSI10/updateContext")
+	public void insert(String entityType, Parking o) {
+		ClientResponse res = client
+				.resource("http://orion:1026/NGSI10/updateContext")
 				.type("application/json").accept("application/json")
-				.post(convert(o));
-		logger.info("orion insert DONE");
+				.post(ClientResponse.class, convert(entityType, o));
+
+		if (updateFailed(res)) {
+			OrionInsert ins = convert(entityType, o);
+			ins.updateAction = "APPEND";
+			client.asyncResource("http://orion:1026/NGSI10/updateContext")
+					.type("application/json").accept("application/json")
+					.post(ins);
+			logger.info("orion insert DONE");
+		} else {
+			logger.info("orion update DONE");
+		}
+
 	}
 
-	private OrionInsert convert(Street o) {
+	public void insert(String entityType, Street o) {
+		ClientResponse res = client
+				.resource("http://orion:1026/NGSI10/updateContext")
+				.type("application/json").accept("application/json")
+				.post(ClientResponse.class, convert(entityType, o));
+
+		if (updateFailed(res)) {
+			OrionInsert ins = convert(entityType, o);
+			ins.updateAction = "APPEND";
+			client.asyncResource("http://orion:1026/NGSI10/updateContext")
+					.type("application/json").accept("application/json")
+					.post(ins);
+			logger.info("orion insert DONE");
+		} else {
+			logger.info("orion update DONE");
+		}
+	}
+
+	public void insertBike(String entityType, Map<String, Object> o) {
+
+		ClientResponse res = client
+				.resource("http://orion:1026/NGSI10/updateContext")
+				.type("application/json").accept("application/json")
+				.post(ClientResponse.class, convert(entityType, o, T_BIKE));
+
+		if (updateFailed(res)) {
+			OrionInsert ins = convert(entityType, o, T_BIKE);
+			ins.updateAction = "APPEND";
+			client.asyncResource("http://orion:1026/NGSI10/updateContext")
+					.type("application/json").accept("application/json")
+					.post(ins);
+			logger.info("orion insert DONE");
+		} else {
+			logger.info("orion update DONE");
+		}
+	}
+
+	// {"name":"Noriglio - Rovereto","street":"Noriglio - Rovereto","id":"Noriglio - Rovereto","nBikes":3,"maxSlots":6,"nBrokenBikes":4,"latitude":45.88365364364294,"longitude":11.070399481792492,"reportsNumber":1}
+	private OrionInsert convert(String entityType, Map<String, Object> o,
+			int type) {
+		OrionInsert payload = new OrionInsert();
+
+		List<ContextElement> entities = new ArrayList<ContextElement>();
+
+		switch (type) {
+		case T_BIKE:
+			entities.add(new ContextElement(entityType, String.valueOf(o
+					.get("id")), Arrays.asList(
+					new Tuple("name", String.valueOf(o.get("name"))),
+					new Tuple("nBikes", String.valueOf(o.get("nBikes"))),
+					new Tuple("maxSlots", String.valueOf(o.get("maxSlots"))),
+					new Tuple("nBrokenBikes", String.valueOf(o
+							.get("nBrokenBikes"))),
+					new Tuple("street", String.valueOf(o.get("street"))),
+					new Tuple("position", String.valueOf(o.get("latitude"))
+							+ "," + String.valueOf(o.get("longitude"))),
+					new Tuple("reportsNumber", String.valueOf(o
+							.get("reportsNumber"))))));
+			logger.info("bike converted");
+			break;
+
+		case T_BIKEREPO:
+
+			break;
+
+		default:
+			break;
+		}
+
+		payload.setContextElements(entities);
+		logger.info("street converted");
+		return payload;
+	}
+
+	private OrionInsert convert(String entityType, Street o) {
 		OrionInsert payload = new OrionInsert();
 
 		List<ContextElement> entities = new ArrayList<ContextElement>();
@@ -66,7 +168,7 @@ public class OrionService {
 		return payload;
 	}
 
-	private OrionInsert convert(Parking o) {
+	private OrionInsert convert(String entityType, Parking o) {
 		OrionInsert payload = new OrionInsert();
 
 		List<ContextElement> entities = new ArrayList<ContextElement>();
@@ -82,9 +184,9 @@ public class OrionService {
 		return payload;
 	}
 
-	class OrionInsert {
+	private class OrionInsert {
 		private List<ContextElement> contextElements;
-		private String updateAction = "APPEND";
+		public String updateAction = "UPDATE";
 
 		public List<ContextElement> getContextElements() {
 			return contextElements;
@@ -100,7 +202,7 @@ public class OrionService {
 
 	}
 
-	class Tuple {
+	private class Tuple {
 		private String e1;
 		private String e2;
 
@@ -119,7 +221,7 @@ public class OrionService {
 
 	}
 
-	class ContextElement {
+	private class ContextElement {
 		private String type;
 		private String isPattern = "false";
 		private String id;
@@ -168,7 +270,7 @@ public class OrionService {
 
 	}
 
-	class OrionAttribute {
+	private class OrionAttribute {
 		private String name;
 		private String type;
 		private String value;

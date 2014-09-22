@@ -120,7 +120,7 @@ public class ObjectController extends AbstractObjectController {
 		dataService.updateParkingData(parking, agency, userId);
 
 		// add orion insertion
-		orionService.insert(parking);
+		orionService.insert(orionService.parkingType, parking);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/{agency}/streets/{id}/{userId:.*}")
@@ -131,7 +131,7 @@ public class ObjectController extends AbstractObjectController {
 		dataService.updateStreetData(street, agency, userId);
 
 		// add orion insertion
-		orionService.insert(street);
+		orionService.insert(orionService.parkingType, street);
 	}
 
 }

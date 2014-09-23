@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
@@ -24,7 +24,8 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 @Service
 public class OrionService {
 
-	private static final Logger logger = Logger.getLogger("OrionService");
+	private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger
+			.getLogger(OrionService.class);
 
 	private Client client;
 
@@ -39,6 +40,10 @@ public class OrionService {
 	@Value("${orion.bikerepo.type}")
 	@Autowired
 	public String bikerepoType;
+
+	@Value("${orion.bike.simulate}")
+	@Autowired
+	public boolean bikeSimulate;
 
 	private static final int T_BIKE = 1;
 	private static final int T_BIKEREPO = 2;
@@ -115,6 +120,32 @@ public class OrionService {
 		}
 	}
 
+	private ContextElement randomizeBikes(String entityType,
+			Map<String, Object> o) {
+		Random rand = new Random();
+
+		// nextInt is normally exclusive of the top value,
+		// so add 1 to make it inclusive
+		int min = 0, max = (Integer) o.get("maxSlots");
+		int rBikes = rand.nextInt((max - min) + 1) + min;
+
+		int rBroken = rand.nextInt((max - min) + 1) + min;
+		min = 0;
+		max = 10;
+		int rReport = rand.nextInt((max - min) + 1) + min;
+
+		return new ContextElement(entityType, String.valueOf(o.get("id"))
+				.replaceAll(" ", "_"), Arrays.asList(
+				new Tuple("name", String.valueOf(o.get("name"))), new Tuple(
+						"nBikes", String.valueOf(rBikes)), new Tuple(
+						"maxSlots", String.valueOf(o.get("maxSlots"))),
+				new Tuple("nBrokenBikes", String.valueOf(rBroken)), new Tuple(
+						"street", String.valueOf(o.get("street"))), new Tuple(
+						"position", String.valueOf(o.get("latitude")) + ","
+								+ String.valueOf(o.get("longitude"))),
+				new Tuple("reportsNumber", String.valueOf(rReport))));
+	}
+
 	// {"name":"Noriglio - Rovereto","street":"Noriglio - Rovereto","id":"Noriglio - Rovereto","nBikes":3,"maxSlots":6,"nBrokenBikes":4,"latitude":45.88365364364294,"longitude":11.070399481792492,"reportsNumber":1}
 	private OrionInsert convert(String entityType, Map<String, Object> o,
 			int type) {
@@ -124,18 +155,28 @@ public class OrionService {
 
 		switch (type) {
 		case T_BIKE:
-			entities.add(new ContextElement(entityType, String.valueOf(o
-					.get("id")), Arrays.asList(
-					new Tuple("name", String.valueOf(o.get("name"))),
-					new Tuple("nBikes", String.valueOf(o.get("nBikes"))),
-					new Tuple("maxSlots", String.valueOf(o.get("maxSlots"))),
-					new Tuple("nBrokenBikes", String.valueOf(o
-							.get("nBrokenBikes"))),
-					new Tuple("street", String.valueOf(o.get("street"))),
-					new Tuple("position", String.valueOf(o.get("latitude"))
-							+ "," + String.valueOf(o.get("longitude"))),
-					new Tuple("reportsNumber", String.valueOf(o
-							.get("reportsNumber"))))));
+			entities.add(bikeSimulate ? randomizeBikes(entityType, o)
+					: new ContextElement(
+							entityType,
+							String.valueOf(o.get("id")).replaceAll(" ", "_"),
+							Arrays.asList(
+									new Tuple("name", String.valueOf(o
+											.get("name"))),
+									new Tuple("nBikes", String.valueOf(o
+											.get("nBikes"))),
+									new Tuple("maxSlots", String.valueOf(o
+											.get("maxSlots"))),
+									new Tuple("nBrokenBikes", String.valueOf(o
+											.get("nBrokenBikes"))),
+									new Tuple("street", String.valueOf(o
+											.get("street"))),
+									new Tuple("position",
+											String.valueOf(o.get("latitude"))
+													+ ","
+													+ String.valueOf(o
+															.get("longitude"))),
+									new Tuple("reportsNumber", String.valueOf(o
+											.get("reportsNumber"))))));
 			logger.info("bike converted");
 			break;
 
@@ -148,7 +189,6 @@ public class OrionService {
 		}
 
 		payload.setContextElements(entities);
-		logger.info("street converted");
 		return payload;
 	}
 

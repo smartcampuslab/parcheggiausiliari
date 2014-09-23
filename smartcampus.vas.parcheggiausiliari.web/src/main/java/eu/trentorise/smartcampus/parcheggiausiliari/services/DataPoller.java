@@ -2,7 +2,6 @@ package eu.trentorise.smartcampus.parcheggiausiliari.services;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
@@ -25,7 +24,8 @@ public class DataPoller {
 	// - per log della stazione:
 	// https://tn.smartcampuslab.it/bikesharing/stations/rovereto/{stationId}/reports
 
-	private static final Logger logger = Logger.getLogger("DataPoller");
+	private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger
+			.getLogger(DataPoller.class);
 
 	@Autowired
 	private OrionService orionService;

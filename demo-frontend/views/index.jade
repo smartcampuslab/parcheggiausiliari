@@ -22,13 +22,13 @@ html
           function addChartData(chartData) {
           console.log(JSON.stringify(chartData));
             if(chart != null && chartData.entity_id != null) {                
-              var index = serieIndex(chartData.entity_id);
+              var index = serieIndex('Stadio parks');
               var series; 
               if(index >= 0) {
                 console.log("found series "+ index);
                 series = chart.series[index];
               } else {
-                series = addNewSerie(chartData.entity_id);
+                series = addNewSerie('Stadio parks');
               }
               // check if new entry is realy newer than last entry
               var isFuture = true;
@@ -42,14 +42,14 @@ html
                 length = series.data.length;
               }*/
               if(length > 0) {
-                 isFuture = parseInt(chartData.receive_timestamp) > series.data[length-1].x;
+                 isFuture = parseInt(chartData.receive_timestamp)*1000 > series.data[length-1].x;
               }
               if(isFuture) {
                 // chartData.receive_timestamp
-                var x = parseInt(chartData.receive_timestamp);
-                var y = parseInt(chartData.datacol3);                             
+                var x = parseInt(chartData.receive_timestamp)*1000;
+                var y = parseInt(chartData.attr_value);                             
                 series.addPoint([x, y], true,false); 
-                console.log("added point " + new Date(x) +" " + chartData.datacol3);      
+                console.log("added point " + new Date(x) +" " + y);      
               }
               
             }
@@ -63,11 +63,11 @@ html
               events: addChartData(null)
             },
             title: {
-              text: 'Corso Antonio Rosmini Parks'
+              text: 'Stadio Parks'
             },
             xAxis: {
               type: 'datetime',
-              tickPixelInterval: 100
+              tickPixelInterval: 50
             },
             yAxis: {
               min: 0,
@@ -93,9 +93,8 @@ html
             tooltip: {
               enabled: true,
               formatter: function() {
-                  return '<b>'+ this.series.name +'</b><br/>'+
-                  Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', new Date(this.x)) +'<br/>'+
-                  Highcharts.numberFormat(this.y, 0);
+                  return Highcharts.dateFormat('%d-%m-%Y %H:%M:%S', new Date(this.x)) +'<br/>'+
+                  '<b>'+Highcharts.numberFormat(this.y, 0)+'</b>';
               }
             },
             legend: {

@@ -71,7 +71,7 @@
   getLastData = function(connection, pcId, callback) {
     var _this = this;
     console.log("querying for last insert");
-    return connection.query('SELECT m.* from data m where m.entity_id=? and m.receive_timestamp=(select max(m2.receive_timestamp) from data m2 where m2.entity_id=?)', [pcId, pcId], function(err, rows, fields) {
+    return connection.query('SELECT m.* from `data-pstadio` m where m.receive_timestamp=(select max(m2.receive_timestamp) from `data-pstadio` m2)', [pcId, pcId], function(err, rows, fields) {
       if (err) {
         throw err;
       }
@@ -81,7 +81,7 @@
 
   getAllData = function(connection, pcId, callback) {
     console.log("load  all data");
-    return connection.query('SELECT m.* from data m where m.entity_id=? order by receive_timestamp asc', [pcId], function(err, rows, fields) {
+    return connection.query('SELECT m.* from `data-pstadio` m order by receive_timestamp asc', [pcId], function(err, rows, fields) {
       if (err) {
         throw err;
       }

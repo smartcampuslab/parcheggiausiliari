@@ -71,7 +71,7 @@
   getLastData = function(connection, pcId, callback) {
     var _this = this;
     console.log("querying for last insert");
-    return connection.query('SELECT DISTINCT m.* from data m where m.entity_id=? and m.receive_timestamp=(select max(m2.receive_timestamp) from data m2 where m2.entity_id=?)', [pcId, pcId], function(err, rows, fields) {
+    return connection.query('SELECT m.* from data m where m.entity_id=? and m.receive_timestamp=(select max(m2.receive_timestamp) from data m2 where m2.entity_id=?)', [pcId, pcId], function(err, rows, fields) {
       if (err) {
         throw err;
       }
@@ -80,7 +80,7 @@
   };
 
   getAllData = function(connection, pcId, callback) {
-    console.log("querying for all data");
+    console.log("load  all data");
     return connection.query('SELECT m.* from data m where m.entity_id=? order by receive_timestamp asc', [pcId], function(err, rows, fields) {
       if (err) {
         throw err;
@@ -109,10 +109,10 @@
   this.getLastDataWrapper = function(connection, pcId) {
     return getLastData(connection, pcId, function(result) {
       var item, _i, _len, _results;
-      //console.log("last "+ JSON.stringify(result));
       _results = [];
       for (_i = 0, _len = result.length; _i < _len; _i++) {
         item = result[_i];
+        console.log("last "+ JSON.stringify(item));
         _results.push(typeof io !== "undefined" && io !== null ? io.sockets.emit('chart', {
           chartData: item
         }) : void 0);

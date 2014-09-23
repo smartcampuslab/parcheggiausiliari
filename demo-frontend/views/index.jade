@@ -42,15 +42,14 @@ html
                 length = series.data.length;
               }*/
               if(length > 0) {
-                // isFuture = new Date(chartData.receive_timestamp).getTime() > new Date(series.data[length-1].x).getTime();
+                 isFuture = parseInt(chartData.receive_timestamp) > series.data[length-1].x;
               }
-              isFuture = true;
               if(isFuture) {
                 // chartData.receive_timestamp
-                var x = new Date().getTime();
+                var x = parseInt(chartData.receive_timestamp);
                 var y = parseInt(chartData.datacol3);                             
                 series.addPoint([x, y], true,false); 
-                console.log("added point " + x +" " + chartData.datacol3);      
+                console.log("added point " + new Date(x) +" " + chartData.datacol3);      
               }
               
             }
@@ -95,8 +94,8 @@ html
               enabled: true,
               formatter: function() {
                   return '<b>'+ this.series.name +'</b><br/>'+
-                  Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
-                  Highcharts.numberFormat(this.y, 2);
+                  Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', new Date(this.x)) +'<br/>'+
+                  Highcharts.numberFormat(this.y, 0);
               }
             },
             legend: {

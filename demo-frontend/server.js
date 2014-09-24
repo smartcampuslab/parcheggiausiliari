@@ -54,19 +54,16 @@
 
   connection.connect();
 
- /* this.inserts = function(connection, pcId, date, cpu) {
+  getBikeData =  function(connection, pcId, callback) {
     var _this = this;
-    return connection.query('insert into data (pc, dat, cpu ) values (?, ?, ?)', [pcId, date, cpu], function(err, rows, fields) {
+    console.log("querying bike data");
+    return connection.query('SELECT m.* from `data-avg-bike` m ORDER BY m.station ASC', [pcId, pcId], function(err, rows, fields) {
       if (err) {
         throw err;
       }
-      return console.log("inserted " + rows.insertId);
+      return callback(rows);
     });
   };
-
-  setInterval((function() {
-    return _this.inserts(connection, 'pc1', new Date(), Math.random());
-  }), 10000);*/
 
   getLastData = function(connection, pcId, callback) {
     var _this = this;
@@ -112,12 +109,32 @@
       _results = [];
       for (_i = 0, _len = result.length; _i < _len; _i++) {
         item = result[_i];
-        console.log("last "+ JSON.stringify(item));
+        //console.log("last "+ JSON.stringify(item));
         _results.push(typeof io !== "undefined" && io !== null ? io.sockets.emit('chart', {
           chartData: item
         }) : void 0);
       }
       return _results;
+    });
+  };
+
+    this.getBikeDataWrapper = function(connection, pcId) {
+    return getBikeData(connection, pcId, function(result) {
+      var item, _i, _len;
+      item = [];
+
+      for (_i = 0,lasten =result.length; _i < lasten; _i++) {
+        item.push(result[_i].avg);
+        }
+        console.log("Bike "+ JSON.stringify(item) +" " +result.length);
+        if (typeof io !== "undefined" && io !== null) {
+          io.sockets.emit('bike-chart', {
+            chartData: item
+          });
+      }
+      return setInterval((function() {
+        return  _this.getBikeDataWrapper(connection, entity_id);
+      }), 20000);
     });
   };
 
@@ -137,6 +154,7 @@
     });
     mys.connect();
     _this.getAllDataWrapper(mys, entity_id);
+    _this.getBikeDataWrapper(mys, entity_id);
     return socket.on('disconnect', function() {});
   });
 

@@ -14,13 +14,38 @@ html
 
 
     block content
-        div#graph(style="width:600px;height:300px;")
+        div#graph(style="width:100%;height:300px;")
+        div#graph-bike(style="width:100%;height:600px;margin-top:20px;")
         script(type='text/javascript').
           var socket = io.connect();           
           var chart = null;
+          var bikeChart = null;
           var actualDate = new Date();
+
+
+          /* ******************************************************************************
+
+              ADD BIKE CHART
+
+          ************************************************************************************** */
+           function addBikeChart(chartData) {
+            console.log("bike update " + JSON.stringify(chartData));
+            if(bikeChart != null) {                
+              var series = bikeChart.series[0]; 
+              series.setData(chartData,true);
+              bikeChart.redraw();
+            }
+          };
+
+
+          /* ******************************************************************************
+
+              ADD STADIO PARK CHART
+
+          ************************************************************************************** */
+
           function addChartData(chartData) {
-          console.log(JSON.stringify(chartData));
+            console.log(JSON.stringify(chartData));
             if(chart != null && chartData.entity_id != null) {                
               var index = serieIndex('Stadio parks');
               var series; 
@@ -33,14 +58,14 @@ html
               // check if new entry is realy newer than last entry
               var isFuture = true;
               var length = series.data.length;
-              /*if(length == 1) {
+              if(length == 1) {
                 // remove testdata
-                if(new Date(series.data[0].x).getTime()==actualDate.getTime()) { 
+                if(series.data[0].x == actualDate.getTime()) { 
                   console.log("no new data");                 
                   series.data[0].remove();
                 }
                 length = series.data.length;
-              }*/
+              }
               if(length > 0) {
                  isFuture = parseInt(chartData.receive_timestamp)*1000 > series.data[length-1].x;
               }
@@ -54,6 +79,62 @@ html
               
             }
           };
+
+          bikeChart = new Highcharts.Chart({
+            chart: {
+            renderTo: 'graph-bike',
+            type: 'column',
+            events: addBikeChart(null)
+            },
+            title: {
+                text: 'Avg Bikes Available'
+            },
+           
+            xAxis: {
+                categories: ['Brione','Lizzana','Marco','Mart','Municipio','Noriglio','Ospedale','P.Rosmini','Quercia','Sacco','Stazione FF.SS.','Via Paoli','Zona Industriale'],
+                title: {
+                    text: null
+                },labels: {
+                    overflow: 'justify'
+                },
+                max:12
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Avg bikes',
+                    align: 'high'
+                },
+                labels: {
+                    overflow: 'justify'
+                },
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+            credits: {
+                enabled: false
+            },
+           exporting: {
+              enabled: false
+            },
+            series: [{
+                name: '',
+                data: []
+            }]
+          });
+          function serieIndex(seriesName) {
+              for (var i = 0; i < chart.series.length; i++) {
+                if(chart.series[i].name == seriesName) {
+                  return i;
+                }
+              }
+              return -1;
+          }
         
           chart = new Highcharts.Chart({
             chart: {
@@ -103,30 +184,7 @@ html
             exporting: {
               enabled: false
             },
-            series: [/*{
-              name: 'Room3',
-              data: (function() {
-                // generate an array of random data
-                var data = [];
-                data.push({
-                  x: new Date(),
-                  y: 50
-                });
-                data.push({
-                  x: new Date(),
-                  y: 10
-                });
-                data.push({
-                  x: new Date(),
-                  y: 20
-                });
-                data.push({
-                  x: new Date(),
-                  y: 15
-                });
-                return data;
-              }())
-            }*/]
+            series: []
           });
           function serieIndex(seriesName) {
               for (var i = 0; i < chart.series.length; i++) {
@@ -136,21 +194,24 @@ html
               }
               return -1;
           }
+
           function addNewSerie(newName) {
             return chart.addSeries({
               name: newName,
-             /* data: (function() {                
+              data: (function() {                
                 var data = [];
                 data.push({
                   x: actualDate.getTime(),
-                  y: 50
+                  y: null
                 });
                 return data;
-              })(),*/
+              })(),
               id: Math.floor(Math.random()*1000)
             });
             chart.redraw();
           }
+
+         
           socket.on('chart', function (data) { 
               if(!$.isArray(data.chartData)) {
                 addChartData(data.chartData);
@@ -159,4 +220,10 @@ html
               }
           });
 
-
+           socket.on('bike-chart', function (data) { 
+              if(!$.isArray(data.chartData)) {
+                 addBikeChart(data.chartData);
+              } else {
+                addBikeChart(data.chartData);
+              }
+          });

@@ -67,11 +67,11 @@ html
                 length = series.data.length;
               }
               if(length > 0) {
-                 isFuture = parseInt(chartData.receive_timestamp)*1000 > series.data[length-1].x;
+                 isFuture = parseInt(chartData.receive_timestamp)*1000 + 3600000*2 > series.data[length-1].x;
               }
               if(isFuture) {
                 // chartData.receive_timestamp
-                var x = parseInt(chartData.receive_timestamp)*1000;
+                var x = parseInt(chartData.receive_timestamp)*1000 + 3600000*2;
                 var y = parseInt(chartData.attr_value);                             
                 series.addPoint([x, y], true,false); 
                 console.log("added point " + new Date(x) +" " + y);      

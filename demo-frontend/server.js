@@ -99,7 +99,7 @@
       }
       return setInterval((function() {
         return _this.getLastDataWrapper(connection, entity_id);
-      }), 10000);
+      }), 30000);
     });
   };
 
@@ -118,24 +118,47 @@
     });
   };
 
-    this.getBikeDataWrapper = function(connection, pcId) {
+ this.getBikeDataMonit = function(connection, pcId) {
     return getBikeData(connection, pcId, function(result) {
+      var item, _i, _len;
+      item = [];
+     var _results = [];
+      for (_i = 0,lasten =result.length; _i < lasten; _i++) {
+        item.push(result[_i].avg);
+        }
+        //console.log("Bike "+ JSON.stringify(item) +" " +result.length);
+       _results.push(typeof io !== "undefined" && io !== null ? io.sockets.emit('bike-chart', {
+          chartData: item
+        }) : void 0);
+
+       return _results;
+      
+    });
+  };
+
+
+
+    this.getBikeDataWrapper = function(connection, pcId) {
+      
+    getBikeData(connection, pcId, function(result) {
       var item, _i, _len;
       item = [];
 
       for (_i = 0,lasten =result.length; _i < lasten; _i++) {
         item.push(result[_i].avg);
         }
-        console.log("Bike "+ JSON.stringify(item) +" " +result.length);
+      //  console.log("Bike "+ JSON.stringify(item) +" " +result.length);
         if (typeof io !== "undefined" && io !== null) {
           io.sockets.emit('bike-chart', {
             chartData: item
           });
       }
-      return setInterval((function() {
-        return  _this.getBikeDataWrapper(connection, entity_id);
-      }), 20000);
+    
     });
+
+     setInterval((function() {
+        return  _this.getBikeDataMonit(connection, entity_id);
+      }), 30000);
   };
 
   if (!module.parent) {

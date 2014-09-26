@@ -142,13 +142,14 @@
           chartData: item
         }) : void 0);
         lastBikeAVG = tmpAvg;
-        if(ORION_SUBMITTING) {
-          orionSubmit(lastBikeAVG);
+       if(ORION_SUBMITTING) {
+          _this.orionSubmit(lastBikeAVG);
         }
         
         } else {
           console.log("no AVG update");
         }
+
        return _results;
       
     });

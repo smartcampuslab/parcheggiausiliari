@@ -79,7 +79,7 @@ public class ViaKMLHelper {
 	            } else {
 		            via.setReservedSlotNumber(via.getSlotNumber());
 	            }
-	            via.setStreetReference(null);
+	            via.setStreetReference(via.getId());
 	            via.setSubscritionAllowedPark(false);
 
 	            via.setGeometry(new ViaBean.LineBean());

@@ -91,14 +91,16 @@ public class DataService {
 				for (ViaBean via : vie) {
 					Street street = new Street();
 					street.setId("street@"+agency+"@"+via.getId());
+					street.setAreaId(via.getAreaId());
 					street.setAgency(agency);
 					street.setName(via.getStreetReference());
 					street.setPolyline(PolylineEncoder.encode(via.getGeometry().getPoints()));
 					PointBean start = via.getGeometry().getPoints().get(0);
 					street.setPosition(new double[]{start.getLat(),start.getLng()});
 					street.setSlotsFree(via.getFreeParkSlotNumber());
-					street.setSlotsPaying(via.getSlotNumber());
+					street.setSlotsPaying(via.getPaidSlotNumber());
 					street.setSlotsTimed(via.getTimedParkSlotNumber());
+					//street.setSlotsUnavailable(via.getReservedSlotNumber());
 					saveOrUpdateStreet(street);
 				}
 			}

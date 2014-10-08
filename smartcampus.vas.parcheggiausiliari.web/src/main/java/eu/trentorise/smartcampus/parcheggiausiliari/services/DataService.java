@@ -1,20 +1,23 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.services;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.core.geo.Circle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import eu.trentorise.smartcampus.network.JsonUtils;
-import eu.trentorise.smartcampus.network.RemoteConnector;
 import eu.trentorise.smartcampus.network.RemoteException;
 import eu.trentorise.smartcampus.parcheggiausiliari.data.GeoStorage;
 import eu.trentorise.smartcampus.parcheggiausiliari.data.LogMongoStorage;
@@ -80,21 +83,26 @@ public class DataService {
 
 		for (int i = 0; i < refs.length; i++) {
 			String agency = agencies[i];
-			String s = RemoteConnector.getJSON(refs[i], "", null);
-			List<ViaBean> vie = JsonUtils.toObjectList(s, ViaBean.class);
-			for (ViaBean via : vie) {
-				Street street = new Street();
-				street.setId("street@"+agency+"@"+via.getId());
-				street.setAgency(agency);
-				street.setName(via.getStreetReference());
-				street.setPolyline(PolylineEncoder.encode(via.getGeometry().getPoints()));
-				PointBean start = via.getGeometry().getPoints().get(0);
-				street.setPosition(new double[]{start.getLat(),start.getLng()});
-				street.setSlotsFree(via.getFreeParkSlotNumber());
-				street.setSlotsPaying(via.getSlotNumber());
-				street.setSlotsTimed(via.getTimedParkSlotNumber());
-				saveOrUpdateStreet(street);
+			String urlString = refs[i];
+			if (ResourceUtils.isUrl(urlString)) {
+				URL url = ResourceUtils.getURL(urlString);
+				InputStream is = url.openStream();
+				List<ViaBean> vie = JsonUtils.toObjectList(IOUtils.toString(is), ViaBean.class);
+				for (ViaBean via : vie) {
+					Street street = new Street();
+					street.setId("street@"+agency+"@"+via.getId());
+					street.setAgency(agency);
+					street.setName(via.getStreetReference());
+					street.setPolyline(PolylineEncoder.encode(via.getGeometry().getPoints()));
+					PointBean start = via.getGeometry().getPoints().get(0);
+					street.setPosition(new double[]{start.getLat(),start.getLng()});
+					street.setSlotsFree(via.getFreeParkSlotNumber());
+					street.setSlotsPaying(via.getSlotNumber());
+					street.setSlotsTimed(via.getTimedParkSlotNumber());
+					saveOrUpdateStreet(street);
+				}
 			}
+
 		}
 	}
 	

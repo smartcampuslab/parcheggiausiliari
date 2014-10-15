@@ -112,6 +112,7 @@ public class MapFragment extends Fragment implements SinglePopup {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				
 				FragmentTransaction ft = getFragmentManager()
 						.beginTransaction();
 				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
@@ -183,7 +184,6 @@ public class MapFragment extends Fragment implements SinglePopup {
 		});
 
 		/* ***Map Settings*** */
-
 		map = (MapView) rootView.findViewById(R.id.mapview);
 		map.setTileSource(TileSourceFactory.MAPQUESTOSM);
 		map.setMultiTouchControls(true);
@@ -192,7 +192,8 @@ public class MapFragment extends Fragment implements SinglePopup {
 				new CustomLocationProvider(getActivity()), map);
 		myLoc.enableMyLocation();
 		map.getOverlays().add(myLoc);
-		map.getController().setZoom(18);
+		map.getController().setZoom(15);
+		map.getController().animateTo(new GeoPoint(45.9060752,11.0182097));
 
 		/* ***Adding Markers*** */
 
@@ -237,8 +238,8 @@ public class MapFragment extends Fragment implements SinglePopup {
 						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
 			}
 		});
-		myLocButton.callOnClick();
-		myLocButton.callOnClick();
+//		myLocButton.callOnClick();
+//		myLocButton.callOnClick();
 		btnParkings.setOnClickListener(new OnClickListener() {
 
 			@Override

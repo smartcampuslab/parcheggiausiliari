@@ -6,6 +6,8 @@ import java.util.Arrays;
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -36,84 +39,115 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		if (!isUserConnectedToInternet(getApplicationContext())) {
+			Toast.makeText(
+					getApplicationContext(),
+					"Non sei connesso a internet, verifica nelle impostazioni e riprova",
+					Toast.LENGTH_SHORT).show();
+			MainActivity.this.finish();
+		} else {
+			if (savedInstanceState == null)
+				getSupportFragmentManager().beginTransaction()
+						.add(R.id.container, new MapFragment(), "Mappa")
+						.commit();
+			else
+				mCurrent = savedInstanceState.getInt("current");
 
-		if (savedInstanceState == null)
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new MapFragment(), "Mappa").commit();
-		else
-			mCurrent = savedInstanceState.getInt("current");
-		
-		
-		/* ***Drawer Settings*** */
-		
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);
+			/* ***Drawer Settings*** */
 
-		/** Used to open the Drawer by clicking the actionBar */
-		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-		mDrawerLayout, /* DrawerLayout object */
-		R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
-		R.string.drawer_open, /* "open drawer" description */
-		R.string.drawer_close /* "close drawer" description */
-		) {
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setHomeButtonEnabled(true);
 
-			/** Called when a drawer has settled in a completely closed state. */
-			public void onDrawerClosed(View view) {
-				super.onDrawerClosed(view);
-				supportInvalidateOptionsMenu();
-			}
+			/** Used to open the Drawer by clicking the actionBar */
+			mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+			mDrawerLayout, /* DrawerLayout object */
+			R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+			R.string.drawer_open, /* "open drawer" description */
+			R.string.drawer_close /* "close drawer" description */
+			) {
 
-			/** Called when a drawer has settled in a completely open state. */
-			public void onDrawerOpened(View drawerView) {
-				super.onDrawerOpened(drawerView);
-				getSupportActionBar().setTitle(mTitle);
-				supportInvalidateOptionsMenu();
-			}
-		};
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		String[] strings = { "Mappa", "Le mie segnalazioni", "Logout" };
-		mDrawerList.setAdapter(new DrawerArrayAdapter(getApplicationContext(),
-				strings));
-
-		mDrawerList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				FragmentManager fm = getSupportFragmentManager();
-				if (arg2 == 0
-						&& !(fm.findFragmentById(R.id.container) instanceof MapFragment)) {
-					getSupportActionBar().setTitle("Mappa");
-					FragmentTransaction ft = getSupportFragmentManager()
-							.beginTransaction();
-					ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-					ft.replace(R.id.container, new MapFragment(),
-							getString(R.string.map_fragment))
-							.addToBackStack(null).commit();
-				} else if (arg2 == 1
-						&& !(fm.findFragmentById(R.id.container) instanceof StoricoAgenteFragment)) {
-					getSupportActionBar().setTitle("Storico");
-					FragmentTransaction ft = getSupportFragmentManager()
-							.beginTransaction();
-					ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-					ft.replace(R.id.container, new StoricoAgenteFragment(),
-							getString(R.string.storico_fragment))
-							.addToBackStack(null).commit();
-				} else if (arg2 == 2) {
-					logout();
-
+				/**
+				 * Called when a drawer has settled in a completely closed
+				 * state.
+				 */
+				public void onDrawerClosed(View view) {
+					super.onDrawerClosed(view);
+					
+					supportInvalidateOptionsMenu();
 				}
 
-				mDrawerLayout.closeDrawer(mDrawerList);
-			}
-		});
-		mTitle = getTitle();
+				/** Called when a drawer has settled in a completely open state. */
+				public void onDrawerOpened(View drawerView) {
+					super.onDrawerOpened(drawerView);
+					getSupportActionBar().setTitle(mTitle);
+					supportInvalidateOptionsMenu();
+				}
+				
+			};
+
+			mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+			mDrawerList = (ListView) findViewById(R.id.left_drawer);
+			String[] strings = { "Mappa", "Le mie segnalazioni", "Parcheggi",
+					"Vie", "Logout" };
+			mDrawerList.setAdapter(new DrawerArrayAdapter(
+					getApplicationContext(), strings));
+
+			mDrawerList.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					FragmentManager fm = getSupportFragmentManager();
+					if (arg2 == 0
+							&& !(fm.findFragmentById(R.id.container) instanceof MapFragment)) {
+						getSupportActionBar().setTitle("Mappa");
+						FragmentTransaction ft = getSupportFragmentManager()
+								.beginTransaction();
+						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+						ft.replace(R.id.container, new MapFragment(),
+								getString(R.string.map_fragment))
+								.addToBackStack(null).commit();
+					} else if (arg2 == 1
+							&& !(fm.findFragmentById(R.id.container) instanceof StoricoAgenteFragment)) {
+						getSupportActionBar().setTitle("Storico");
+						FragmentTransaction ft = getSupportFragmentManager()
+								.beginTransaction();
+						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+						ft.replace(R.id.container, new StoricoAgenteFragment(),
+								getString(R.string.storico_fragment))
+								.addToBackStack(null).commit();
+					} else if (arg2 == 2) {
+						getSupportActionBar().setTitle("Parcheggi");
+						FragmentTransaction ft = getSupportFragmentManager()
+								.beginTransaction();
+						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+						ft.replace(R.id.container, new ParkListFragment(),
+								getString(R.string.parklist_fragment))
+								.addToBackStack(null).commit();
+					} else if (arg2 == 3) {
+						getSupportActionBar().setTitle("Vie");
+						FragmentTransaction ft = getSupportFragmentManager()
+								.beginTransaction();
+						ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+						ft.replace(R.id.container, new StreetListFragment(),
+								getString(R.string.streetlist_fragment))
+								.addToBackStack(null).commit();
+					} else if (arg2 == 4) {
+						logout();
+
+					}
+
+					mDrawerLayout.closeDrawer(mDrawerList);
+				}
+			});
+			mTitle = getTitle();
+		}
 	}
 
 	/**
-	 * method used for logging out of the application, which opens a popup for asking confirmation of the action
+	 * method used for logging out of the application, which opens a popup for
+	 * asking confirmation of the action
 	 */
 	private void logout() {
 		new ConfirmPopup("Logout",
@@ -209,6 +243,16 @@ public class MainActivity extends ActionBarActivity {
 				break;
 			case 2:
 				img.setImageDrawable(rowView.getResources().getDrawable(
+						R.drawable.ic_drawer_parcheggi));
+				break;
+
+			case 3:
+				img.setImageDrawable(rowView.getResources().getDrawable(
+						R.drawable.ic_drawer_vie));
+				break;
+
+			case 4:
+				img.setImageDrawable(rowView.getResources().getDrawable(
 						R.drawable.ic_logout));
 				break;
 			}
@@ -216,4 +260,15 @@ public class MainActivity extends ActionBarActivity {
 		}
 	}
 
+	public static boolean isUserConnectedToInternet(Context context) {
+		ConnectivityManager connectivityManager = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+		if (netInfo != null) {
+			return netInfo.isConnected();
+		}
+		return false;
+	}
+	
+	
 }

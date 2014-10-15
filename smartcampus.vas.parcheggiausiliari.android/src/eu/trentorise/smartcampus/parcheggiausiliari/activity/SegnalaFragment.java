@@ -119,8 +119,8 @@ public class SegnalaFragment extends Fragment {
 										Context.MODE_PRIVATE);
 						SharedPreferences.Editor editor = prefs.edit();
 						editor.remove(obj.getId()).commit();
-						Toast.makeText(getActivity(), "Dati cancellati",
-								Toast.LENGTH_LONG).show();
+//						Toast.makeText(getActivity(), "Dati cancellati",
+//								Toast.LENGTH_LONG).show();
 					}
 				}.show(getFragmentManager(), null);
 			}
@@ -161,8 +161,8 @@ public class SegnalaFragment extends Fragment {
 						clearFocus();
 						updateObject();
 						new AusiliariHelper(getActivity()).sendData(obj);
-						Toast.makeText(getActivity(), "Data Sent",
-								Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), "Dati inviati",
+								Toast.LENGTH_LONG).show();
 						getActivity()
 								.getSharedPreferences(MY_PREFERENCES,
 										Context.MODE_PRIVATE).edit()
@@ -232,8 +232,8 @@ public class SegnalaFragment extends Fragment {
 										Context.MODE_PRIVATE);
 						SharedPreferences.Editor editor = prefs.edit();
 						editor.remove(obj.getId()).commit();
-						Toast.makeText(getActivity(), "Dati cancellati",
-								Toast.LENGTH_LONG).show();
+//						Toast.makeText(getActivity(), "Dati cancellati",
+//								Toast.LENGTH_LONG).show();
 					}
 				}.show(getFragmentManager(), null);
 			}
@@ -275,8 +275,8 @@ public class SegnalaFragment extends Fragment {
 						clearFocus();
 						updateObject();
 						new AusiliariHelper(getActivity()).sendData(obj);
-						Toast.makeText(getActivity(), "Data Sent",
-								Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity(), "Dati inviati",
+								Toast.LENGTH_LONG).show();
 						getActivity()
 								.getSharedPreferences(MY_PREFERENCES,
 										Context.MODE_PRIVATE).edit()

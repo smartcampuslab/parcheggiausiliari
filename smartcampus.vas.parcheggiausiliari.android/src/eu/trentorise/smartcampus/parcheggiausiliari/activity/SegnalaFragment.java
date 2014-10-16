@@ -282,7 +282,7 @@ public class SegnalaFragment extends Fragment {
 										Context.MODE_PRIVATE).edit()
 								.remove(obj.getId()).commit();
 						resetPickers();
-						refresh();
+						//refresh();
 					}
 				}.show(getFragmentManager(), null);
 			}

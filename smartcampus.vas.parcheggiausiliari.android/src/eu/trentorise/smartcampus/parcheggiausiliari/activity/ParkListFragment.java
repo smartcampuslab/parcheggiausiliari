@@ -83,7 +83,7 @@ public class ParkListFragment extends Fragment {
 						.getSupportFragmentManager()
 						.beginTransaction()
 						.replace(
-								R.id.container,
+								getId(),//R.id.container,
 								new DetailsFragment((GeoObject) list
 										.getAdapter().getItem(arg2)))
 						.addToBackStack(null).commit();

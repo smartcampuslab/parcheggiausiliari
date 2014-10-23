@@ -192,8 +192,10 @@ public class MapFragment extends Fragment implements SinglePopup {
 				new CustomLocationProvider(getActivity()), map);
 		myLoc.enableMyLocation();
 		map.getOverlays().add(myLoc);
-		map.getController().setZoom(15);
-		map.getController().animateTo(new GeoPoint(45.9060752,11.0182097));
+		map.getController().setZoom(17);
+		String center = getResources().getString(R.string.appcenter);
+		String[] coords = center.split(",");
+		map.getController().animateTo(new GeoPoint(Double.parseDouble(coords[0]),Double.parseDouble(coords[1])));
 
 		/* ***Adding Markers*** */
 

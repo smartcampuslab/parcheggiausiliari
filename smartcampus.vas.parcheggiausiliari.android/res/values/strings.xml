@@ -23,7 +23,11 @@
     <string name= "logout_fragment">Logout</string>
     <string name="btnParkings">Parcheggi</string>
     <string name="btnStreets">Vie</string>
-	<string name="token">dXNlcjpwYXNzd29yZA==</string>
-	<string name="applocation">rovereto</string>
+		<string name="token">dXNlcjpwYXNzd29yZA==</string>
+<!-- 		<string name="applocation">trento</string> -->
+<!-- 		<string name="appcenter">46.075596,11.116682</string> -->
+    <!-- ROVERETO -->
+    <string name="applocation">rovereto</string>
+    <string name="appcenter">45.9060752,11.0182097</string>
 	
 </resources>

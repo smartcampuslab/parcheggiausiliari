@@ -38,7 +38,6 @@ public class SegnalaFragment extends Fragment {
 	private TextView txtTimed;
 
 	public SegnalaFragment(GeoObject obj) {
-		// TODO Auto-generated constructor stub
 		this.obj = obj;
 	}
 
@@ -112,7 +111,6 @@ public class SegnalaFragment extends Fragment {
 
 					@Override
 					public void confirm() {
-						// TODO Auto-generated method stub
 						resetPickers();
 						SharedPreferences prefs = getActivity()
 								.getSharedPreferences(MY_PREFERENCES,
@@ -190,7 +188,6 @@ public class SegnalaFragment extends Fragment {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 	}
 
@@ -225,7 +222,6 @@ public class SegnalaFragment extends Fragment {
 
 					@Override
 					public void confirm() {
-						// TODO Auto-generated method stub
 						resetPickers();
 						SharedPreferences prefs = getActivity()
 								.getSharedPreferences(MY_PREFERENCES,
@@ -257,8 +253,22 @@ public class SegnalaFragment extends Fragment {
 			mPickerPayment.setRange(0, ((Street) obj).getSlotsPaying());
 			txtTimed.setText("/" + ((Street) obj).getSlotsTimed());
 			mPickerTimed.setRange(0, ((Street) obj).getSlotsTimed());
+
+			View blockFree = rootView.findViewById(R.id.free_block);
+			if (((Street) obj).getSlotsFree() == 0) {
+				blockFree.setEnabled(false);
+			}
+			View blockPayment = rootView.findViewById(R.id.payment_block);
+			if (((Street) obj).getSlotsPaying() == 0) {
+				blockPayment.setEnabled(false);
+			}
+			View blockTime = rootView.findViewById(R.id.time_block);
+			if (((Street) obj).getSlotsTimed() == 0) {
+				blockTime.setEnabled(false);
+			}
 		}
 
+		
 		mPickerWork.setRange(0, a);
 
 		btnSend = (Button) rootView.findViewById(R.id.btnSend);

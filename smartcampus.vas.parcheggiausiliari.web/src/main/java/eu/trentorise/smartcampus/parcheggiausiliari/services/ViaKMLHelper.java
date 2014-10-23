@@ -61,8 +61,11 @@ public class ViaKMLHelper {
 	            }	
 	            if (data.containsKey("OFF_LS")) {
 	            	via.setFreeParkSlotNumber(Integer.parseInt(data.get("OFF_LS")));
+	            } else if (data.containsKey("OFF_LC")) {
+	            	via.setFreeParkSlotNumber(Integer.parseInt(data.get("OFF_LC")));
 	            } else {
 	            	via.setFreeParkSlotNumber(0);
+	            	
 	            }	
 	            if (data.containsKey("OFF_DO")) {
 	            	via.setTimedParkSlotNumber(Integer.parseInt(data.get("OFF_DO")));

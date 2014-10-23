@@ -45,7 +45,7 @@ public class ViaKMLHelper {
 	            via.setAreaId(data.get("MACROZONA")+"_"+data.get("SUB_MACRO"));
 	            via.setMacroAreaId(data.get("MACROZONA"));
 	            via.setSubMacroAreaId(data.get("SUB_MACRO"));
-	            via.setColor(null);
+	            via.setColor(data.get("TARIFFA"));
 	            if (data.containsKey("N_PARCOMET")) {
 	            	via.setParkometerId(data.get("N_PARCOMET"));
 	            }

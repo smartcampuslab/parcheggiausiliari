@@ -97,9 +97,17 @@ public class DataService {
 					street.setPolyline(PolylineEncoder.encode(via.getGeometry().getPoints()));
 					PointBean start = via.getGeometry().getPoints().get(0);
 					street.setPosition(new double[]{start.getLat(),start.getLng()});
-					street.setSlotsFree(via.getFreeParkSlotNumber());
-					street.setSlotsPaying(via.getPaidSlotNumber());
-					street.setSlotsTimed(via.getTimedParkSlotNumber());
+					if (via.getFreeParkSlotNumber() != null) {
+						street.setSlotsFree(via.getFreeParkSlotNumber());
+					}
+					if (via.getPaidSlotNumber() != null) {
+						street.setSlotsPaying(via.getPaidSlotNumber());
+					} else if (via.getSlotNumber() != null) {
+						street.setSlotsPaying(via.getSlotNumber());
+					}
+					if (via.getTimedParkSlotNumber() != null){
+						street.setSlotsTimed(via.getTimedParkSlotNumber());
+					}
 					//street.setSlotsUnavailable(via.getReservedSlotNumber());
 					saveOrUpdateStreet(street);
 				}

@@ -1,6 +1,8 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -112,6 +114,11 @@ public class AusiliariHelper implements Parcheggi_Services {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Collections.sort(array, new Comparator<Street>(){
+		    public int compare(Street obj1, Street obj2) {
+		    	return obj1.getName().compareTo(obj2.getName());
+		    }
+		});
 		return array;
 	}
 

@@ -1,7 +1,9 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.model;
 
+import java.util.Comparator;
 
-public class Street extends GeoObject {
+
+public class Street extends GeoObject implements Comparator<Street>{
 	private static final long serialVersionUID = 387771948768252561L;
 
 	/**
@@ -99,6 +101,11 @@ public class Street extends GeoObject {
 
 	public void setSlotsTimed(int slotsTimed) {
 		this.slotsTimed = slotsTimed;
+	}
+
+	@Override
+	public int compare(Street lhs, Street rhs) {
+		return lhs.getName().compareTo(rhs.getName());
 	}
 	
 	

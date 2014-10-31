@@ -31,6 +31,17 @@ public class StoricoFragment extends Fragment {
 		this.obj = obj;
 	}
 
+	
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+	    super.setUserVisibleHint(isVisibleToUser);
+
+	    // Make sure that we are currently visible
+	    if (this.isVisible()) {
+	    	refreshParkingList();
+	    }
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -45,30 +56,7 @@ public class StoricoFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		ArrayList<LogObject> result = new ArrayList<LogObject>();
-		if (Parking.class.isInstance(obj)) {
-			List<ParkingLog> list = new AusiliariHelper(getActivity())
-					.getStoricoPark((Parking) obj);
-			if (!list.isEmpty()) {
-				tv.setVisibility(View.GONE);
-				for (ParkingLog p : list) {
-					result.add(p);
-				}
-			}
-		} else {
-			List<StreetLog> list = new AusiliariHelper(getActivity())
-					.getStoricoStreet((Street) obj);
-			if (!list.isEmpty()) {
-				tv.setVisibility(View.GONE);
-				for (StreetLog p : list) {
-					result.add(p);
-				}
-			}
-		}
-
-		StoricoAdapter adapter = new StoricoAdapter(getActivity(),
-				result);
-		lv.setAdapter(adapter);
+		refreshParkingList();
 	}
 
 	@Override
@@ -123,5 +111,32 @@ public class StoricoFragment extends Fragment {
 
 			return rowView;
 		}
+	}
+	
+	private void refreshParkingList(){
+		ArrayList<LogObject> result = new ArrayList<LogObject>();
+		if (Parking.class.isInstance(obj)) {
+			List<ParkingLog> list = new AusiliariHelper(getActivity())
+					.getStoricoPark((Parking) obj);
+			if (!list.isEmpty()) {
+				tv.setVisibility(View.GONE);
+				for (ParkingLog p : list) {
+					result.add(p);
+				}
+			}
+		} else {
+			List<StreetLog> list = new AusiliariHelper(getActivity())
+					.getStoricoStreet((Street) obj);
+			if (!list.isEmpty()) {
+				tv.setVisibility(View.GONE);
+				for (StreetLog p : list) {
+					result.add(p);
+				}
+			}
+		}
+
+		StoricoAdapter adapter = new StoricoAdapter(getActivity(),
+				result);
+		lv.setAdapter(adapter);
 	}
 }

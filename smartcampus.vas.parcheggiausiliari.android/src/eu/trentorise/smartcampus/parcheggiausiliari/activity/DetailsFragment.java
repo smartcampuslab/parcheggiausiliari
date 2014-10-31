@@ -22,13 +22,6 @@ public class DetailsFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_details, container,
 				false);
-		ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
-		tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
-		tabs.setTextColor(getResources().getColorStateList(
-				R.color.tab_titles_color));
-		pager.setAdapter(new MyPagerAdapter(getFragmentManager()));
-		// Bind the tabs to the ViewPager
-		tabs.setViewPager(pager);
 		return rootView;
 
 	}
@@ -37,6 +30,17 @@ public class DetailsFragment extends Fragment {
 		this.obj = obj;
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+		ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
+		tabs = (PagerSlidingTabStrip) getActivity().findViewById(R.id.tabs);
+		tabs.setTextColor(getResources().getColorStateList(
+				R.color.tab_titles_color));
+		pager.setAdapter(new MyPagerAdapter(getChildFragmentManager()));
+		// Bind the tabs to the ViewPager
+		tabs.setViewPager(pager);
+	}
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);

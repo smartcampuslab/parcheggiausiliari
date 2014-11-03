@@ -114,6 +114,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		if (array == null) return new ArrayList<Street>();
 		Collections.sort(array, new Comparator<Street>(){
 		    public int compare(Street obj1, Street obj2) {
 		    	return obj1.getName().compareTo(obj2.getName());

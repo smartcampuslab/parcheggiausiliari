@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Nessuna Segnalazione trovata"
+        android:text="@string/no_signals_found"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:visibility="visible" />
 

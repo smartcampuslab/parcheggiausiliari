@@ -60,7 +60,7 @@ public class PopupFragment extends DialogFragment {
 					+ "/"
 					+ String.format("%02d", (d.getMonth() + 1)) + "/" + (d
 					.getYear() + 1900))
-					: "Not recently updated");
+					: "Non presente");
 		} else {
 			Date d = null;
 			if(((Street) obj).getLastChange() != null)
@@ -75,7 +75,7 @@ public class PopupFragment extends DialogFragment {
 					+ String.format("%02d", d.getDate())
 					+ "/"
 					+ String.format("%02d", (d.getMonth() + 1)) + "/" + (d
-					.getYear() + 1900)) : "Not recently updated");
+					.getYear() + 1900)) : "Non presente");
 		}
 		Button btnStorico = (Button) v.findViewById(R.id.btnStorico);
 		btnStorico.setOnClickListener(new OnClickListener() {

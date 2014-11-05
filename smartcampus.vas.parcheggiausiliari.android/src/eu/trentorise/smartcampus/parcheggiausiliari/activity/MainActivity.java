@@ -36,6 +36,15 @@ public class MainActivity extends ActionBarActivity {
 	private int mCurrent = 0;
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+	}
+	@Override
+	protected void onStop() {
+		super.onStop();
+	}
+	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
@@ -89,8 +98,7 @@ public class MainActivity extends ActionBarActivity {
 			mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 			mDrawerList = (ListView) findViewById(R.id.left_drawer);
-			String[] strings = { "Mappa", "Le mie segnalazioni", "Parcheggi",
-					"Vie", "Logout" };
+			String[] strings = getResources().getStringArray(R.array.drawer_entries_strings);
 			mDrawerList.setAdapter(new DrawerArrayAdapter(
 					getApplicationContext(), strings));
 
@@ -177,8 +185,9 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
 		outState.putInt("current", mCurrent);
+
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override

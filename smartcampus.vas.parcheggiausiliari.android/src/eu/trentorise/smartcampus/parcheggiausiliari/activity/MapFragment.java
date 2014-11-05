@@ -61,14 +61,108 @@ public class MapFragment extends Fragment implements SinglePopup {
 	private List<Parking> parks;
 	private View vNew;
 
+	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-
+	public void onStart() {
+		super.onStart();
 		/*
 		 *  ***Setting up the custom layout of the actionbar and implementing
 		 * search functionality***
 		 */
 
+		setupActionBar();
+
+		/* ***Populating view*** */
+
+		Button btnParkings = (Button) getActivity().findViewById(R.id.btnParking);
+		Button btnStreets = (Button) getActivity().findViewById(R.id.btnVie);
+		btnStreets.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				FragmentTransaction ft = getFragmentManager()
+						.beginTransaction();
+				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+				ft.replace(R.id.container, new StreetListFragment(),
+						getString(R.string.streetlist_fragment))
+						.addToBackStack(null).commit();
+			}
+		});
+
+		/* ***Map Settings*** */
+		map = (MapView) getActivity().findViewById(R.id.mapview);
+		map.setTileSource(TileSourceFactory.MAPQUESTOSM);
+		map.setMultiTouchControls(true);
+		map.setMinZoomLevel(10);
+		MyLocationNewOverlay myLoc = new MyLocationNewOverlay(getActivity(),
+				new CustomLocationProvider(getActivity()), map);
+		myLoc.enableMyLocation();
+		map.getOverlays().add(myLoc);
+		map.getController().setZoom(Integer.valueOf(getResources().getString((R.string.zoom_level))));
+		String center = getResources().getString(R.string.appcenter);
+		String[] coords = center.split(",");
+		map.getController().animateTo(new GeoPoint(Double.parseDouble(coords[0]),Double.parseDouble(coords[1])));
+
+		/* ***Adding Markers*** */
+
+		ArrayList<ParkingMarker> items = new ArrayList<ParkingMarker>();
+		for (Parking mPark : parks) {
+			ParkingMarker item = new ParkingMarker(mPark);
+			item.setMarker(getResources().getDrawable(
+					R.drawable.marker_parcheggio));
+			items.add(item);
+		}
+
+		map.getOverlays().add(
+				new ItemizedOverlayWithFocus<ParkingMarker>(items,
+						new OnItemGestureListener<ParkingMarker>() {
+
+							@Override
+							public boolean onItemLongPress(int arg0,
+									ParkingMarker arg1) {
+								return false;
+							}
+
+							@Override
+							public boolean onItemSingleTapUp(int arg0,
+									ParkingMarker arg1) {
+								showPopup(map, arg1);
+								return true;
+							}
+						}, map.getResourceProxy()));
+
+		/* ***Setting up "go to my location" button*** */
+
+		Button myLocButton = (Button) getActivity().findViewById(R.id.btMyLocation);
+		myLocButton.setBackgroundResource(R.drawable.ic_menu_mylocation);
+		myLocButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				GPSTracker pos = new GPSTracker(getActivity());
+				map.getController().animateTo(
+						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
+				map.getController().setZoom(18);
+				map.getController().animateTo(
+						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
+			}
+		});
+//		myLocButton.callOnClick();
+//		myLocButton.callOnClick();
+		btnParkings.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				FragmentTransaction ft = getFragmentManager()
+						.beginTransaction();
+				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+				ft.replace(R.id.container, new ParkListFragment(),
+						getString(R.string.parklist_fragment))
+						.addToBackStack(null).commit();
+			}
+		});
+		addLinee(streets);
+	}
+	private void setupActionBar() {
 		ActionBar actionBar = ((MainActivity) getActivity())
 				.getSupportActionBar();
 		v = actionBar.getCustomView();
@@ -131,7 +225,13 @@ public class MapFragment extends Fragment implements SinglePopup {
 
 		});
 		actionBar.setCustomView(vNew);
+		
+		searchIcon.setVisibility(View.VISIBLE);
+	}
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 	}
 
 	/**
@@ -162,99 +262,9 @@ public class MapFragment extends Fragment implements SinglePopup {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		searchIcon.setVisibility(View.VISIBLE);
 		View rootView = inflater.inflate(R.layout.fragment_map, container,
 				false);
-
-		/* ***Populating view*** */
-
-		Button btnParkings = (Button) rootView.findViewById(R.id.btnParking);
-		Button btnStreets = (Button) rootView.findViewById(R.id.btnVie);
-		btnStreets.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				FragmentTransaction ft = getFragmentManager()
-						.beginTransaction();
-				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-				ft.replace(R.id.container, new StreetListFragment(),
-						getString(R.string.streetlist_fragment))
-						.addToBackStack(null).commit();
-			}
-		});
-
-		/* ***Map Settings*** */
-		map = (MapView) rootView.findViewById(R.id.mapview);
-		map.setTileSource(TileSourceFactory.MAPQUESTOSM);
-		map.setMultiTouchControls(true);
-		map.setMinZoomLevel(10);
-		MyLocationNewOverlay myLoc = new MyLocationNewOverlay(getActivity(),
-				new CustomLocationProvider(getActivity()), map);
-		myLoc.enableMyLocation();
-		map.getOverlays().add(myLoc);
-		map.getController().setZoom(17);
-		String center = getResources().getString(R.string.appcenter);
-		String[] coords = center.split(",");
-		map.getController().animateTo(new GeoPoint(Double.parseDouble(coords[0]),Double.parseDouble(coords[1])));
-
-		/* ***Adding Markers*** */
-
-		ArrayList<ParkingMarker> items = new ArrayList<ParkingMarker>();
-		for (Parking mPark : parks) {
-			ParkingMarker item = new ParkingMarker(mPark);
-			item.setMarker(getResources().getDrawable(
-					R.drawable.marker_parcheggio));
-			items.add(item);
-		}
-
-		map.getOverlays().add(
-				new ItemizedOverlayWithFocus<ParkingMarker>(items,
-						new OnItemGestureListener<ParkingMarker>() {
-
-							@Override
-							public boolean onItemLongPress(int arg0,
-									ParkingMarker arg1) {
-								return false;
-							}
-
-							@Override
-							public boolean onItemSingleTapUp(int arg0,
-									ParkingMarker arg1) {
-								showPopup(map, arg1);
-								return true;
-							}
-						}, map.getResourceProxy()));
-
-		/* ***Setting up "go to my location" button*** */
-
-		Button myLocButton = (Button) rootView.findViewById(R.id.btMyLocation);
-		myLocButton.setBackgroundResource(R.drawable.ic_menu_mylocation);
-		myLocButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				GPSTracker pos = new GPSTracker(getActivity());
-				map.getController().animateTo(
-						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
-				map.getController().setZoom(18);
-				map.getController().animateTo(
-						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
-			}
-		});
-//		myLocButton.callOnClick();
-//		myLocButton.callOnClick();
-		btnParkings.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				FragmentTransaction ft = getFragmentManager()
-						.beginTransaction();
-				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-				ft.replace(R.id.container, new ParkListFragment(),
-						getString(R.string.parklist_fragment))
-						.addToBackStack(null).commit();
-			}
-		});
-		addLinee(streets);
+		
 		return rootView;
 	}
 

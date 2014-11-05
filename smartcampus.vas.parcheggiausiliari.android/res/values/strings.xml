@@ -3,24 +3,34 @@
 
     <string name="app_name">ContaParcheggi</string>
     <string name="action_settings">Settings</string>
-    <string name="drawer_open">open</string>
-    <string name="drawer_close">closed</string>
-    <string name="drawer_mappa">Mappa</string>
-    <string name="drawer_storico">Storico</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Closed</string>
+<!--     drawer strings -->
+    <string name="drawer_mappa">Map</string>
+    <string name="drawer_my_signals">My Signals</string>
+    <string name="drawer_parcheggi">Parkings</string>
+    <string name="drawer_vie">Streets</string>
     <string name="drawer_logout">Logout</string>
-    <string name="storico_fragment">Storico</string>
-    <string name="map_fragment">Mappa</string>
+    
+    <string name="storico_fragment">History</string>
+    <string name="map_fragment">Map</string>
     <string name="parklist_fragment">Parkings</string>
-    <string name="streetlist_fragment">Vie</string>
+    <string name="streetlist_fragment">Streets</string>
     <string name="logout_fragment">Logout</string>
-    <string name="btnParkings">Parcheggi</string>
-    <string name="btnStreets">Vie</string>
+    <string name="btnParkings">Parkings</string>
+    <string name="btnStreets">Streets</string>
     <string name="token">dXNlcjpwYXNzd29yZA==</string>
+    <string name="no_signals_found">No signals found</string>
+
+    <!-- Trento -->
+
+
     <!-- <string name="applocation">trento</string> -->
-    <!-- <string name="appcenter">46.075596,11.116682</string> -->
+    <!-- <string name="appcenter">46.070746, 11.123677</string> -->
+    <!-- <string name="zoom_level">16</string> -->
     <!-- ROVERETO -->
     <string name="applocation">rovereto</string>
     <string name="appcenter">45.893324, 11.036265</string>
-    <string name="no_signals_found">Nessuna segnalazione trovata</string>
+    <string name="zoom_level">16</string>
 
 </resources>

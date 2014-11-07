@@ -26,6 +26,10 @@ public class DetailsFragment extends Fragment {
 
 	}
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 	public DetailsFragment(GeoObject obj) {
 		this.obj = obj;
 	}

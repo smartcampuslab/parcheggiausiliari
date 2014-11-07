@@ -1,6 +1,10 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 
+import java.util.List;
+import java.util.Map;
+
 import smartcampus.vas.parcheggiausiliari.android.R;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -14,6 +18,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateSegnalaInterface;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
@@ -21,7 +26,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker.OnChangedListener;
 
-public class SegnalaFragment extends Fragment {
+public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface {
 
 	private static final String MY_PREFERENCES = "Ausiliari";
 	private NumberPicker mPickerFree;
@@ -158,14 +163,14 @@ public class SegnalaFragment extends Fragment {
 					public void confirm() {
 						clearFocus();
 						updateObject();
-						new AusiliariHelper(getActivity()).sendData(obj);
-						Toast.makeText(getActivity(), "Dati inviati",
-								Toast.LENGTH_LONG).show();
-						getActivity()
-								.getSharedPreferences(MY_PREFERENCES,
-										Context.MODE_PRIVATE).edit()
-								.remove(obj.getId()).commit();
-						resetPickers();
+						AusiliariHelper.sendDataProcessor(obj,getActivity(),SegnalaFragment.this);
+//						Toast.makeText(getActivity(), "Dati inviati",
+//								Toast.LENGTH_LONG).show();
+//						getActivity()
+//								.getSharedPreferences(MY_PREFERENCES,
+//										Context.MODE_PRIVATE).edit()
+//								.remove(obj.getId()).commit();
+//						resetPickers();
 						refresh();
 					}
 				}.show(getFragmentManager(), null);
@@ -284,14 +289,14 @@ public class SegnalaFragment extends Fragment {
 					public void confirm() {
 						clearFocus();
 						updateObject();
-						new AusiliariHelper(getActivity()).sendData(obj);
-						Toast.makeText(getActivity(), "Dati inviati",
-								Toast.LENGTH_LONG).show();
-						getActivity()
-								.getSharedPreferences(MY_PREFERENCES,
-										Context.MODE_PRIVATE).edit()
-								.remove(obj.getId()).commit();
-						resetPickers();
+						AusiliariHelper.sendDataProcessor(obj, getActivity(),SegnalaFragment.this);
+//						Toast.makeText(getActivity(), "Dati inviati",
+//								Toast.LENGTH_LONG).show();
+//						getActivity()
+//								.getSharedPreferences(MY_PREFERENCES,
+//										Context.MODE_PRIVATE).edit()
+//								.remove(obj.getId()).commit();
+//						resetPickers();
 						//refresh();
 					}
 				}.show(getFragmentManager(), null);
@@ -402,5 +407,16 @@ public class SegnalaFragment extends Fragment {
 			updateData();
 		}
 
+	}
+
+	@Override
+	public void signal() {
+		Toast.makeText(getActivity(), "Dati inviati",
+				Toast.LENGTH_LONG).show();
+		getActivity()
+				.getSharedPreferences(MY_PREFERENCES,
+						Context.MODE_PRIVATE).edit()
+				.remove(obj.getId()).commit();
+		resetPickers();
 	}
 }

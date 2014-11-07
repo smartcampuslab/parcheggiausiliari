@@ -5,13 +5,12 @@
     <string name="action_settings">Settings</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Closed</string>
-<!--     drawer strings -->
+    <!-- drawer strings -->
     <string name="drawer_mappa">Map</string>
     <string name="drawer_my_signals">My Signals</string>
     <string name="drawer_parcheggi">Parkings</string>
     <string name="drawer_vie">Streets</string>
     <string name="drawer_logout">Logout</string>
-    
     <string name="storico_fragment">History</string>
     <string name="map_fragment">Map</string>
     <string name="parklist_fragment">Parkings</string>
@@ -21,7 +20,12 @@
     <string name="btnStreets">Streets</string>
     <string name="token">dXNlcjpwYXNzd29yZA==</string>
     <string name="no_signals_found">No signals found</string>
-
+    <string name="parks_empty_list">No parkings found</string>
+    <string name="streets_empty_list">No streets found</string>
+    <string name="button_annulla">Cancel</string>
+    <string name="button_continua">Continue</string>
+    <string name="dialog_loading">Loading</string>
+    <string name="dialog_waiting">Waiting...</string>
     <!-- Trento -->
 
 

@@ -5,7 +5,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="eu.trentorise.smartcampus.parcheggiausiliari.activity.ParkListFragment" >
-    
+
+    <TextView
+        android:id="@+id/streets_empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/streets_empty_list"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:visibility="gone" />
+
     <ListView
         android:id="@+id/listStreets"
         android:layout_width="match_parent"

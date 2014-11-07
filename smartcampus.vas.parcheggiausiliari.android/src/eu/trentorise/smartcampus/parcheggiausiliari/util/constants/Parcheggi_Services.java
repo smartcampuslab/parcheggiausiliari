@@ -4,7 +4,7 @@ package eu.trentorise.smartcampus.parcheggiausiliari.util.constants;
  * Interface containing all services URLS as static final fields
  * @author Michele Armellini
  */
-public interface Parcheggi_Services {
+public class Parcheggi_Services {
 
 	public static final String HOST = "https://vas-dev.smartcampuslab.it/";
 

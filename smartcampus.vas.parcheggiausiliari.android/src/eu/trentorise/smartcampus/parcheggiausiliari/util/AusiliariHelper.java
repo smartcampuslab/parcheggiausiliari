@@ -1,427 +1,247 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.Resources.NotFoundException;
-import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
+import eu.trentorise.smartcampus.parcheggiausiliari.activity.AddGeoPoints;
+import eu.trentorise.smartcampus.parcheggiausiliari.activity.SendSignalProcessor;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateParkListInterface;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateSegnalaInterface;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoAgenteInterface;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoParkingInterface;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoStreetInterface;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStreetListInterface;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.ParkingLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.StreetLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.constants.Parcheggi_Services;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.processor.GetParkingListProcessor;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.processor.GetParkingMapProcessor;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.processor.GetStoricoAgenteProcessor;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.processor.GetStoricoParkingProcessor;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.processor.GetStoricoStreetProcessor;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.processor.GetStreetMapProcessor;
+import eu.trentorise.smartcampus.parcheggiausiliari.util.processor.GetStreetsListProcessor;
 
 /**
- * Class containing all methods which make use of the Services listed in the interface {@link Parcheggi_Services}
+ * Class containing all methods which make use of the Services listed in the
+ * interface {@link Parcheggi_Services}
+ * 
  * @author Michele Armellini
- *
+ * 
  */
-public class AusiliariHelper implements Parcheggi_Services {
+public class AusiliariHelper {
 	private static Context mContext;
+	private static AusiliariHelper instance = null;
 
-	public AusiliariHelper(Context ctx) {
-		this.mContext = ctx;
+	protected AusiliariHelper(Context mContext) {
+		AusiliariHelper.mContext = mContext;
 	}
 
-	public void sendData(GeoObject obj) {
-		SetDataTask ast = new SetDataTask();
-		ast.execute(obj);
+	public static void init(Context mContext) {
+		if (instance == null) {
+			instance = new AusiliariHelper(mContext);
+		}
+	}
+
+	public static AusiliariHelper getInstance() {
+		if (instance == null && mContext != null) {
+			AusiliariHelper.init(mContext);
+		}
+		return instance;
+	}
+
+	public static void sendDataProcessor(GeoObject obj,Activity activity,UpdateSegnalaInterface updateSegnalaInterface) {
+		SendSignalProcessor ast = new SendSignalProcessor(activity);
+		ast.execute(obj,updateSegnalaInterface);
+	}
+	
+	public static void getStoricoStreetProcessor(
+			UpdateStoricoStreetInterface updateStoricoStreetInterface,
+			Activity activity, Street street) {
+		GetStoricoStreetProcessor asa = new GetStoricoStreetProcessor(activity);
+		asa.execute(updateStoricoStreetInterface,  street);
+	}
+	
+	public static void getStoricoParkingProcessor(
+			UpdateStoricoParkingInterface updateStoricoParkingInterface,
+			Activity activity, Parking park) {
+		GetStoricoParkingProcessor asa = new GetStoricoParkingProcessor(activity);
+		asa.execute(updateStoricoParkingInterface,  park);
 	}
 
 	public static List<ParkingLog> getStoricoPark(Parking obj) {
-		List<ParkingLog> toRtn = new ArrayList<ParkingLog>();
+		String request = null;
+		List<ParkingLog> list = null;
 		try {
-			GetParkingStoricoTask ast = new GetParkingStoricoTask();
-			ast.execute(obj);
-			toRtn = ast.get();
-		} catch (InterruptedException e) {
+			request = RemoteConnector.getJSON(
+					Parcheggi_Services.HOST,
+					"parcheggiausiliari/"
+							+ mContext.getResources().getString(
+									R.string.applocation)
+							+ Parcheggi_Services.PARKLOGLIST + obj.getId(),
+					mContext.getResources().getString(R.string.token));
+			list = JsonUtils.toObjectList(request, ParkingLog.class);
+
+		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return toRtn;
+
+		return list;
 	}
 
 	public static List<StreetLog> getStoricoStreet(Street obj) {
-		List<StreetLog> toRtn = new ArrayList<StreetLog>();
+		String request = null;
+		List<StreetLog> list = null;
 		try {
-			GetStreetStoricoTask ast = new GetStreetStoricoTask();
-			ast.execute(obj);
-			toRtn = ast.get();
-		} catch (InterruptedException e) {
+			request = RemoteConnector.getJSON(
+					Parcheggi_Services.HOST,
+					"parcheggiausiliari/"
+							+ mContext.getResources().getString(
+									R.string.applocation)
+							+ Parcheggi_Services.STREETLOGLIST + obj.getId(),
+					mContext.getResources().getString(R.string.token));
+			list = JsonUtils.toObjectList(request, StreetLog.class);
+
+		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return toRtn;
+
+		return list;
+		
 	}
+
+	
 
 	public static List<Map> getStoricoAgente() {
-		List<Map> toRtn = new ArrayList<Map>();
+		String request = null;
 		try {
-			GetStoricoAgenteTask ast = new GetStoricoAgenteTask();
-			ast.execute();
-			toRtn = ast.get();
-		} catch (InterruptedException e) {
+			request = RemoteConnector.getJSON(
+					Parcheggi_Services.HOST,
+					"parcheggiausiliari/"
+							+ mContext.getResources().getString(
+									R.string.applocation)
+							+ Parcheggi_Services.AUSLOGLIST
+							+ new AusiliariHelper(mContext).getUsername(),
+					mContext.getResources().getString(R.string.token));
+		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return toRtn;
+		return JsonUtils.toObjectList(request, Map.class);
+
 	}
 
-	public static List<Parking> getParklist() {
-		List<Parking> array = null;
-		try {
-			GetParkingTask ast = new GetParkingTask();
-			ast.execute();
-			array = ast.get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return array;
+	public static void getStoricoProcessor(
+			UpdateStoricoAgenteInterface updateStoricoAgenteInterface,
+			Activity activity) {
+		GetStoricoAgenteProcessor asa = new GetStoricoAgenteProcessor(activity);
+		asa.execute(updateStoricoAgenteInterface);
 	}
 
 	public static List<Street> getStreetlist() {
+		String request = null;
 		List<Street> array = null;
+
 		try {
-			GetStreetsTask ast = new GetStreetsTask();
-			ast.execute();
-			array = ast.get();
-		} catch (InterruptedException e) {
+			request = RemoteConnector.getJSON(
+					Parcheggi_Services.HOST,
+					"parcheggiausiliari/"
+							+ mContext.getResources().getString(
+									R.string.applocation)
+							+ Parcheggi_Services.STREETLIST, mContext
+							.getResources().getString(R.string.token));
+		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (array == null) return new ArrayList<Street>();
-		Collections.sort(array, new Comparator<Street>(){
-		    public int compare(Street obj1, Street obj2) {
-		    	return obj1.getName().compareTo(obj2.getName());
-		    }
-		});
+		if (request != null) {
+			array = JsonUtils.toObjectList(request, Street.class);
+			Collections.sort(array, new Comparator<Street>() {
+				public int compare(Street obj1, Street obj2) {
+					return obj1.getName().compareTo(obj2.getName());
+				}
+			});
+		}
 		return array;
+	}
+
+	public static List<Parking> getParklist() {
+		String request = null;
+		try {
+			request = RemoteConnector.getJSON(
+					Parcheggi_Services.HOST,
+					"parcheggiausiliari/"
+							+ mContext.getResources().getString(
+									R.string.applocation)
+							+ Parcheggi_Services.PARKLIST, mContext
+							.getResources().getString(R.string.token));
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return JsonUtils.toObjectList(request, Parking.class);
+	}
+
+	public static void getParklistProcessor(
+			UpdateParkListInterface updateParkListInterface, Activity activity) {
+
+		GetParkingListProcessor ast = new GetParkingListProcessor(activity);
+		ast.execute(updateParkListInterface);
+	}
+
+	public static void getParklistProcessorMap(FragmentActivity activity,
+			AddGeoPoints agpInterface) {
+		GetParkingMapProcessor ast = new GetParkingMapProcessor(activity);
+		ast.execute(agpInterface);
+	}
+
+	public static void getStreetProcessor(
+			UpdateStreetListInterface updateStreetListInterface,
+			Activity activity) {
+
+		GetStreetsListProcessor ast = new GetStreetsListProcessor(activity);
+		ast.execute(updateStreetListInterface);
+	}
+
+	public static void getStreetProcessorMap(FragmentActivity activity,
+			AddGeoPoints agpInterface) {
+		GetStreetMapProcessor ast = new GetStreetMapProcessor(activity);
+		ast.execute(agpInterface);
 	}
 
 	public static String getUsername() {
 		return ((Activity) mContext).getSharedPreferences("Login", 0)
 				.getString("User", null);
 	}
+
+
+
 	
-	private static class SetDataTask extends AsyncTask<GeoObject, Void, Void> {
-		ProgressDialog pd;
-
-		@Override
-		protected Void doInBackground(GeoObject... params) {
-			try {
-				if (Parking.class.isInstance(params[0])) {
-					RemoteConnector.postJSON(
-							HOST,
-							"parcheggiausiliari/"
-									+ mContext.getResources().getString(
-											R.string.applocation)
-									+ UPDATEPARK
-									+ params[0].getId()
-									+ "/"
-									+ new AusiliariHelper(mContext)
-											.getUsername(), JsonUtils
-									.toJSON(params[0]), mContext.getResources()
-									.getString(R.string.token));
-				} else {
-					RemoteConnector.postJSON(
-							HOST,
-							"parcheggiausiliari/"
-									+ mContext.getResources().getString(
-											R.string.applocation)
-									+ UPDATESTREET
-									+ params[0].getId()
-									+ "/"
-									+ new AusiliariHelper(mContext)
-											.getUsername(), JsonUtils
-									.toJSON(params[0]), mContext.getResources()
-									.getString(R.string.token));
-				}
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			pd = new ProgressDialog(mContext);
-			pd.setTitle("Sending Data");
-			pd.setMessage("Attendere");
-			pd.show();
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-
-			if (pd.isShowing())
-				pd.dismiss();
-		}
-	}
-
-	private static class GetStreetStoricoTask extends
-			AsyncTask<GeoObject, Void, List<StreetLog>> {
-		ProgressDialog pd;
-
-		@Override
-		protected List<StreetLog> doInBackground(GeoObject... params) {
-			String request = null;
-			List<StreetLog> list = null;
-			try {
-				request = RemoteConnector.getJSON(
-						HOST,
-						"parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + STREETLOGLIST
-								+ params[0].getId(), mContext.getResources()
-								.getString(R.string.token));
-				list = JsonUtils.toObjectList(request, StreetLog.class);
-
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return list;
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			pd = new ProgressDialog(mContext);
-			pd.setTitle("Downloading Data");
-			pd.show();
-		}
-
-		@Override
-		protected void onPostExecute(List<StreetLog> result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-
-			if (pd.isShowing())
-				pd.dismiss();
-		}
-	}
-
-	private static class GetParkingStoricoTask extends
-			AsyncTask<GeoObject, Void, List<ParkingLog>> {
-		ProgressDialog pd;
-
-		@Override
-		protected List<ParkingLog> doInBackground(GeoObject... params) {
-			String request = null;
-			List<ParkingLog> list = null;
-			try {
-				request = RemoteConnector.getJSON(
-						HOST,
-						"parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + PARKLOGLIST
-								+ params[0].getId(), mContext.getResources()
-								.getString(R.string.token));
-				list = JsonUtils.toObjectList(request, ParkingLog.class);
-
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return list;
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			pd = new ProgressDialog(mContext);
-			pd.setTitle("Downloading Data");
-			pd.show();
-		}
-
-		@Override
-		protected void onPostExecute(List<ParkingLog> result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-
-			if (pd.isShowing())
-				pd.dismiss();
-		}
-	}
-
-	private static class GetStoricoAgenteTask extends
-			AsyncTask<Void, Void, List<Map>> {
-		ProgressDialog pd;
-
-		@Override
-		protected List<Map> doInBackground(Void... params) {
-			String request = null;
-			try {
-				request = RemoteConnector.getJSON(
-						HOST,
-						"parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + AUSLOGLIST
-								+ new AusiliariHelper(mContext).getUsername(),
-						mContext.getResources().getString(R.string.token));
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return JsonUtils.toObjectList(request, Map.class);
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			pd = new ProgressDialog(mContext);
-			pd.setTitle("Downloading Data");
-			pd.show();
-		}
-
-		@Override
-		protected void onPostExecute(List<Map> result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-
-			if (pd.isShowing())
-				pd.dismiss();
-		}
-	}
-
-	private static class GetStreetsTask extends
-			AsyncTask<Void, Void, List<Street>> {
-		ProgressDialog pd;
-
-		@Override
-		protected List<Street> doInBackground(Void... params) {
-			String request = null;
-			try {
-				request = RemoteConnector.getJSON(
-						HOST,
-						"parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + STREETLIST,
-						mContext.getResources().getString(R.string.token));
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return JsonUtils.toObjectList(request, Street.class);
-		}
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			pd = new ProgressDialog(mContext);
-			pd.setTitle("Downloading Data");
-			pd.show();
-		}
-
-		@Override
-		protected void onPostExecute(List<Street> result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-
-			if (pd.isShowing())
-				pd.dismiss();
-		}
-	}
-
-	private static class GetParkingTask extends
-			AsyncTask<Void, Void, List<Parking>> {
-		ProgressDialog pd;
-
-		@Override
-		protected List<Parking> doInBackground(Void... params) {
-			String request = null;
-			try {
-				request = RemoteConnector.getJSON(
-						HOST,
-						"parcheggiausiliari/"
-								+ mContext.getResources().getString(
-										R.string.applocation) + PARKLIST,
-						mContext.getResources().getString(R.string.token));
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return JsonUtils.toObjectList(request, Parking.class);
-		}
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-			pd = new ProgressDialog(mContext);
-			pd.setTitle("Downloading Data");
-			pd.show();
-		}
-
-		@Override
-		protected void onPostExecute(List<Parking> result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-
-			if (pd.isShowing())
-				pd.dismiss();
-		}
-	}
-
 
 }

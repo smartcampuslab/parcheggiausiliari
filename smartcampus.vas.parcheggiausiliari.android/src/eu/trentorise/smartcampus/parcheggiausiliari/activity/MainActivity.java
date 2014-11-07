@@ -3,6 +3,8 @@ package eu.trentorise.smartcampus.parcheggiausiliari.activity;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
+
 import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.content.Intent;
@@ -39,14 +41,16 @@ public class MainActivity extends ActionBarActivity {
 	protected void onPause() {
 		super.onPause();
 	}
+
 	@Override
 	protected void onStop() {
 		super.onStop();
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		initHelpers();
 		setContentView(R.layout.activity_main);
 		if (!isUserConnectedToInternet(getApplicationContext())) {
 			Toast.makeText(
@@ -82,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
 				 */
 				public void onDrawerClosed(View view) {
 					super.onDrawerClosed(view);
-					
+
 					supportInvalidateOptionsMenu();
 				}
 
@@ -92,13 +96,14 @@ public class MainActivity extends ActionBarActivity {
 					getSupportActionBar().setTitle(mTitle);
 					supportInvalidateOptionsMenu();
 				}
-				
+
 			};
 
 			mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 			mDrawerList = (ListView) findViewById(R.id.left_drawer);
-			String[] strings = getResources().getStringArray(R.array.drawer_entries_strings);
+			String[] strings = getResources().getStringArray(
+					R.array.drawer_entries_strings);
 			mDrawerList.setAdapter(new DrawerArrayAdapter(
 					getApplicationContext(), strings));
 
@@ -150,6 +155,12 @@ public class MainActivity extends ActionBarActivity {
 				}
 			});
 			mTitle = getTitle();
+		}
+	}
+
+	private void initHelpers() {
+		if (AusiliariHelper.getInstance() == null) {
+			AusiliariHelper.init(this);
 		}
 	}
 
@@ -220,7 +231,7 @@ public class MainActivity extends ActionBarActivity {
 
 	/**
 	 * ArrayAdapter used to populate the Drawer
-	 *
+	 * 
 	 */
 	public static class DrawerArrayAdapter extends ArrayAdapter<String> {
 		private final Context context;
@@ -278,6 +289,5 @@ public class MainActivity extends ActionBarActivity {
 		}
 		return false;
 	}
-	
-	
+
 }

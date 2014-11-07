@@ -45,7 +45,7 @@ public abstract class ConfirmPopup extends DialogFragment {
 		tv.setText(message);
 		v.findViewById(R.id.txtLastDataHeader).setVisibility(View.GONE);
 		Button btnStorico = (Button) v.findViewById(R.id.btnStorico);
-		btnStorico.setText("Continua");
+		btnStorico.setText(R.string.button_continua);
 		btnStorico.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -55,7 +55,7 @@ public abstract class ConfirmPopup extends DialogFragment {
 			}
 		});
 		Button btnAnnulla = (Button) v.findViewById(R.id.btnDel);
-		btnAnnulla.setText("Annulla");
+		btnAnnulla.setText(R.string.button_annulla);
 		btnAnnulla.setOnClickListener(new OnClickListener() {
 
 			@Override

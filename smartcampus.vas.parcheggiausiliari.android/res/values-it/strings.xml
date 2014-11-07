@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ContaParcheggi</string>
     <string name="action_settings">Preferenze</string>
     <string name="drawer_open">Apri</string>
     <string name="drawer_close">Chiudi</string>
-<!--     drawer strings -->
+    <!-- drawer strings -->
     <string name="drawer_mappa">Mappa</string>
     <string name="drawer_my_signals">Storico</string>
     <string name="drawer_parcheggi">Parcheggi</string>
     <string name="drawer_vie">Vie</string>
     <string name="drawer_logout">Esci</string>
-    
 
-<!--     <string name="drawer_my_signals">Le mie segnalazioni</string> -->
+    <!-- <string name="drawer_my_signals">Le mie segnalazioni</string> -->
     <string name="storico_fragment">Storico</string>
     <string name="map_fragment">Mappa</string>
     <string name="parklist_fragment">Parcheggi</string>
@@ -23,17 +21,25 @@
     <string name="btnStreets">Vie</string>
     <string name="token">dXNlcjpwYXNzd29yZA==</string>
     <string name="no_signals_found">Nessuna segnalazione trovata</string>
-    
-    
+    <string name="parks_empty_list">Nessun parcheggio trovato</string>
+    <string name="streets_empty_list">Nessuna strada trovata</string>
+    <string name="button_annulla">Annulla</string>
+    <string name="button_continua">Continua</string>
+    <string name="dialog_loading">Caricamento</string>
+    <string name="dialog_waiting">Attendere...</string>
+
 
     <!-- Trento -->
+    <!-- <string name="applocation">trento</string> -->
+    <!-- <string name="appcenter">46.070746, 11.123677</string> -->
+    <!-- <string name="zoom_level">16</string> -->
+    <!-- <string name="app_name">ContaParcheggi - Trento</string> -->
 
-<!--     <string name="applocation">trento</string> -->
-<!--     <string name="appcenter">46.070746, 11.123677</string> -->
-<!--     <string name="zoom_level">16</string> -->
+
     <!-- ROVERETO -->
     <string name="applocation">rovereto</string>
     <string name="appcenter">45.893324, 11.036265</string>
     <string name="zoom_level">16</string>
+    <string name="app_name">ContaParcheggi - Rovereto</string>
 
 </resources>

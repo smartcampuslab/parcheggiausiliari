@@ -27,11 +27,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Filter;
 import android.widget.ImageView;
-import android.widget.TextView;
+import eu.trentorise.smartcampus.parcheggiausiliari.activity.adapters.GeoObjectAdapter;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
@@ -49,7 +47,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteT
  * @author Michele Armellini
  * 
  */
-public class MapFragment extends Fragment implements SinglePopup {
+public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 
 	private boolean opened = false;
 	private MapView map;
@@ -103,33 +101,8 @@ public class MapFragment extends Fragment implements SinglePopup {
 		String[] coords = center.split(",");
 		map.getController().animateTo(new GeoPoint(Double.parseDouble(coords[0]),Double.parseDouble(coords[1])));
 
-		/* ***Adding Markers*** */
 
-		ArrayList<ParkingMarker> items = new ArrayList<ParkingMarker>();
-		for (Parking mPark : parks) {
-			ParkingMarker item = new ParkingMarker(mPark);
-			item.setMarker(getResources().getDrawable(
-					R.drawable.marker_parcheggio));
-			items.add(item);
-		}
-
-		map.getOverlays().add(
-				new ItemizedOverlayWithFocus<ParkingMarker>(items,
-						new OnItemGestureListener<ParkingMarker>() {
-
-							@Override
-							public boolean onItemLongPress(int arg0,
-									ParkingMarker arg1) {
-								return false;
-							}
-
-							@Override
-							public boolean onItemSingleTapUp(int arg0,
-									ParkingMarker arg1) {
-								showPopup(map, arg1);
-								return true;
-							}
-						}, map.getResourceProxy()));
+		
 
 		/* ***Setting up "go to my location" button*** */
 
@@ -160,7 +133,7 @@ public class MapFragment extends Fragment implements SinglePopup {
 						.addToBackStack(null).commit();
 			}
 		});
-		addLinee(streets);
+//		addLinee(streets);
 	}
 	private void setupActionBar() {
 		ActionBar actionBar = ((MainActivity) getActivity())
@@ -178,11 +151,12 @@ public class MapFragment extends Fragment implements SinglePopup {
 		searchBox.setVisibility(View.GONE);
 
 		/* Non static calls are needed in order for the Helper to have the context and show the ProgressDialog correctly */
-		streets = new AusiliariHelper(getActivity()).getStreetlist();
-		parks = new AusiliariHelper(getActivity()).getParklist();
+//		streets = new AusiliariHelper(getActivity()).getStreetlist();
+		AusiliariHelper.getParklistProcessorMap(getActivity(), this);
+		AusiliariHelper.getStreetProcessorMap(getActivity(), this);
 
-		list.addAll(parks);
-		list.addAll(streets);
+//		list.addAll(parks);
+//		list.addAll(streets);
 
 		searchBox.setAdapter(new GeoObjectAdapter(getActivity(), list));
 		searchIcon.setOnClickListener(new View.OnClickListener() {
@@ -315,6 +289,7 @@ public class MapFragment extends Fragment implements SinglePopup {
 		}
 
 		map.getOverlays().add(fo);
+		map.invalidate();
 	}
 
 	@Override
@@ -351,94 +326,39 @@ public class MapFragment extends Fragment implements SinglePopup {
 				.getSupportActionBar();
 		actionBar.setCustomView(v);
 	}
+	@Override
+	public void addgeopoints(List<Parking> parks) {
+		ArrayList<ParkingMarker> items = new ArrayList<ParkingMarker>();
+		for (Parking mPark : parks) {
+			ParkingMarker item = new ParkingMarker(mPark);
+			item.setMarker(getResources().getDrawable(
+					R.drawable.marker_parcheggio));
+			items.add(item);
+		}
+
+		map.getOverlays().add(
+				new ItemizedOverlayWithFocus<ParkingMarker>(items,
+						new OnItemGestureListener<ParkingMarker>() {
+
+							@Override
+							public boolean onItemLongPress(int arg0,
+									ParkingMarker arg1) {
+								return false;
+							}
+
+							@Override
+							public boolean onItemSingleTapUp(int arg0,
+									ParkingMarker arg1) {
+								showPopup(map, arg1);
+								return true;
+							}
+						}, map.getResourceProxy()));		
+	}
+	@Override
+	public void addStreets(List<Street> streets) {
+		addLinee(streets);
+	}
 
 	
-	/**
-	 * 
-	 * Class which populates the suggestion dropdown and performs the filtering
-	 * 
-	 * @author Michele Armellini
-	 */
-	public static class GeoObjectAdapter extends ArrayAdapter<GeoObject> {
-		private Filter filter;
-		private final Context context;
-		private List<GeoObject> items = new ArrayList<GeoObject>();
-		private List<GeoObject> filtered = new ArrayList<GeoObject>();
-
-		public GeoObjectAdapter(Context context, List<GeoObject> values) {
-			super(context, R.layout.search_item, values);
-			this.context = context;
-			this.filtered.addAll(values);
-			this.items.addAll(values);
-			this.filter = new MyFilter();
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater
-					.inflate(R.layout.search_item, parent, false);
-			TextView textView = (TextView) rowView
-					.findViewById(R.id.search_item);
-			if (position < filtered.size())
-				textView.setText(filtered.get(position).getName());
-
-			return rowView;
-		}
-
-		@Override
-		public Filter getFilter() {
-			if (filter == null)
-				filter = new MyFilter();
-			return filter;
-		}
-
-		private class MyFilter extends Filter {
-
-			@Override
-			protected FilterResults performFiltering(CharSequence constraint) {
-				filtered.clear();
-				FilterResults result = new FilterResults();
-				if (constraint != null && constraint.toString().length() > 0) {
-					constraint = constraint.toString().toLowerCase();
-					ArrayList<GeoObject> filt = new ArrayList<GeoObject>();
-					ArrayList<GeoObject> lItems = new ArrayList<GeoObject>();
-					synchronized (this) {
-						lItems.addAll(items);
-					}
-					for (int i = 0, l = lItems.size(); i < l; i++) {
-						GeoObject m = lItems.get(i);
-						if (m.getName().toLowerCase().contains(constraint))
-							filt.add(m);
-					}
-					result.count = filt.size();
-					result.values = filt;
-				} else {
-
-					filtered.clear();
-					result.count = filtered.size();
-					result.values = filtered;
-				}
-				return result;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			protected void publishResults(CharSequence constraint,
-					FilterResults results) {
-				// NOTE: this function is *always* called from the UI thread.
-				filtered = (ArrayList<GeoObject>) results.values;
-				ArrayList<GeoObject> temp = new ArrayList<GeoObject>();
-				temp.addAll(filtered);
-				clear();
-				for (int i = 0, l = temp.size(); i < l; i++) {
-					add(temp.get(i));
-				}
-				notifyDataSetChanged();
-				notifyDataSetInvalidated();
-			}
-
-		}
-	}
+	
 }

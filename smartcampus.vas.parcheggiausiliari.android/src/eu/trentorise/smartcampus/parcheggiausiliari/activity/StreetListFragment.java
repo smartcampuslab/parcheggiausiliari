@@ -18,18 +18,21 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
+import eu.trentorise.smartcampus.parcheggiausiliari.activity.adapters.StreetListAdapter;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStreetListInterface;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
-public class StreetListFragment extends Fragment {
+public class StreetListFragment extends Fragment implements UpdateStreetListInterface{
 
 	private ListView list;
 	private SearchView mSearchView;
+	private List<Street> streets = new ArrayList<Street>();
+	private StreetListAdapter streetsAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,8 +58,8 @@ public class StreetListFragment extends Fragment {
 
 			@Override
 			public boolean onQueryTextChange(String arg0) {
-				((StreetListAdapter) list.getAdapter()).getFilter().filter(
-						arg0);
+				((StreetListAdapter) list.getAdapter()).getFilter()
+						.filter(arg0);
 				return true;
 			}
 		});
@@ -68,11 +71,40 @@ public class StreetListFragment extends Fragment {
 		setHasOptionsMenu(true);
 		View rootView = inflater.inflate(R.layout.fragment_streetlist,
 				container, false);
-		list = (ListView) rootView.findViewById(R.id.listStreets);
+		return rootView;
+	}
+
+	@Override
+	public void onStart() {
 		
-		/* Non static call is needed in order for the Helper to have the context and show the ProgressDialog correctly */
-		list.setAdapter(new StreetListAdapter(getActivity(),
-				new AusiliariHelper(getActivity()).getStreetlist()));
+//		super.onStart();
+//		parksAdapter = new ParkListAdapter(getActivity(), parks);
+//		list = (ListView) getActivity().findViewById(R.id.listParkings);
+//		list.setAdapter(parksAdapter);
+//		list.setOnItemClickListener(new OnItemClickListener() {
+//
+//			@Override
+//			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+//					long arg3) {
+//
+//				getActivity()
+//						.getSupportFragmentManager()
+//						.beginTransaction()
+//						.replace(
+//								getId(),// R.id.container,
+//								new DetailsFragment((GeoObject) list
+//										.getAdapter().getItem(arg2)))
+//						.addToBackStack(null).commit();
+//			}
+//		});
+//		AusiliariHelper.getParklistProcessor(this, getActivity());
+		
+		
+		
+		super.onStart();
+		streetsAdapter = new StreetListAdapter(getActivity(), streets);
+		list = (ListView) getActivity().findViewById(R.id.listStreets);
+		list.setAdapter(streetsAdapter);
 		list.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -90,98 +122,31 @@ public class StreetListFragment extends Fragment {
 				// Log.d("DEBUG", "Passed");
 			}
 		});
-		return rootView;
+		AusiliariHelper.getStreetProcessor(this, getActivity());
+		//disable layout message "empty list"
+//		TextView tv = (TextView) getActivity().findViewById(R.id.streets_empty_text);
+//		tv.setVisibility(View.GONE);
+//	} else {
+//		//enable layout message "empty list"
+//		TextView tv = (TextView) getActivity().findViewById(R.id.streets_empty_text);
+//		tv.setVisibility(View.VISIBLE);
+//	}
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 	}
-	
-	/**
-	 * adapter for populating the ListView and performing the research
-	 * @author Michele Armellini
-	 *
-	 */
-	public static class StreetListAdapter extends ArrayAdapter<Street> {
-		private Filter filter;
-		private final Context context;
-		private List<Street> items = new ArrayList<Street>();
-		private List<Street> filtered = new ArrayList<Street>();
 
-		public StreetListAdapter(Context context, List<Street> values) {
-			super(context, R.layout.listrow, values);
-			this.context = context;
-			this.filtered.addAll(values);
-			this.items.addAll(values);
-			this.filter = new MyFilter();
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View rowView = inflater.inflate(R.layout.listrow, parent, false);
-			TextView textView = (TextView) rowView.findViewById(R.id.txt1);
-			textView.setText(filtered.get(position).getName());
-
-			return rowView;
-		}
-
-		@Override
-		public Filter getFilter() {
-			if (filter == null)
-				filter = new MyFilter();
-			return filter;
-		}
-
-		private class MyFilter extends Filter {
-
-			@Override
-			protected FilterResults performFiltering(CharSequence constraint) {
-				filtered.clear();
-				filtered.addAll(items);
-				constraint = constraint.toString().toLowerCase();
-				FilterResults result = new FilterResults();
-				if (constraint != null && constraint.toString().length() > 0) {
-					ArrayList<Street> filt = new ArrayList<Street>();
-					ArrayList<Street> lItems = new ArrayList<Street>();
-					synchronized (this) {
-						lItems.addAll(filtered);
-					}
-					for (int i = 0, l = lItems.size(); i < l; i++) {
-						Street m = lItems.get(i);
-						if (m.getName().toLowerCase().contains(constraint))
-							filt.add(m);
-					}
-					result.count = filt.size();
-					result.values = filt;
-				} else {
-
-					filtered.clear();
-					filtered.addAll(items);
-					result.count = filtered.size();
-					result.values = filtered;
-				}
-				return result;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			protected void publishResults(CharSequence constraint,
-					FilterResults results) {
-				filtered = (ArrayList<Street>) results.values;
-				ArrayList<Street> temp = new ArrayList<Street>();
-				temp.addAll(filtered);
-				notifyDataSetChanged();
-				clear();
-				for (int i = 0, l = temp.size(); i < l; i++) {
-					add(temp.get(i));
-				}
-
-				notifyDataSetInvalidated();
-			}
-
-		}
+	@Override
+	public void addStreets(List<Street> streets) {
+		this.streets = streets;
+		streetsAdapter.clear();
+		streetsAdapter.addAll(streets);
+		streetsAdapter.updateCollections(streets);
+		streetsAdapter.notifyDataSetChanged();
+		
 	}
+
+	
 }

@@ -28,6 +28,7 @@ public class Street extends GeoObject {
 	
 	private LastChange lastChange;
 	
+	private String areaId;
 	
 	public int getSlotsOccupiedOnFree() {
 		return slotsOccupiedOnFree;
@@ -100,6 +101,12 @@ public class Street extends GeoObject {
 	public void setSlotsTimed(int slotsTimed) {
 		this.slotsTimed = slotsTimed;
 	}
-	
-	
+
+	public String getAreaId() {
+		return areaId;
+	}
+
+	public void setAreaId(String areaId) {
+		this.areaId = areaId;
+	}
 }

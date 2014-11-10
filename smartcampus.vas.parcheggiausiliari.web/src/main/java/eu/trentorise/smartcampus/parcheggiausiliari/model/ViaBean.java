@@ -9,11 +9,17 @@ public class ViaBean {
 	private Integer handicappedSlotNumber;
 	private Integer timedParkSlotNumber;
 	private Integer freeParkSlotNumber;
+	private Integer reservedSlotNumber;
+	private Integer paidSlotNumber;
 	private boolean subscritionAllowedPark;
 	private String areaId;
+	private String macroAreaId;
+	private String subMacroAreaId;
 	private LineBean geometry;
 	private String color;
 
+	private String parkometerId;
+	
 	public String getId() {
 		return id;
 	}
@@ -93,7 +99,48 @@ public class ViaBean {
 	public void setSubscritionAllowedPark(boolean subscritionAllowedPark) {
 		this.subscritionAllowedPark = subscritionAllowedPark;
 	}
-	
+
+	public String getMacroAreaId() {
+		return macroAreaId;
+	}
+
+	public void setMacroAreaId(String macroAreaId) {
+		this.macroAreaId = macroAreaId;
+	}
+
+	public String getSubMacroAreaId() {
+		return subMacroAreaId;
+	}
+
+	public void setSubMacroAreaId(String subMacroAreaId) {
+		this.subMacroAreaId = subMacroAreaId;
+	}
+
+	public Integer getReservedSlotNumber() {
+		return reservedSlotNumber;
+	}
+
+	public void setReservedSlotNumber(Integer reservedSlotNumber) {
+		this.reservedSlotNumber = reservedSlotNumber;
+	}
+
+	public Integer getPaidSlotNumber() {
+		return paidSlotNumber;
+	}
+
+	public void setPaidSlotNumber(Integer paidSlotNumber) {
+		this.paidSlotNumber = paidSlotNumber;
+	}
+
+	public String getParkometerId() {
+		return parkometerId;
+	}
+
+	public void setParkometerId(String parkometerId) {
+		this.parkometerId = parkometerId;
+	}
+
+
 	public static class LineBean {
 		private List<PointBean> points;
 

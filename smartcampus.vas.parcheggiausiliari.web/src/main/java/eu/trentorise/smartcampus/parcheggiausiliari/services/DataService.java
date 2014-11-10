@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -51,7 +53,7 @@ public class DataService {
 	private String streetAgencies;
 	
 	@PostConstruct
-	private void initData() throws IOException, DataException {
+	private void initData() throws IOException, DataException, Exception {
 		String[] agencies = parkingAgencies.split(",");
 		String[] refs = parkingSources.split(",");
 		
@@ -60,22 +62,33 @@ public class DataService {
 		for (int i = 0; i < refs.length; i++) {
 			String agency = agencies[i];
 
+			List<Parking> oldParkings = getParkings(agency);
+			Set<String> oldIds = new HashSet<String>();
+			for (Parking p : oldParkings) {
+				oldIds.add(p.getId());
+			}
+
 			ClassPathResource res = new ClassPathResource(refs[i]);
 			List<KMLData> data = KMLHelper.readData(res.getInputStream());
 			for (KMLData item : data) {
 				Parking p = new Parking();
 				p.setId("parking@"+agency+"@"+item.getId());
+				oldIds.remove(p.getId());
 				p.setName(item.getName());
 				p.setAgency(agency);
 				p.setSlotsTotal(item.getTotal());
 				p.setPosition(new double[]{item.getLat(),item.getLon()});
 				saveOrUpdateParking(p);
 			}
+
+			for (String id : oldIds) {
+				geoStorage.deleteObject(geoStorage.getObjectByIdAndAgency(Parking.class, id, agency));
+			}
 		}
 	}
 	
-	@Scheduled(fixedRate = 24*60*60*1000)
-	private void updateStreets() throws SecurityException, RemoteException, IOException, DataException {
+	@Scheduled(fixedRate = 4*60*60*1000)
+	private void updateStreets() throws Exception {
 		String[] agencies = streetAgencies.split(",");
 		String[] refs = streetURLs.split(",");
 		
@@ -83,14 +96,23 @@ public class DataService {
 
 		for (int i = 0; i < refs.length; i++) {
 			String agency = agencies[i];
+
 			String urlString = refs[i];
 			if (ResourceUtils.isUrl(urlString)) {
 				URL url = ResourceUtils.getURL(urlString);
 				InputStream is = url.openStream();
 				List<ViaBean> vie = JsonUtils.toObjectList(IOUtils.toString(is), ViaBean.class);
+				
+				List<Street> oldStreets = getStreets(agency);
+				Set<String> oldIds = new HashSet<String>();
+				for (Street p : oldStreets) {
+					oldIds.add(p.getId());
+				}
+
 				for (ViaBean via : vie) {
 					Street street = new Street();
 					street.setId("street@"+agency+"@"+via.getId());
+					oldIds.remove(street.getId());
 					street.setAreaId(via.getAreaId());
 					street.setAgency(agency);
 					street.setName(via.getStreetReference());
@@ -110,6 +132,9 @@ public class DataService {
 					}
 					//street.setSlotsUnavailable(via.getReservedSlotNumber());
 					saveOrUpdateStreet(street);
+				}
+				for (String id : oldIds) {
+					geoStorage.deleteObject(geoStorage.getObjectByIdAndAgency(Street.class, id, agency));
 				}
 			}
 

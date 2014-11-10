@@ -260,15 +260,15 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 			mPickerTimed.setRange(0, ((Street) obj).getSlotsTimed());
 
 			View blockFree = rootView.findViewById(R.id.free_block);
-			if (((Street) obj).getSlotsFree() == 0) {
+			if (((Street) obj).getSlotsFree() == 0 && blockFree !=null ) {
 				blockFree.setEnabled(false);
 			}
 			View blockPayment = rootView.findViewById(R.id.payment_block);
-			if (((Street) obj).getSlotsPaying() == 0) {
+			if (((Street) obj).getSlotsPaying() == 0 && blockPayment !=null ) {
 				blockPayment.setEnabled(false);
 			}
 			View blockTime = rootView.findViewById(R.id.time_block);
-			if (((Street) obj).getSlotsTimed() == 0) {
+			if (((Street) obj).getSlotsTimed() == 0 && blockTime !=null) {
 				blockTime.setEnabled(false);
 			}
 		}

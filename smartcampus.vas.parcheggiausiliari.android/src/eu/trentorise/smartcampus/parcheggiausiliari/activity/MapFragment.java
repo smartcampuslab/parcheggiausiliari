@@ -39,6 +39,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.util.MyPolyline;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.SinglePopup;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView.OnClearListener;
+//import android.widget.Filter.FilterResults;
 
 /**
  * Fragment containing the map. It implements {@link SinglePopup} to make sure
@@ -58,7 +59,7 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 	private List<Street> streets;
 	private List<Parking> parks;
 	private View vNew;
-
+	private GeoObjectAdapter streetFiltered;
 	
 	@Override
 	public void onStart() {
@@ -119,8 +120,7 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 						new GeoPoint(pos.getLatitude(), pos.getLongitude()));
 			}
 		});
-//		myLocButton.callOnClick();
-//		myLocButton.callOnClick();
+
 		btnParkings.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -151,14 +151,9 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 		searchBox.setVisibility(View.GONE);
 
 		/* Non static calls are needed in order for the Helper to have the context and show the ProgressDialog correctly */
-//		streets = new AusiliariHelper(getActivity()).getStreetlist();
 		AusiliariHelper.getParklistProcessorMap(getActivity(), this);
 		AusiliariHelper.getStreetProcessorMap(getActivity(), this);
 
-//		list.addAll(parks);
-//		list.addAll(streets);
-
-		searchBox.setAdapter(new GeoObjectAdapter(getActivity(), list));
 		searchIcon.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -167,37 +162,7 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 			}
 		});
 
-		searchBox.setOnClearListener(new OnClearListener() {
-
-			@Override
-			public void onClear() {
-				toggleSearch(true);
-			}
-		});
-
-		searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				FragmentTransaction ft = getFragmentManager()
-						.beginTransaction();
-				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
-				ft.replace(
-						R.id.container,
-						new DetailsFragment((GeoObject) parent
-								.getItemAtPosition(position)), null)
-						.addToBackStack(null)// Start the animated transition.
-						.commit();
-				toggleSearch(true);
-				searchIcon.setVisibility(View.GONE);
-				InputMethodManager imm = (InputMethodManager) getActivity()
-						.getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
-			}
-
-		});
+	
 		actionBar.setCustomView(vNew);
 		
 		searchIcon.setVisibility(View.VISIBLE);
@@ -287,7 +252,43 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 					street.getPolyline(), street, this);
 			fo.add(mp);
 		}
+		list.clear();
+		list.addAll(data);
 
+		streetFiltered = new GeoObjectAdapter(getActivity(), list);
+		searchBox.setAdapter(streetFiltered);
+		streetFiltered.notifyDataSetChanged();
+		searchBox.setOnClearListener(new OnClearListener() {
+
+			@Override
+			public void onClear() {
+				toggleSearch(true);
+			}
+		});
+
+		searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				FragmentTransaction ft = getFragmentManager()
+						.beginTransaction();
+				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
+				ft.replace(
+						R.id.container,
+						new DetailsFragment((GeoObject) parent
+								.getItemAtPosition(position)), null)
+						.addToBackStack(null)// Start the animated transition.
+						.commit();
+				toggleSearch(true);
+				searchIcon.setVisibility(View.GONE);
+				InputMethodManager imm = (InputMethodManager) getActivity()
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
+			}
+
+		});
 		map.getOverlays().add(fo);
 		map.invalidate();
 	}
@@ -360,5 +361,6 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 	}
 
 	
+
 	
 }

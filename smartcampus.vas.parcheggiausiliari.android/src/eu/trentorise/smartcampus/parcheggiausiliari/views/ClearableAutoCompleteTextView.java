@@ -1,8 +1,8 @@
 package eu.trentorise.smartcampus.parcheggiausiliari.views;
 
+import smartcampus.vas.parcheggiausiliari.android.R;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v7.appcompat.R;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;

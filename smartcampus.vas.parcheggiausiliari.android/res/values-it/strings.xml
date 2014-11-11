@@ -28,18 +28,4 @@
     <string name="dialog_loading">Caricamento</string>
     <string name="dialog_waiting">Attendere...</string>
 
-
-    <!-- Trento -->
-    <!-- <string name="applocation">trento</string> -->
-    <!-- <string name="appcenter">46.070746, 11.123677</string> -->
-    <!-- <string name="zoom_level">16</string> -->
-    <!-- <string name="app_name">ContaParcheggi - Trento</string> -->
-
-
-    <!-- ROVERETO -->
-    <string name="applocation">rovereto</string>
-    <string name="appcenter">45.893324, 11.036265</string>
-    <string name="zoom_level">16</string>
-    <string name="app_name">ContaParcheggi - Rovereto</string>
-
 </resources>

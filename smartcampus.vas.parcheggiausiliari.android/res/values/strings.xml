@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ContaParcheggi</string>
     <string name="action_settings">Settings</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Closed</string>
@@ -28,13 +27,17 @@
     <string name="dialog_waiting">Waiting...</string>
     <!-- Trento -->
 
-
-    <!-- <string name="applocation">trento</string> -->
-    <!-- <string name="appcenter">46.070746, 11.123677</string> -->
-    <!-- <string name="zoom_level">16</string> -->
-    <!-- ROVERETO -->
-    <string name="applocation">rovereto</string>
-    <string name="appcenter">45.893324, 11.036265</string>
+    <!-- Trento -->
+    <string name="applocation">trento</string>
+    <string name="appcenter">46.070746,11.123677</string>
     <string name="zoom_level">16</string>
+    <string name="app_name">ContaParcheggi - Trento</string>
+
+
+    <!-- ROVERETO -->
+<!--     <string name="applocation">rovereto</string> -->
+<!--     <string name="appcenter">45.893324,11.036265</string> -->
+<!--     <string name="zoom_level">16</string> -->
+<!--     <string name="app_name">ContaParcheggi - Rovereto</string> -->
 
 </resources>

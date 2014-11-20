@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.trentorise.smartcampus</groupId>
 	<artifactId>smartcampus.vas.parcheggiausiliari.web</artifactId>
-	<version>1.0</version>
+	<version>1.0-fiware</version>
 	<packaging>war</packaging>
-	<name>Parcheggi ausiliari webapp</name>
+	<name>Parcheggi ausiliari webapp (FI-WARE demo)</name>
 
 	<properties>
 		<spring.version>3.1.3.RELEASE</spring.version>
@@ -146,7 +146,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>parcheggiausiliari</finalName>
+		<finalName>parcheggiausiliari.fiware</finalName>
 	</build>
 
 	<repositories>

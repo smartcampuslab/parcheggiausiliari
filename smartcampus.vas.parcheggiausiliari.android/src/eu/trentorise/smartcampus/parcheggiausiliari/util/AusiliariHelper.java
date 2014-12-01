@@ -19,9 +19,11 @@ import eu.trentorise.smartcampus.parcheggiausiliari.model.StreetLog;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.constants.Parcheggi_Services;
 
 /**
- * Class containing all methods which make use of the Services listed in the interface {@link Parcheggi_Services}
+ * Class containing all methods which make use of the Services listed in the
+ * interface {@link Parcheggi_Services}
+ * 
  * @author Michele Armellini
- *
+ * 
  */
 public class AusiliariHelper implements Parcheggi_Services {
 	private static Context mContext;
@@ -119,7 +121,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 		return ((Activity) mContext).getSharedPreferences("Login", 0)
 				.getString("User", null);
 	}
-	
+
 	private static class SetDataTask extends AsyncTask<GeoObject, Void, Void> {
 		ProgressDialog pd;
 
@@ -129,7 +131,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 				if (Parking.class.isInstance(params[0])) {
 					RemoteConnector.postJSON(
 							HOST,
-							"parcheggiausiliari/"
+							"parcheggiausiliari.fiware/"
 									+ mContext.getResources().getString(
 											R.string.applocation)
 									+ UPDATEPARK
@@ -142,7 +144,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 				} else {
 					RemoteConnector.postJSON(
 							HOST,
-							"parcheggiausiliari/"
+							"parcheggiausiliari.fiware/"
 									+ mContext.getResources().getString(
 											R.string.applocation)
 									+ UPDATESTREET
@@ -197,7 +199,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 			try {
 				request = RemoteConnector.getJSON(
 						HOST,
-						"parcheggiausiliari/"
+						"parcheggiausiliari.fiware/"
 								+ mContext.getResources().getString(
 										R.string.applocation) + STREETLOGLIST
 								+ params[0].getId(), mContext.getResources()
@@ -246,7 +248,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 			try {
 				request = RemoteConnector.getJSON(
 						HOST,
-						"parcheggiausiliari/"
+						"parcheggiausiliari.fiware/"
 								+ mContext.getResources().getString(
 										R.string.applocation) + PARKLOGLIST
 								+ params[0].getId(), mContext.getResources()
@@ -294,7 +296,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 			try {
 				request = RemoteConnector.getJSON(
 						HOST,
-						"parcheggiausiliari/"
+						"parcheggiausiliari.fiware/"
 								+ mContext.getResources().getString(
 										R.string.applocation) + AUSLOGLIST
 								+ new AusiliariHelper(mContext).getUsername(),
@@ -339,7 +341,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 			try {
 				request = RemoteConnector.getJSON(
 						HOST,
-						"parcheggiausiliari/"
+						"parcheggiausiliari.fiware/"
 								+ mContext.getResources().getString(
 										R.string.applocation) + STREETLIST,
 						mContext.getResources().getString(R.string.token));
@@ -382,7 +384,7 @@ public class AusiliariHelper implements Parcheggi_Services {
 			try {
 				request = RemoteConnector.getJSON(
 						HOST,
-						"parcheggiausiliari/"
+						"parcheggiausiliari.fiware/"
 								+ mContext.getResources().getString(
 										R.string.applocation) + PARKLIST,
 						mContext.getResources().getString(R.string.token));
@@ -414,6 +416,5 @@ public class AusiliariHelper implements Parcheggi_Services {
 				pd.dismiss();
 		}
 	}
-
 
 }

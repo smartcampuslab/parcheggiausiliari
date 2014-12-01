@@ -7,7 +7,8 @@ package eu.trentorise.smartcampus.parcheggiausiliari.util.constants;
  */
 public interface Parcheggi_Services {
 
-	public static final String HOST = "http://192.168.41.72:8080/";
+	// public static final String HOST = "http://192.168.0.7:8080/";
+	public static final String HOST = "https://vas-dev.smartcampuslab.it/";
 
 	public static final String PARKLIST = "/parkings/";
 

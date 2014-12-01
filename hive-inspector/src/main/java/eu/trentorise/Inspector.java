@@ -17,7 +17,7 @@ public class Inspector {
 	private static final String HIVE_PWD = "";
 
 	private static final String TMP_TABLE = "sc_data";
-	private static final String STADIO_ENTITY = "Ospedale___Rovereto";
+	private static final String STADIO_ENTITY = "parking@rovereto@1";
 
 	/**
 	 * @param args
@@ -36,11 +36,11 @@ public class Inspector {
 			ResultSet resultSet = null;
 
 			// delete temp table
-			// stmt.executeQuery("drop table " + TMP_TABLE);
-			// logger.info("Dropped " + TMP_TABLE);
+			stmt.executeQuery("drop table " + TMP_TABLE);
+			logger.info("Dropped " + TMP_TABLE);
 
 			stmt.executeQuery(String
-					.format("create external table IF NOT EXISTS %s (date_f string, time_f string, entity_f string, type_f string, attr_f string, fake_f string, value_f int) row format delimited fields terminated by '|' location '%s'",
+					.format("create external table IF NOT EXISTS %s (date_f string, time_f int, entity_f string, type_f string, attr_f string, fake_f string, value_f int) row format delimited fields terminated by '|' location '%s'",
 							TMP_TABLE, "/user/mirko.perillo/sc/dataset1/"));
 			logger.info("CREATED " + TMP_TABLE);
 
@@ -50,14 +50,14 @@ public class Inspector {
 			// }
 
 			// query park
-			// resultSet = stmt
-			// .executeQuery(String
-			// .format("SELECT entity_f,time_f, value_f FROM %s WHERE entity_f='%s'",
-			// TMP_TABLE, STADIO_ENTITY));
-			// while (resultSet.next()) {
-			// logger.info(resultSet.getString(1) + " "
-			// + resultSet.getString(2) + " " + resultSet.getInt(3));
-			// }
+			resultSet = stmt
+					.executeQuery(String
+							.format("SELECT entity_f,time_f, value_f FROM %s WHERE entity_f='%s' ORDER BY time_f ASC",
+									TMP_TABLE, STADIO_ENTITY));
+			while (resultSet.next()) {
+				logger.info(resultSet.getString(1) + " "
+						+ resultSet.getString(2) + " " + resultSet.getInt(3));
+			}
 
 			// query bike
 			resultSet = stmt

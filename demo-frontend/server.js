@@ -3,6 +3,8 @@
 
   var ORION_SUBMITTING = true;
 
+  var FILAB = true;
+
 
   var app, connection, count, data, express, getAllData, getLastData, http_server, io, mysql, sys,
     _this = this;
@@ -16,6 +18,9 @@
   var bodyParser = require('body-parser');
   var errorHandler = require('error-handler');
   var restler = require('restler');
+  var hive = require('node-hive').for({ server:"cosmos.lab.fi-ware.org" });
+  mysql = require('mysql');
+
 
   app = module.exports = express();
 
@@ -24,24 +29,23 @@
     app.set('view engine', 'jade');
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
-    //app.use(express.methodOverride());
     app.use(require('stylus').middleware({
       src: __dirname + '/public'
     }));
-    //app.use(app.router);
     app.use(express["static"](__dirname + '/public'));
  
 
- /* if (app.get('env') === 'development') {
-      app.use(errorHandler({
-      dumpExceptions: true,
-      showStack: true
-    }));
-  }
+ 
 
-  if (app.get('env') === 'production') {
-     app.use(errorHandler());
-  }*/
+  if(!FILAB) {
+     connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'fiware',
+    password: 'fiware',
+    database: 'fiware'
+  });
+  connection.connect();
+  }
 
   count = 6;
 
@@ -51,26 +55,41 @@
 
   sys = require('util');
 
-  mysql = require('mysql');
 
-  connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'fiware',
-    password: 'fiware',
-    database: 'fiware'
-  });
+  
 
-  connection.connect();
 
   getBikeData =  function(connection, pcId, callback) {
     var _this = this;
     console.log("querying bike data");
+    if(!FILAB){
     return connection.query('SELECT m.* from `data-avg-bike` m ORDER BY m.station ASC', [pcId, pcId], function(err, rows, fields) {
       if (err) {
         throw err;
       }
       return callback(rows);
     });
+  }
+
+  if(FILAB) {
+    var rows = [];
+    hive.fetch("SELECT entity_f,AVG(value_f) as media FROM sc_bikes WHERE entity_f  NOT LIKE 'street@%%' AND entity_f NOT LIKE 'parking@%%' GROUP BY entity_f", function(err, data) {
+      if (err) {
+        throw err;
+      }
+      data.each(function(record) {
+      console.log("record " + JSON.stringify(record));
+      rows.push({'station': record['entity_f'], 'avg': (Math.round(record['media'] * 100) / 100)});
+  });
+      console.log("rows " + JSON.stringify(rows));
+      rows.sort(function(a, b){
+      return a.station.localeCompare(b.station);
+    });
+    console.log("rows " + JSON.stringify(rows));
+    return callback(rows);
+  });
+    
+  }
   };
 
   getLastData = function(connection, pcId, callback) {
@@ -157,7 +176,7 @@
 
 
 this.orionSubmit = function(value) {
-   var url = 'http://orion:1026/NGSI10/updateContext';
+   var url = 'http://localhost:1026/NGSI10/updateContext';
   var options = {
     'headers' : {'User-Agent': 'demo-frontend', 'Content-type': 'application/json', 'Accept' : 'application/json'},
      'timeout' : 60000
@@ -199,7 +218,6 @@ this.orionSubmit = function(value) {
 
 
     this.getBikeDataWrapper = function(connection, pcId) {
-      
     getBikeData(connection, pcId, function(result) {
       var item, _i, _len;
       item = [];
@@ -237,6 +255,7 @@ this.orionSubmit = function(value) {
 
   io.sockets.on('connection', function(socket) {
     var mys;
+    if(!FILAB){
     mys = mysql.createConnection({
       host: 'localhost',
       user: 'fiware',
@@ -244,7 +263,8 @@ this.orionSubmit = function(value) {
       database: 'fiware'
     });
     mys.connect();
-    _this.getAllDataWrapper(mys, entity_id);
+  }
+   // _this.getAllDataWrapper(mys, entity_id);
     _this.getBikeDataWrapper(mys, entity_id);
     return socket.on('disconnect', function() {});
   });

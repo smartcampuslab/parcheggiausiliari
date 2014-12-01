@@ -52,6 +52,7 @@
   data = [];
 
   var lastBikeAVG = -1;
+  var lastTime = -1;
 
   sys = require('util');
 
@@ -73,19 +74,19 @@
 
   if(FILAB) {
     var rows = [];
-    hive.fetch("SELECT entity_f,AVG(value_f) as media FROM sc_bikes WHERE entity_f  NOT LIKE 'street@%%' AND entity_f NOT LIKE 'parking@%%' GROUP BY entity_f", function(err, data) {
+    hive.fetch("SELECT entity_f,AVG(value_f) as media FROM sc_data WHERE entity_f  NOT LIKE 'street@%%' AND entity_f NOT LIKE 'parking@%%' GROUP BY entity_f", function(err, data) {
       if (err) {
         throw err;
       }
       data.each(function(record) {
-      console.log("record " + JSON.stringify(record));
+     // console.log("record " + JSON.stringify(record));
       rows.push({'station': record['entity_f'], 'avg': (Math.round(record['media'] * 100) / 100)});
   });
-      console.log("rows " + JSON.stringify(rows));
+     
       rows.sort(function(a, b){
       return a.station.localeCompare(b.station);
     });
-    console.log("rows " + JSON.stringify(rows));
+   // console.log("rows " + JSON.stringify(rows));
     return callback(rows);
   });
     
@@ -95,23 +96,58 @@
   getLastData = function(connection, pcId, callback) {
     var _this = this;
     console.log("querying for last park insert");
+    if(!FILAB) {
     return connection.query('SELECT m.* from `data-pstadio` m where m.receive_timestamp=(select max(m2.receive_timestamp) from `data-pstadio` m2)', [pcId, pcId], function(err, rows, fields) {
       if (err) {
         throw err;
       }
       return callback(rows);
     });
+  }
+    if(FILAB) {
+          var rows = [];
+          
+           hive.fetch("SELECT entity_f,time_f, value_f FROM sc_data WHERE entity_f='parking@rovereto@1' AND time_f > " + lastTime, function(err, data) {
+        if (err) {
+          throw err;
+        }
+        data.each(function(record) {
+        if(lastTime < record['time_f']) {
+          lastTime = record['time_f'];
+        }
+        rows.push({'entity_id': 'park', 'receive_timestamp': record['time_f'], 'attr_value': record['value_f']});
+    });
+      //console.log("rows " + JSON.stringify(rows));
+      return callback(rows);
+      });
+      }
   };
 
   getAllData = function(connection, pcId, callback) {
     console.log("load  all park data");
+       if(!FILAB) {
     return connection.query('SELECT m.* from `data-pstadio` m order by receive_timestamp asc', [pcId], function(err, rows, fields) {
       if (err) {
         throw err;
       }
       return callback(rows);
     });
-  };
+    }
+      if(FILAB) {
+          var rows = [];
+           hive.fetch("SELECT entity_f,time_f, value_f FROM sc_data WHERE entity_f='parking@rovereto@1' ORDER BY time_f ASC", function(err, data) {
+        if (err) {
+          throw err;
+        }
+        data.each(function(record) {
+        //console.log("record " + JSON.stringify(record));
+        rows.push({'entity_id': 'park', 'receive_timestamp': record['time_f'], 'attr_value': record['value_f']});
+    });
+      //console.log("rows " + JSON.stringify(rows));
+      return callback(rows);
+      });
+      }
+     };
 
   this.getAllDataWrapper = function(connection, pcId) {
     return getAllData(connection, pcId, function(result) {
@@ -136,7 +172,7 @@
       _results = [];
       for (_i = 0, _len = result.length; _i < _len; _i++) {
         item = result[_i];
-        //console.log("last "+ JSON.stringify(item));
+        console.log("last "+ JSON.stringify(item));
         _results.push(typeof io !== "undefined" && io !== null ? io.sockets.emit('chart', {
           chartData: item
         }) : void 0);
@@ -264,7 +300,7 @@ this.orionSubmit = function(value) {
     });
     mys.connect();
   }
-   // _this.getAllDataWrapper(mys, entity_id);
+    _this.getAllDataWrapper(mys, entity_id);
     _this.getBikeDataWrapper(mys, entity_id);
     return socket.on('disconnect', function() {});
   });

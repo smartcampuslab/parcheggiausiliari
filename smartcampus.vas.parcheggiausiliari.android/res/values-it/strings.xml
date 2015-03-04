@@ -28,4 +28,6 @@
     <string name="dialog_loading">Caricamento</string>
     <string name="dialog_waiting">Attendere...</string>
 
+        <string name="empty_user">Specifica nome utente!</string>
+    
 </resources>

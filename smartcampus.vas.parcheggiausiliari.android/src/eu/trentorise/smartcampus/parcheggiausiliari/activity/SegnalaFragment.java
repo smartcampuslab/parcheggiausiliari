@@ -410,13 +410,18 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 	}
 
 	@Override
-	public void signal() {
-		Toast.makeText(getActivity(), "Dati inviati",
-				Toast.LENGTH_LONG).show();
-		getActivity()
-				.getSharedPreferences(MY_PREFERENCES,
-						Context.MODE_PRIVATE).edit()
-				.remove(obj.getId()).commit();
-		resetPickers();
+	public void signal(boolean result) {
+		if (result) {
+			Toast.makeText(getActivity(), R.string.dialog_send_ok,
+					Toast.LENGTH_LONG).show();
+			getActivity()
+					.getSharedPreferences(MY_PREFERENCES,
+							Context.MODE_PRIVATE).edit()
+					.remove(obj.getId()).commit();
+			resetPickers();
+		} else {
+			Toast.makeText(getActivity(), R.string.dialog_send_ko,
+					Toast.LENGTH_LONG).show();
+		}
 	}
 }

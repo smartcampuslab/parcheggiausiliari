@@ -14,7 +14,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.util.RemoteConnector;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.RemoteException;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.constants.Parcheggi_Services;
 
-public class SendSignalProcessor extends AsyncTask<Object, Void, Void> {
+public class SendSignalProcessor extends AsyncTask<Object, Void, Boolean> {
 	Activity activity;
 	ProgressDialog pd;
 	UpdateSegnalaInterface updateSegnalaInterface;
@@ -22,7 +22,7 @@ public class SendSignalProcessor extends AsyncTask<Object, Void, Void> {
 	this.activity=activity;
 }
 	@Override
-	protected Void doInBackground(Object... params) {
+	protected Boolean doInBackground(Object... params) {
 		updateSegnalaInterface = (UpdateSegnalaInterface) params[1];
 		try {
 			if (Parking.class.isInstance(params[0])) {
@@ -52,6 +52,7 @@ public class SendSignalProcessor extends AsyncTask<Object, Void, Void> {
 								.toJSON(params[0]), activity.getResources()
 								.getString(R.string.token));
 			}
+			return true;
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,7 +63,7 @@ public class SendSignalProcessor extends AsyncTask<Object, Void, Void> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return false;
 	}
 
 	@Override
@@ -75,9 +76,9 @@ public class SendSignalProcessor extends AsyncTask<Object, Void, Void> {
 	}
 
 	@Override
-	protected void onPostExecute(Void result) {
+	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
-		updateSegnalaInterface.signal();
+		updateSegnalaInterface.signal(result);
 		if (pd.isShowing())
 			pd.dismiss();
 	}

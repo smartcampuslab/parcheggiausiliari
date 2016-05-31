@@ -27,7 +27,9 @@
     <string name="button_continua">Continua</string>
     <string name="dialog_loading">Caricamento</string>
     <string name="dialog_waiting">Attendere...</string>
-
+    <string name="dialog_send_ok">Dati inviati</string>
+    <string name="dialog_send_ko">Invio dati fallito Riprova più tardi.</string>
+    
         <string name="empty_user">Specifica nome utente!</string>
     
 </resources>

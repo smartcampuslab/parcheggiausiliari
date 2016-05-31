@@ -193,6 +193,7 @@ public class DataService {
 		old.setSlotsPaying(s.getSlotsPaying());
 		old.setSlotsOccupiedOnPaying(s.getSlotsOccupiedOnPaying());
 		old.setSlotsTimed(s.getSlotsTimed());
+		old.setSlotsOccupiedOnTimed(s.getSlotsOccupiedOnTimed());
 		old.setSlotsUnavailable(s.getSlotsUnavailable());
 		StreetLog sl = new StreetLog();
 		sl.setAuthor(authorId);

@@ -5,6 +5,6 @@ import java.util.Map;
 
 public interface UpdateSegnalaInterface {
 
-	void signal();
+	void signal(boolean result);
 
 }

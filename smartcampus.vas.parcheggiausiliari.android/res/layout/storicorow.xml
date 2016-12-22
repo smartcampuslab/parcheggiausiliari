@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:text="Pippo - ore 14:00 - 17/09/2014"
+        android:text=""
         android:textSize="21sp" />
 
     <LinearLayout

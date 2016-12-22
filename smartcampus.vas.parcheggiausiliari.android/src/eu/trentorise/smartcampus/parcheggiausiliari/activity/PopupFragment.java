@@ -47,10 +47,10 @@ public class PopupFragment extends DialogFragment {
 		TextView tv = (TextView) v.findViewById(R.id.txtLastData);
 		if (Parking.class.isInstance(obj)) {
 			Date d = null;
-			if(((Parking) obj).getLastChange() != null)
-				d = new Date(((Parking) obj).getLastChange().getTime());
-			tv.setText(((Parking) obj).getLastChange() != null ? (((Parking) obj)
-					.getLastChange().getAuthor()
+			if(((Parking) obj).getUpdateTime() != null)
+				d = new Date(((Parking) obj).getUpdateTime());
+			tv.setText(((Parking) obj).getUpdateTime() != null ? (((Parking) obj)
+					.getAuthor()
 					+ " - ore "
 					+ String.format("%02d", d.getHours())
 					+ ":"

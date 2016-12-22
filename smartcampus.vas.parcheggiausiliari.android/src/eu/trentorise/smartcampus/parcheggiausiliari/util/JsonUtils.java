@@ -81,6 +81,8 @@ public class JsonUtils {
 		try {
 			return fullMapper.readValue(body, cls);
 		} catch (Exception e) {
+			//return null;
+			e.printStackTrace();
 			return null;
 		}
 	}

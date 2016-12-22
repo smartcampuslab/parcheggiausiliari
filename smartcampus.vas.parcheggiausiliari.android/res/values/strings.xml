@@ -27,20 +27,22 @@
     <string name="dialog_waiting">Waiting...</string>
     <string name="dialog_send_ok">Data sent successfully</string>
     <string name="dialog_send_ko">Data has not been sent. Please try again later.</string>
-
+	<string name="system_author">Sysytem</string>
     <string name="empty_user">User name cannot be empty!</string>
 
     <!-- Trento -->
 
     <!-- Trento -->
-<!--     <string name="applocation">trento</string> -->
+<!--     <string name="park">metroparco/data-mgt</string> -->
+<!--     <string name="applocation">tn</string> -->
 <!--     <string name="appcenter">46.070746,11.123677</string> -->
 <!--     <string name="zoom_level">16</string> -->
 <!--     <string name="app_name">ContaParcheggi - Trento</string> -->
 
 
     <!-- ROVERETO -->
-    <string name="applocation">rovereto</string>
+    <string name="park">metroparco/data-mgt/</string>
+    <string name="applocation">rv</string>
     <string name="appcenter">45.893324,11.036265</string>
     <string name="zoom_level">16</string>
     <string name="app_name">ContaParcheggi - ROV</string>

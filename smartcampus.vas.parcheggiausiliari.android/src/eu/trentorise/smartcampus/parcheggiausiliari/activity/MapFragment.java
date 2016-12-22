@@ -14,8 +14,11 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import smartcampus.vas.parcheggiausiliari.android.R;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -29,8 +32,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.activity.adapters.GeoObjectAdapter;
+import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoAgenteInterface;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.LogObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
@@ -39,6 +45,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.util.MyPolyline;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.SinglePopup;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.ClearableAutoCompleteTextView.OnClearListener;
+
 //import android.widget.Filter.FilterResults;
 
 /**
@@ -60,12 +67,13 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 	private List<Parking> parks;
 	private View vNew;
 	private GeoObjectAdapter streetFiltered;
-	
+	private LogObject currentLog = null;
+
 	@Override
 	public void onStart() {
 		super.onStart();
 		/*
-		 *  ***Setting up the custom layout of the actionbar and implementing
+		 * ***Setting up the custom layout of the actionbar and implementing
 		 * search functionality***
 		 */
 
@@ -73,7 +81,8 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 
 		/* ***Populating view*** */
 
-		Button btnParkings = (Button) getActivity().findViewById(R.id.btnParking);
+		Button btnParkings = (Button) getActivity().findViewById(
+				R.id.btnParking);
 		Button btnStreets = (Button) getActivity().findViewById(R.id.btnVie);
 		btnStreets.setOnClickListener(new OnClickListener() {
 
@@ -90,24 +99,27 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 
 		/* ***Map Settings*** */
 		map = (MapView) getActivity().findViewById(R.id.mapview);
-		map.setTileSource(TileSourceFactory.MAPQUESTOSM);
+		map.setTileSource(TileSourceFactory.MAPNIK);
 		map.setMultiTouchControls(true);
 		map.setMinZoomLevel(10);
 		MyLocationNewOverlay myLoc = new MyLocationNewOverlay(getActivity(),
 				new CustomLocationProvider(getActivity()), map);
 		myLoc.enableMyLocation();
 		map.getOverlays().add(myLoc);
-		map.getController().setZoom(Integer.valueOf(getResources().getString((R.string.zoom_level))));
+		map.getController()
+				.setZoom(
+						Integer.valueOf(getResources().getString(
+								(R.string.zoom_level))));
 		String center = getResources().getString(R.string.appcenter);
 		String[] coords = center.split(",");
-		map.getController().animateTo(new GeoPoint(Double.parseDouble(coords[0]),Double.parseDouble(coords[1])));
-
-
-		
+		map.getController().animateTo(
+				new GeoPoint(Double.parseDouble(coords[0]), Double
+						.parseDouble(coords[1])));
 
 		/* ***Setting up "go to my location" button*** */
 
-		Button myLocButton = (Button) getActivity().findViewById(R.id.btMyLocation);
+		Button myLocButton = (Button) getActivity().findViewById(
+				R.id.btMyLocation);
 		myLocButton.setBackgroundResource(R.drawable.ic_menu_mylocation);
 		myLocButton.setOnClickListener(new OnClickListener() {
 
@@ -133,8 +145,9 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 						.addToBackStack(null).commit();
 			}
 		});
-//		addLinee(streets);
+		// addLinee(streets);
 	}
+
 	private void setupActionBar() {
 		ActionBar actionBar = ((MainActivity) getActivity())
 				.getSupportActionBar();
@@ -150,7 +163,10 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 				.findViewById(R.id.search_box);
 		searchBox.setVisibility(View.GONE);
 
-		/* Non static calls are needed in order for the Helper to have the context and show the ProgressDialog correctly */
+		/*
+		 * Non static calls are needed in order for the Helper to have the
+		 * context and show the ProgressDialog correctly
+		 */
 		AusiliariHelper.getParklistProcessorMap(getActivity(), this);
 		AusiliariHelper.getStreetProcessorMap(getActivity(), this);
 
@@ -162,15 +178,15 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 			}
 		});
 
-	
 		actionBar.setCustomView(vNew);
-		
+
 		searchIcon.setVisibility(View.VISIBLE);
 	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 	}
 
 	/**
@@ -203,13 +219,17 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_map, container,
 				false);
-		
+
 		return rootView;
 	}
 
 	protected void showPopup(View anchorView, ParkingMarker arg1) {
-		DialogFragment df = new PopupFragment(arg1.getmParking());
-		df.show(getFragmentManager(), getTag());
+		// lanciare processor e recuperare ultimo
+		GetLastLogProcessor ast = new GetLastLogProcessor(getActivity());
+		ast.execute(arg1.getmParking());
+
+		// DialogFragment df = new PopupFragment(arg1.getmParking());
+		// df.show(getFragmentManager(), getTag());
 	}
 
 	@Override
@@ -271,7 +291,7 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
+
 				FragmentTransaction ft = getFragmentManager()
 						.beginTransaction();
 				ft.setCustomAnimations(R.anim.enter, R.anim.exit);
@@ -318,7 +338,6 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 		actionBar.setCustomView(vNew);
 	}
 
-	
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -327,6 +346,7 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 				.getSupportActionBar();
 		actionBar.setCustomView(v);
 	}
+
 	@Override
 	public void addgeopoints(List<Parking> parks) {
 		ArrayList<ParkingMarker> items = new ArrayList<ParkingMarker>();
@@ -350,17 +370,55 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 							@Override
 							public boolean onItemSingleTapUp(int arg0,
 									ParkingMarker arg1) {
+
 								showPopup(map, arg1);
 								return true;
 							}
-						}, map.getResourceProxy()));		
+						}, map.getResourceProxy()));
 	}
+
 	@Override
 	public void addStreets(List<Street> streets) {
 		addLinee(streets);
 	}
 
-	
+	private class GetLastLogProcessor extends
+			AsyncTask<Object, Void, List<LogObject>> {
+		// UpdateStoricoAgenteInterface updateStoricoAgenteInterface;
+		Activity activity;
+		ProgressDialog pd;
+		GeoObject currentObject;
 
-	
+		public GetLastLogProcessor(Activity activity) {
+			this.activity = activity;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			pd = new ProgressDialog(activity);
+			pd.setTitle(activity.getString(R.string.dialog_loading));
+			pd.setMessage(activity.getString(R.string.dialog_waiting));
+			pd.show();
+		}
+
+		protected List<LogObject> doInBackground(Object... params) {
+			// get Parkings or street log
+			// this.updateStoricoAgenteInterface =
+			// (UpdateStoricoAgenteInterface) params[0];
+			// if (params[0] instanceof Parking)
+			currentObject = (GeoObject) params[0];
+			return AusiliariHelper.getStorico((GeoObject) params[0]);
+		}
+
+		protected void onPostExecute(List<LogObject> storico) {
+			currentLog = storico.get(0);
+			currentObject.setAuthor(currentLog.getAuthor());
+			currentObject.setUpdateTime(currentLog.getTime());
+			DialogFragment df = new PopupFragment(currentObject);
+			df.show(getFragmentManager(), getTag());
+		}
+
+	}
 }

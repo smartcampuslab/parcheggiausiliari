@@ -35,6 +35,8 @@ public class ClearableAutoCompleteTextView extends AutoCompleteTextView {
 	private OnClearListener onClearListener = defaultClearListener;
 
 	// The image we defined for the clear button
+//	public Drawable imgClearButton = getResources().getDrawable(
+//			R.drawable.abc_ic_clear_mtrl_alpha);
 	public Drawable imgClearButton = getResources().getDrawable(
 			R.drawable.abc_ic_clear_normal);
 

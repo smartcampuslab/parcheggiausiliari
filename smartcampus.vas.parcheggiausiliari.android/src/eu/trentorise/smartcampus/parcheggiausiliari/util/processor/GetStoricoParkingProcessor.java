@@ -58,5 +58,6 @@ public class GetStoricoParkingProcessor extends
 		}
 		if (pd.isShowing())
 			pd.dismiss();
+		updateStoricoParkingInterface.refreshLog();
 	}
 }

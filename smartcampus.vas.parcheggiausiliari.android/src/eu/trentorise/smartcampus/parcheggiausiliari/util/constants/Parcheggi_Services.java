@@ -6,26 +6,27 @@ package eu.trentorise.smartcampus.parcheggiausiliari.util.constants;
  */
 public class Parcheggi_Services {
 
-	public static final String HOST = "https://tn.smartcommunitylab.it/";
+	public static final String HOST = "https://dev.smartcommunitylab.it/";
 
 	public static final String PARKLIST = "/parkings/";
 
 	public static final String STREETLIST = "/streets/";
 
 	// aggiungere id via in fondo
-	public static final String STREETLOGLIST = "/log/street/";
+	public static final String STREETLOGLIST = "/logs";
 
 	// aggiungere idVia?num num = max Risultati
-	public static final String STREETLOGLISTMAX = "/log/street/";
+	public static final String STREETLOGLISTMAX = "/logs";
 
 	// aggiungere id park in fondo
-	public static final String PARKLOGLIST = "/log/parking/";
+	public static final String PARKLOGLIST = "/logs";
 
 	// aggiungere idPark?num num = max Risultati
-	public static final String PARKLOGLISTMAX = "/log/parking/";
+	public static final String PARKLOGLISTMAX = "/logs";
 
+	public static final String LOGELEMENTS ="&skip=0&count=100";
 	// aggiungere idAusiliario
-	public static final String AUSLOGLIST = "/log/user/";
+	public static final String AUSLOGLIST = "/logs/";
 
 	// aggiungere idAus?num num = max risultati
 	public static final String AUSLOGLISTMAX = "/log/user/";

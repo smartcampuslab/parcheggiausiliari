@@ -28,27 +28,23 @@ public class SendSignalProcessor extends AsyncTask<Object, Void, Boolean> {
 			if (Parking.class.isInstance(params[0])) {
 				RemoteConnector.postJSON(
 						Parcheggi_Services.HOST,
-						"parcheggiausiliari/"
+						activity.getResources().getString(
+								R.string.park)
 								+ activity.getResources().getString(
 										R.string.applocation)
 								+ Parcheggi_Services.UPDATEPARK
-								+ ((Parking)params[0]).getId()
-								+ "/"
-								+  AusiliariHelper
-										.getUsername(), JsonUtils
+								+ ((Parking)params[0]).getId(), JsonUtils
 								.toJSON(params[0]), activity.getResources()
 								.getString(R.string.token));
 			} else {
 				RemoteConnector.postJSON(
 						Parcheggi_Services.HOST,
-						"parcheggiausiliari/"
+						activity.getResources().getString(
+								R.string.park)
 								+ activity.getResources().getString(
 										R.string.applocation)
 								+ Parcheggi_Services.UPDATESTREET
-								+ ((Street)params[0]).getId()
-								+ "/"
-								+ AusiliariHelper
-										.getUsername(), JsonUtils
+								+ ((Street)params[0]).getId(), JsonUtils
 								.toJSON(params[0]), activity.getResources()
 								.getString(R.string.token));
 			}

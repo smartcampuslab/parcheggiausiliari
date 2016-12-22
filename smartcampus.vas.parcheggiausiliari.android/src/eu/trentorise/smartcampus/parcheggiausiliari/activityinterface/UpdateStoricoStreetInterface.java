@@ -9,5 +9,5 @@ public interface UpdateStoricoStreetInterface {
 
 
 	void addStoricoStreet(List<StreetLog> storico);
-
+	void refreshLog();
 }

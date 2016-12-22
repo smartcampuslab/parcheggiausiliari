@@ -33,7 +33,14 @@ public class BasicObject implements Serializable {
 
 	private String id;
 	private long version;
-	private long updateTime;
+	private Long updateTime;
+	private String author;
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
 	public String getId() {
 		return id;
 	}
@@ -46,12 +53,13 @@ public class BasicObject implements Serializable {
 	public void setVersion(long version) {
 		this.version = version;
 	}
-	public long getUpdateTime() {
+	public Long getUpdateTime() {
 		return updateTime;
 	}
-	public void setUpdateTime(long updateTime) {
-		this.updateTime = updateTime;
+	public void setUpdateTime(Long time) {
+		this.updateTime = time;
 	}
+
 	
 	
 }

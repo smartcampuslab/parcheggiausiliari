@@ -10,10 +10,11 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.TextView;
 import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoAgenteInterface;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.LogObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 
 public class GetStoricoAgenteProcessor extends
-		AsyncTask<Object, Void, List<Map>> {
+		AsyncTask<Object, Void, List<LogObject>> {
 	UpdateStoricoAgenteInterface updateStoricoAgenteInterface;
 	Activity activity;
 	ProgressDialog pd;
@@ -32,13 +33,13 @@ public class GetStoricoAgenteProcessor extends
 		pd.show();
 	}
 
-	protected List<Map> doInBackground(Object... params) {
+	protected List<LogObject> doInBackground(Object... params) {
 		// get Parkings
 		this.updateStoricoAgenteInterface = (UpdateStoricoAgenteInterface) params[0];
 		return AusiliariHelper.getStoricoAgente();
 	}
 
-	protected void onPostExecute(List<Map> storico) {
+	protected void onPostExecute(List<LogObject> storico) {
 		TextView tv = (TextView) activity.findViewById(R.id.txtNoData);
 
 		if (storico != null && storico.size() > 0) {
@@ -55,5 +56,6 @@ public class GetStoricoAgenteProcessor extends
 		}
 		if (pd.isShowing())
 			pd.dismiss();
+		updateStoricoAgenteInterface.refreshLog();
 	}
 }

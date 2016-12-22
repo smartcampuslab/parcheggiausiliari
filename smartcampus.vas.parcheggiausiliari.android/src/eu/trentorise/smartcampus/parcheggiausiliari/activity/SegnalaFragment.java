@@ -22,6 +22,7 @@ import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateSegn
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Parking;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.Street;
+import eu.trentorise.smartcampus.parcheggiausiliari.model.VehicleSlot;
 import eu.trentorise.smartcampus.parcheggiausiliari.util.AusiliariHelper;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker;
 import eu.trentorise.smartcampus.parcheggiausiliari.views.NumberPicker.OnChangedListener;
@@ -41,13 +42,31 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 	private TextView txtFree;
 	private TextView txtPayment;
 	private TextView txtTimed;
+	private List<VehicleSlot> vs;
+	private VehicleSlot carConfiguration;
+	private int indexCarConfiguration;
+
+	private void initialization() {
+		if (Parking.class.isInstance(obj)) {
+			vs = (((Parking) obj).getSlotsConfiguration());
+		} else {
+			vs = (((Street) obj).getSlotsConfiguration());
+		}
+		for (int i = 0; i < vs.size(); i++) {
+			if ("Car".compareTo(vs.get(i).getVehicleType()) == 0) {
+				carConfiguration = vs.get(i);
+				indexCarConfiguration = i;
+			}
+		}
+		obj.setAuthor(AusiliariHelper.getInstance().getUsername());
+	}
 
 	public SegnalaFragment(GeoObject obj) {
 		this.obj = obj;
 	}
 
 	/**
-	 * method called only in onConfigurationChanged to save  current values 
+	 * method called only in onConfigurationChanged to save current values
 	 */
 	private void saveValues() {
 		clearFocus();
@@ -61,8 +80,9 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 		sp.edit().putInt("WORK", mPickerWork.getCurrent()).apply();
 		;
 	}
+
 	/**
-	 * method called only in onConfigurationChanged to restore current values 
+	 * method called only in onConfigurationChanged to restore current values
 	 */
 	private void restoreValues() {
 		SharedPreferences sp = getActivity().getPreferences(0);
@@ -82,6 +102,7 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 
 	/**
 	 * method called to load the correct layout when the device is rotated
+	 * 
 	 * @param inflater
 	 * @param viewGroup
 	 */
@@ -107,7 +128,7 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 		mPickerTimed = (NumberPicker) subview.findViewById(R.id.NumberPicker03);
 		btnAnnulla = (Button) subview.findViewById(R.id.btnReset);
 		btnAnnulla.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				new ConfirmPopup("Reset",
@@ -122,8 +143,8 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 										Context.MODE_PRIVATE);
 						SharedPreferences.Editor editor = prefs.edit();
 						editor.remove(obj.getId()).commit();
-//						Toast.makeText(getActivity(), "Dati cancellati",
-//								Toast.LENGTH_LONG).show();
+						// Toast.makeText(getActivity(), "Dati cancellati",
+						// Toast.LENGTH_LONG).show();
 					}
 				}.show(getFragmentManager(), null);
 			}
@@ -138,15 +159,26 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 			mPickerFree.setRange(0, ((Parking) obj).getSlotsTotal());
 			a += ((Parking) obj).getSlotsTotal();
 		} else {
-			a += ((Street) obj).getSlotsFree()
-					+ ((Street) obj).getSlotsPaying()
-					+ ((Street) obj).getSlotsTimed();
-			txtFree.setText("/" + ((Street) obj).getSlotsFree());
-			mPickerFree.setRange(0, ((Street) obj).getSlotsFree());
-			txtPayment.setText("/" + ((Street) obj).getSlotsPaying());
-			mPickerPayment.setRange(0, ((Street) obj).getSlotsPaying());
-			txtTimed.setText("/" + ((Street) obj).getSlotsTimed());
-			mPickerTimed.setRange(0, ((Street) obj).getSlotsTimed());
+			// TODO calculate using the array of slotconfigurations
+			int totalFree = (carConfiguration.getFreeParkSlotNumber() != null ? carConfiguration.getFreeParkSlotNumber() : 0);
+			totalFree += (carConfiguration.getFreeParkSlotSignNumber() != null ? carConfiguration.getFreeParkSlotSignNumber() : 0);
+			int totalPay = (carConfiguration.getPaidSlotNumber() != null ? carConfiguration.getPaidSlotNumber() : 0);
+			int totalTime = (carConfiguration.getTimedParkSlotNumber() != null ? carConfiguration.getTimedParkSlotNumber() : 0);
+			txtFree.setText("/" + (totalFree));
+			mPickerFree.setRange(0, totalFree);
+			txtPayment.setText("/" + (totalPay));
+			mPickerPayment.setRange(0, (totalPay));
+			txtTimed.setText("/" + totalTime);
+			mPickerTimed.setRange(0, totalTime);
+			// a += ((Street) obj).getSlotsFree()
+			// + ((Street) obj).getSlotsPaying()
+			// + ((Street) obj).getSlotsTimed();
+			// txtFree.setText("/" + ((Street) obj).getSlotsFree());
+			// mPickerFree.setRange(0, ((Street) obj).getSlotsFree());
+			// txtPayment.setText("/" + ((Street) obj).getSlotsPaying());
+			// mPickerPayment.setRange(0, ((Street) obj).getSlotsPaying());
+			// txtTimed.setText("/" + ((Street) obj).getSlotsTimed());
+			// mPickerTimed.setRange(0, ((Street) obj).getSlotsTimed());
 		}
 		mPickerWork.setRange(0, a);
 
@@ -163,14 +195,15 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 					public void confirm() {
 						clearFocus();
 						updateObject();
-						AusiliariHelper.sendDataProcessor(obj,getActivity(),SegnalaFragment.this);
-//						Toast.makeText(getActivity(), "Dati inviati",
-//								Toast.LENGTH_LONG).show();
-//						getActivity()
-//								.getSharedPreferences(MY_PREFERENCES,
-//										Context.MODE_PRIVATE).edit()
-//								.remove(obj.getId()).commit();
-//						resetPickers();
+						AusiliariHelper.sendDataProcessor(obj, getActivity(),
+								SegnalaFragment.this);
+						// Toast.makeText(getActivity(), "Dati inviati",
+						// Toast.LENGTH_LONG).show();
+						// getActivity()
+						// .getSharedPreferences(MY_PREFERENCES,
+						// Context.MODE_PRIVATE).edit()
+						// .remove(obj.getId()).commit();
+						// resetPickers();
 						refresh();
 					}
 				}.show(getFragmentManager(), null);
@@ -190,10 +223,11 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 		f.setArguments(args);
 		return f;
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		initialization();
 	}
 
 	@Override
@@ -218,7 +252,7 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 				.findViewById(R.id.NumberPicker03);
 		btnAnnulla = (Button) rootView.findViewById(R.id.btnReset);
 		btnAnnulla.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				new ConfirmPopup("Reset",
@@ -233,8 +267,8 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 										Context.MODE_PRIVATE);
 						SharedPreferences.Editor editor = prefs.edit();
 						editor.remove(obj.getId()).commit();
-//						Toast.makeText(getActivity(), "Dati cancellati",
-//								Toast.LENGTH_LONG).show();
+						// Toast.makeText(getActivity(), "Dati cancellati",
+						// Toast.LENGTH_LONG).show();
 					}
 				}.show(getFragmentManager(), null);
 			}
@@ -249,31 +283,37 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 			mPickerFree.setRange(0, ((Parking) obj).getSlotsTotal());
 			a += ((Parking) obj).getSlotsTotal();
 		} else {
-			a += ((Street) obj).getSlotsFree()
-					+ ((Street) obj).getSlotsPaying()
-					+ ((Street) obj).getSlotsTimed();
-			txtFree.setText("/" + ((Street) obj).getSlotsFree());
-			mPickerFree.setRange(0, ((Street) obj).getSlotsFree());
-			txtPayment.setText("/" + ((Street) obj).getSlotsPaying());
-			mPickerPayment.setRange(0, ((Street) obj).getSlotsPaying());
-			txtTimed.setText("/" + ((Street) obj).getSlotsTimed());
-			mPickerTimed.setRange(0, ((Street) obj).getSlotsTimed());
+			// calculate using the array of slotconfigurations
+			int totalFree = (carConfiguration.getFreeParkSlotNumber() != null ? carConfiguration
+					.getFreeParkSlotNumber() : 0);
+			totalFree += (carConfiguration.getFreeParkSlotSignNumber() != null ? carConfiguration
+					.getFreeParkSlotSignNumber() : 0);
+			int totalPay = (carConfiguration.getPaidSlotNumber() != null ? carConfiguration
+					.getPaidSlotNumber() : 0);
+			int totalTime = (carConfiguration.getTimedParkSlotNumber() != null ? carConfiguration
+					.getTimedParkSlotNumber() : 0);
+			txtFree.setText("/" + (totalFree));
+			mPickerFree.setRange(0, totalFree);
+			txtPayment.setText("/" + (totalPay));
+			mPickerPayment.setRange(0, (totalPay));
+			txtTimed.setText("/" + totalTime);
+			mPickerTimed.setRange(0, totalTime);
 
 			View blockFree = rootView.findViewById(R.id.free_block);
-			if (((Street) obj).getSlotsFree() == 0 && blockFree !=null ) {
+			if (totalFree == 0 && blockFree != null) {
 				blockFree.setEnabled(false);
 			}
 			View blockPayment = rootView.findViewById(R.id.payment_block);
-			if (((Street) obj).getSlotsPaying() == 0 && blockPayment !=null ) {
+			if (totalPay == 0 && blockPayment != null) {
 				blockPayment.setEnabled(false);
 			}
 			View blockTime = rootView.findViewById(R.id.time_block);
-			if (((Street) obj).getSlotsTimed() == 0 && blockTime !=null) {
+			if (totalTime == 0 && blockTime != null) {
 				blockTime.setEnabled(false);
 			}
+			a += totalFree + totalPay + totalTime;
 		}
 
-		
 		mPickerWork.setRange(0, a);
 
 		btnSend = (Button) rootView.findViewById(R.id.btnSend);
@@ -289,15 +329,16 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 					public void confirm() {
 						clearFocus();
 						updateObject();
-						AusiliariHelper.sendDataProcessor(obj, getActivity(),SegnalaFragment.this);
-//						Toast.makeText(getActivity(), "Dati inviati",
-//								Toast.LENGTH_LONG).show();
-//						getActivity()
-//								.getSharedPreferences(MY_PREFERENCES,
-//										Context.MODE_PRIVATE).edit()
-//								.remove(obj.getId()).commit();
-//						resetPickers();
-						//refresh();
+						AusiliariHelper.sendDataProcessor(obj, getActivity(),
+								SegnalaFragment.this);
+						// Toast.makeText(getActivity(), "Dati inviati",
+						// Toast.LENGTH_LONG).show();
+						// getActivity()
+						// .getSharedPreferences(MY_PREFERENCES,
+						// Context.MODE_PRIVATE).edit()
+						// .remove(obj.getId()).commit();
+						// resetPickers();
+						// refresh();
 					}
 				}.show(getFragmentManager(), null);
 			}
@@ -313,7 +354,8 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 	}
 
 	/**
-	 * method called after the signal is sent to repopulate the list in the StoricoFragment
+	 * method called after the signal is sent to repopulate the list in the
+	 * StoricoFragment
 	 */
 	public void refresh() {
 		getFragmentManager().beginTransaction()
@@ -346,20 +388,73 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 	}
 
 	/**
-	 * method called just befor sending the data to update all the values of the object
+	 * method called just befor sending the data to update all the values of the
+	 * object
 	 */
 	private void updateObject() {
 		if (Parking.class.isInstance(obj)) {
-			((Parking) obj).setSlotsOccupiedOnTotal(mPickerFree.getCurrent());
-			((Parking) obj).setSlotsUnavailable(mPickerWork.getCurrent());
+			// calculate using the array of slotconfigurations
+			if (carConfiguration.getPaidSlotNumber() > 0) {
+				carConfiguration.setPaidSlotOccupied(mPickerFree.getCurrent());
+			} else if (carConfiguration.getFreeParkSlotNumber() > 0) {
+				carConfiguration.setFreeParkSlotOccupied(mPickerFree
+						.getCurrent());
+			} else
+				carConfiguration.setFreeParkSlotSignOccupied(mPickerFree
+						.getCurrent());
+			carConfiguration.setUnusuableSlotNumber(mPickerWork.getCurrent());
+			carConfiguration
+					.setSlotOccupied(getTotalSlotsOccupied(carConfiguration));
 		} else {
+			// calculate using the array of slotconfigurations
 
-			((Street) obj).setSlotsOccupiedOnFree(mPickerFree.getCurrent());
-			((Street) obj).setSlotsUnavailable(mPickerWork.getCurrent());
-			((Street) obj)
-					.setSlotsOccupiedOnPaying(mPickerPayment.getCurrent());
-			((Street) obj).setSlotsOccupiedOnTimed(mPickerTimed.getCurrent());
+			if (carConfiguration.getFreeParkSlotNumber() > 0 && carConfiguration.getFreeParkSlotSignNumber() > 0) {
+				if(mPickerFree.getCurrent() > carConfiguration.getFreeParkSlotNumber()){
+					carConfiguration.setFreeParkSlotOccupied(carConfiguration.getFreeParkSlotNumber());
+					carConfiguration.setFreeParkSlotSignOccupied(mPickerFree.getCurrent() - carConfiguration.getFreeParkSlotNumber());
+				} else {
+					carConfiguration.setFreeParkSlotOccupied(mPickerFree.getCurrent());
+				}
+				
+			} else {
+				if (carConfiguration.getFreeParkSlotNumber() > 0){
+					carConfiguration.setFreeParkSlotOccupied(mPickerFree.getCurrent());
+				} else {
+					carConfiguration.setFreeParkSlotSignOccupied(mPickerFree.getCurrent());
+				}
+			}
+			
+			if(carConfiguration.getPaidSlotNumber() > 0) carConfiguration.setPaidSlotOccupied(mPickerPayment.getCurrent());
+			if(carConfiguration.getTimedParkSlotNumber() > 0) carConfiguration.setTimedParkSlotOccupied(mPickerTimed.getCurrent());
+			carConfiguration.setUnusuableSlotNumber(mPickerWork.getCurrent());
+			carConfiguration.setSlotOccupied(getTotalSlotsOccupied(carConfiguration));
 		}
+		vs.set(indexCarConfiguration, carConfiguration);
+	}
+
+	private Integer getTotalSlotsOccupied(VehicleSlot vs) {
+		int total = 0;
+		total += ((vs.getCarSharingSlotOccupied() != null) ? vs
+				.getCarSharingSlotOccupied() : 0)
+				+ ((vs.getFreeParkSlotOccupied() != null) ? vs
+						.getFreeParkSlotOccupied() : 0)
+				+ ((vs.getFreeParkSlotSignOccupied() != null) ? vs
+						.getFreeParkSlotSignOccupied() : 0)
+				+ ((vs.getHandicappedSlotOccupied() != null) ? vs
+						.getHandicappedSlotOccupied() : 0)
+				+ ((vs.getLoadingUnloadingSlotOccupied() != null) ? vs
+						.getLoadingUnloadingSlotOccupied() : 0)
+				+ ((vs.getPaidSlotOccupied() != null) ? vs
+						.getPaidSlotOccupied() : 0)
+				+ ((vs.getPinkSlotOccupied() != null) ? vs
+						.getPinkSlotOccupied() : 0)
+				+ ((vs.getRechargeableSlotOccupied() != null) ? vs
+						.getRechargeableSlotOccupied() : 0)
+				+ ((vs.getReservedSlotOccupied() != null) ? vs
+						.getReservedSlotOccupied() : 0)
+				+ ((vs.getTimedParkSlotOccupied() != null) ? vs
+						.getTimedParkSlotOccupied() : 0);
+		return total;
 	}
 
 	@Override
@@ -415,9 +510,8 @@ public class SegnalaFragment extends Fragment implements UpdateSegnalaInterface 
 			Toast.makeText(getActivity(), R.string.dialog_send_ok,
 					Toast.LENGTH_LONG).show();
 			getActivity()
-					.getSharedPreferences(MY_PREFERENCES,
-							Context.MODE_PRIVATE).edit()
-					.remove(obj.getId()).commit();
+					.getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE)
+					.edit().remove(obj.getId()).commit();
 			resetPickers();
 		} else {
 			Toast.makeText(getActivity(), R.string.dialog_send_ko,

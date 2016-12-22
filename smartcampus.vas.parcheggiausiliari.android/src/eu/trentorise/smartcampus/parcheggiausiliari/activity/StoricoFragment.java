@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import eu.trentorise.smartcampus.parcheggiausiliari.activity.adapters.MyStoricoAdapter;
 import eu.trentorise.smartcampus.parcheggiausiliari.activity.adapters.StoricoAdapter;
 import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoParkingInterface;
 import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoStreetInterface;
@@ -127,4 +128,13 @@ public class StoricoFragment extends Fragment implements
 		storicoAdapter.addAll(storico);
 		storicoAdapter.notifyDataSetChanged();
 	}
+	@Override
+	public void refreshLog() {
+		storicoAdapter = new StoricoAdapter(getActivity(), storico);
+		lv.setAdapter(storicoAdapter);
+
+		
+	}
+
+
 }

@@ -58,5 +58,6 @@ public class GetStoricoStreetProcessor extends
 		}
 		if (pd.isShowing())
 			pd.dismiss();
+		updateStoricoStreetInterface.refreshLog();
 	}
 }

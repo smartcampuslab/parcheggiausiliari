@@ -8,5 +8,5 @@ public interface UpdateStoricoParkingInterface {
 
 
 	void addStoricoPark(List<ParkingLog> storico);
-
+	void refreshLog();
 }

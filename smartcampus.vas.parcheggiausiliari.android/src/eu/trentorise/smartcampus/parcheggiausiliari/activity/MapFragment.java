@@ -33,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import eu.trentorise.smartcampus.parcheggiausiliari.activity.adapters.GeoObjectAdapter;
 import eu.trentorise.smartcampus.parcheggiausiliari.activityinterface.UpdateStoricoAgenteInterface;
 import eu.trentorise.smartcampus.parcheggiausiliari.model.GeoObject;
@@ -225,9 +226,11 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 
 	protected void showPopup(View anchorView, ParkingMarker arg1) {
 		// lanciare processor e recuperare ultimo
-		GetLastLogProcessor ast = new GetLastLogProcessor(getActivity());
-		ast.execute(arg1.getmParking());
-
+		if (!opened) {
+			opened = true;
+			GetLastLogProcessor ast = new GetLastLogProcessor(getActivity());
+			ast.execute(arg1.getmParking());
+		}
 		// DialogFragment df = new PopupFragment(arg1.getmParking());
 		// df.show(getFragmentManager(), getTag());
 	}
@@ -316,17 +319,22 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 	@Override
 	public void openPopup(GeoObject obj) {
 		// TODO Auto-generated method stub
+		// if (!opened) {
+		// opened = true;
+		// DialogFragment df = new PopupFragment(obj) {
+		// @Override
+		// public void onDismiss(DialogInterface dialog) {
+		// // TODO Auto-generated method stub
+		// opened = false;
+		// super.onDismiss(dialog);
+		// }
+		// };
+		// df.show(getActivity().getSupportFragmentManager(), "");
+		// }
 		if (!opened) {
 			opened = true;
-			DialogFragment df = new PopupFragment(obj) {
-				@Override
-				public void onDismiss(DialogInterface dialog) {
-					// TODO Auto-generated method stub
-					opened = false;
-					super.onDismiss(dialog);
-				}
-			};
-			df.show(getActivity().getSupportFragmentManager(), "");
+			GetLastLogProcessor ast = new GetLastLogProcessor(getActivity());
+			ast.execute(obj);
 		}
 	}
 
@@ -413,11 +421,27 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 		}
 
 		protected void onPostExecute(List<LogObject> storico) {
-			currentLog = storico.get(0);
-			currentObject.setAuthor(currentLog.getAuthor());
-			currentObject.setUpdateTime(currentLog.getTime());
-			DialogFragment df = new PopupFragment(currentObject);
-			df.show(getFragmentManager(), getTag());
+			pd.hide();
+			if (storico != null && storico.size()>0) {
+				currentLog = storico.get(0);
+				currentObject.setAuthor("999".compareTo(currentLog.getAuthor())==0?getString(R.string.system_author):currentLog.getAuthor());
+				currentObject.setUpdateTime(currentLog.getTime());
+				DialogFragment df = new PopupFragment(currentObject) {
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						// TODO Auto-generated method stub
+						opened = false;
+						super.onDismiss(dialog);
+					}
+				};
+				df.show(getFragmentManager(), getTag());
+
+			} else {
+				Toast.makeText(activity,
+						getString(R.string.msg_getstorico_serror),
+						Toast.LENGTH_LONG).show();
+				opened = false;
+			}
 		}
 
 	}

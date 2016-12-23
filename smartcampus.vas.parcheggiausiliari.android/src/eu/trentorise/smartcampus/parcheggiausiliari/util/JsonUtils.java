@@ -105,6 +105,7 @@ public class JsonUtils {
 			}
 			return result;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

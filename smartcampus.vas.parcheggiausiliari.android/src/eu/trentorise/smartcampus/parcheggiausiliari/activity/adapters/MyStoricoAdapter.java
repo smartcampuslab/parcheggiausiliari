@@ -64,7 +64,7 @@ public class MyStoricoAdapter extends ArrayAdapter<LogObject> {
 				rowView.findViewById(R.id.txtStreet).setVisibility(View.GONE);
 				LogObjectExtended p = (LogObjectExtended) values.get(position);
 				Date d = new Date(p.getParkingData().getUpdateTime());
-				textView.setText(((p.getParkingData().getChannel()==1) ? p.getParkingData().getAuthor(): context.getString(R.string.system_author))+ " - ore "
+				textView.setText(((p.getParkingData().getChannel()!=0 && p.getParkingData().getAuthor()!=null && "".compareTo(p.getParkingData().getAuthor())!=0) ? p.getParkingData().getAuthor(): context.getString(R.string.system_author))+ " - ore "
 						
 						+ String.format("%02d", d.getHours()) + ":"
 						+ String.format("%02d", d.getMinutes()) + " - "
@@ -78,7 +78,7 @@ public class MyStoricoAdapter extends ArrayAdapter<LogObject> {
 				valTime = (TextView) rowView.findViewById(R.id.valueTime);
 				LogObjectExtended s = (LogObjectExtended) values.get(position);
 				Date d = new Date(s.getStreetData().getUpdateTime());
-				textView.setText(((s.getStreetData().getChannel()==1) ? s.getStreetData().getAuthor(): context.getString(R.string.system_author))+  " - ore "
+				textView.setText(((s.getStreetData().getChannel()!=0 && s.getStreetData().getAuthor()!=null && "".compareTo(s.getStreetData().getAuthor())!=0) ? s.getStreetData().getAuthor(): context.getString(R.string.system_author))+  " - ore "
 						+ String.format("%02d", d.getHours()) + ":"
 						+ String.format("%02d", d.getMinutes()) + " - "
 						+ String.format("%02d", d.getDate()) + "/"

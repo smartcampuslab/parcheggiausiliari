@@ -63,10 +63,9 @@ public class PopupFragment extends DialogFragment {
 					: "Non presente");
 		} else {
 			Date d = null;
-			if(((Street) obj).getLastChange() != null)
-				d = new Date(((Street) obj).getLastChange().getTime());
-			tv.setText(((Street) obj).getLastChange() != null ? (((Street) obj)
-					.getLastChange().getAuthor()
+			if(((Street) obj).getUpdateTime() != null)
+				d = new Date(((Street) obj).getUpdateTime());
+			tv.setText(((Street) obj).getUpdateTime() != null ? (((Street) obj).getAuthor()
 					+ " - ore "
 					+ String.format("%02d", d.getHours())
 					+ ":"

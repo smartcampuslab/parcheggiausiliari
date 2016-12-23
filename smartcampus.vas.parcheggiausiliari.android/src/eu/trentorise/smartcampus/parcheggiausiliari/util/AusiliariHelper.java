@@ -116,6 +116,7 @@ public class AusiliariHelper {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return list; //return null list and managed in that case the message
 		}
 		addValueString(list);
 		return list;
@@ -214,43 +215,25 @@ public class AusiliariHelper {
 	}
 
 	private static void addValueStringPark(List<ParkingLog> list) {
-		for (ParkingLog map : list) {
-			if (map.getValueString() != null) {
-				Parking park = new Parking();
-				Map tmpValue = JsonUtils.toObject(
-						cleanStringForJSON(map.getValueString()), Map.class);
-				map.setValue(JsonUtils.toObject(
-						cleanStringForJSON(map.getValueString()), Map.class));
-			}
-		}
-
-	}
-
-	private static void addValueStringStreet(List<StreetLog> list) {
-		for (StreetLog map : list) {
-			if (map.getValueString() != null) {
-				Street park = new Street();
-				Map tmpValue = JsonUtils.toObject(
-						cleanStringForJSON(map.getValueString()), Map.class);
-				map.setValue(JsonUtils.toObject(
-						cleanStringForJSON(map.getValueString()), Map.class));
-			}
-		}
-
-	}
-
-	private static void addValueString(List<LogObject> list) {
-		for (LogObject map : list) {
-			String value = cleanStringForJSON((String) map.getValueString());
-			if (value != null) {
-				if (map.getType().contains("Parking")) {
+		if (list != null) {
+			for (ParkingLog map : list) {
+				if (map.getValueString() != null) {
 					Parking park = new Parking();
 					Map tmpValue = JsonUtils
 							.toObject(cleanStringForJSON(map.getValueString()),
 									Map.class);
 					map.setValue(JsonUtils.toObject(
 							cleanStringForJSON(map.getValueString()), Map.class));
-				} else {
+				}
+			}
+		}
+
+	}
+
+	private static void addValueStringStreet(List<StreetLog> list) {
+		if (list != null) {
+			for (StreetLog map : list) {
+				if (map.getValueString() != null) {
 					Street park = new Street();
 					Map tmpValue = JsonUtils
 							.toObject(cleanStringForJSON(map.getValueString()),
@@ -258,7 +241,36 @@ public class AusiliariHelper {
 					map.setValue(JsonUtils.toObject(
 							cleanStringForJSON(map.getValueString()), Map.class));
 				}
-				// map.put("value", JsonUtils.toObjectList(value, Map.class));
+			}
+		}
+
+	}
+
+	private static void addValueString(List<LogObject> list) {
+		if (list != null) {
+			for (LogObject map : list) {
+				String value = cleanStringForJSON((String) map.getValueString());
+				if (value != null) {
+					if (map.getType().contains("Parking")) {
+						Parking park = new Parking();
+						Map tmpValue = JsonUtils.toObject(
+								cleanStringForJSON(map.getValueString()),
+								Map.class);
+						map.setValue(JsonUtils.toObject(
+								cleanStringForJSON(map.getValueString()),
+								Map.class));
+					} else {
+						Street park = new Street();
+						Map tmpValue = JsonUtils.toObject(
+								cleanStringForJSON(map.getValueString()),
+								Map.class);
+						map.setValue(JsonUtils.toObject(
+								cleanStringForJSON(map.getValueString()),
+								Map.class));
+					}
+					// map.put("value", JsonUtils.toObjectList(value,
+					// Map.class));
+				}
 			}
 		}
 

@@ -29,8 +29,9 @@
     <string name="dialog_loading">Caricamento</string>
     <string name="dialog_waiting">Attendere...</string>
     <string name="dialog_send_ok">Dati inviati</string>
-    <string name="dialog_send_ko">Invio dati fallito Riprova più tardi.</string>
-
+    <string name="dialog_send_ko">Invio dati fallito. Riprova più tardi.</string>
+    <string name="msg_getstorico_serror">Errore nel recupero delle informazioni dal server. Riprova più tardi</string>
+    
         <string name="empty_user">Specifica nome utente!</string>
 	<string name="system_author">Sistema</string>
         

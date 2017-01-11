@@ -436,6 +436,20 @@ public class MapFragment extends Fragment implements SinglePopup, AddGeoPoints {
 				};
 				df.show(getFragmentManager(), getTag());
 
+			} else if (storico .size()==0 ){
+				//no log yet
+				currentLog = new LogObject();
+				currentObject.setAuthor("");
+				//currentObject.setUpdateTime(currentLog.getTime());
+				DialogFragment df = new PopupFragment(currentObject) {
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						// TODO Auto-generated method stub
+						opened = false;
+						super.onDismiss(dialog);
+					}
+				};
+				df.show(getFragmentManager(), getTag());
 			} else {
 				Toast.makeText(activity,
 						getString(R.string.msg_getstorico_serror),

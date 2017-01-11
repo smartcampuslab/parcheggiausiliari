@@ -17,7 +17,6 @@
     <string name="logout_fragment">Logout</string>
     <string name="btnParkings">Parkings</string>
     <string name="btnStreets">Streets</string>
-    <string name="token">dXNlcjpwYXNzd29yZA==</string>
     <string name="no_signals_found">No signals found</string>
     <string name="parks_empty_list">No parkings found</string>
     <string name="streets_empty_list">No streets found</string>
@@ -30,15 +29,15 @@
 	<string name="system_author">Sysytem</string>
     <string name="empty_user">User name cannot be empty!</string>
 
-    <!-- Trento -->
 
-    <!-- Trento -->
-<!--     <string name="park">metroparco/data-mgt</string> -->
+<!--     Trento -->
+<!--     <string name="park">metroparco/data-mgt/</string> -->
 <!--     <string name="applocation">tn</string> -->
 <!--     <string name="appcenter">46.070746,11.123677</string> -->
 <!--     <string name="zoom_level">16</string> -->
 <!--     <string name="app_name">ContaParcheggi - Trento</string> -->
-
+<!--     <string name="token">dHJlbnRvMTptZXRyb1ROJDE1</string> -->
+    
 
     <!-- ROVERETO -->
     <string name="park">metroparco/data-mgt/</string>
@@ -46,5 +45,6 @@
     <string name="appcenter">45.893324,11.036265</string>
     <string name="zoom_level">16</string>
     <string name="app_name">ContaParcheggi - ROV</string>
+    <string name="token">cm92ZXJldG8xOm1ldHJvUlYjMTU=</string>
 
 </resources>

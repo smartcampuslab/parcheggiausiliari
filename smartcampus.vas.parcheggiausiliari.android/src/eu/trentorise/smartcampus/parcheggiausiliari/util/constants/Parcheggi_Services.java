@@ -6,7 +6,7 @@ package eu.trentorise.smartcampus.parcheggiausiliari.util.constants;
  */
 public class Parcheggi_Services {
 
-	public static final String HOST = "https://dev.smartcommunitylab.it/";
+	public static final String HOST = "https://tn.smartcommunitylab.it/";
 
 	public static final String PARKLIST = "/parkings/";
 

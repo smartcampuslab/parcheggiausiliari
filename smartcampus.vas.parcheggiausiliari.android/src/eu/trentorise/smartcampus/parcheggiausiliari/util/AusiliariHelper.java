@@ -291,8 +291,7 @@ public class AusiliariHelper {
 			request = RemoteConnector.getJSON(Parcheggi_Services.HOST, mContext
 					.getResources().getString(R.string.park)
 					+ mContext.getResources().getString(R.string.applocation)
-					+ Parcheggi_Services.STREETLIST, mContext.getResources()
-					.getString(R.string.token));
+					+ Parcheggi_Services.STREETLIST, mContext.getResources().getString(R.string.token));
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

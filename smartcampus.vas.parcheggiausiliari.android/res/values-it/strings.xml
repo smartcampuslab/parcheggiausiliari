@@ -19,8 +19,6 @@
     <string name="logout_fragment">Logout</string>
     <string name="btnParkings">Parcheggi</string>
     <string name="btnStreets">Vie</string>
-<!--     <string name="token">dHJlbnRvMTptZXRyb1ROJDE1</string> -->
-<string name="token">cm92ZXJldG8xOm1ldHJvUlYjMTU=</string> 
     <string name="no_signals_found">Nessuna segnalazione trovata</string>
     <string name="parks_empty_list">Nessun parcheggio trovato</string>
     <string name="streets_empty_list">Nessuna strada trovata</string>
